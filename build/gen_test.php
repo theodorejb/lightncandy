@@ -2,8 +2,6 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use LightnCandy\LightnCandy;
-
 genTestForClass('Compiler');
 genTestForClass('Context');
 genTestForClass('Exporter');

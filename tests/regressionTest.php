@@ -1384,23 +1384,6 @@ VAREND
             ),
 
             array(
-                'id' => 278,
-                'template' => '{{#foo}}-{{#bar}}={{moo}}{{/bar}}{{/foo}}',
-                'data' => array(
-                    'foo' => array(
-                         array('bar' => 0, 'moo' => 'A'),
-                         array('bar' => 1, 'moo' => 'B'),
-                         array('bar' => false, 'moo' => 'C'),
-                         array('bar' => true, 'moo' => 'D'),
-                    )
-                ),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_MUSTACHE,
-                ),
-                'expected' => '--=B--=D'
-            ),
-
-            array(
                 'id' => 281,
                 'template' => '{{echo (echo "foo bar (moo).")}}',
                 'options' => array(
@@ -2063,20 +2046,6 @@ VAREND
             ),
 
             array(
-                'template' => "   {{#foo}}\n {{name}}\n{{/foo}}\n  ",
-                'data' => array('foo' => array(array('name' => 'A'),array('name' => 'd'),array('name' => 'E'))),
-                'options' => array('flags' => LightnCandy::FLAG_MUSTACHE),
-                'expected' => " A\n d\n E\n  ",
-            ),
-
-            array(
-                'template' => "{{bar}}\n   {{#foo}}\n {{name}}\n{{/foo}}\n  ",
-                'data' => array('bar' => 'OK', 'foo' => array(array('name' => 'A'),array('name' => 'd'),array('name' => 'E'))),
-                'options' => array('flags' => LightnCandy::FLAG_MUSTACHE),
-                'expected' => "OK\n A\n d\n E\n  ",
-            ),
-
-            array(
                 'template' => "   {{#if foo}}\nYES\n{{else}}\nNO\n{{/if}}\n",
                 'options' => array('flags' => LightnCandy::FLAG_HANDLEBARS),
                 'expected' => "NO\n",
@@ -2092,7 +2061,6 @@ VAREND
             array(
                 'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_MUSTACHE,
                     'partials' => array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
                 ),
                 'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n  1:A\n   2:B\n    3:C\n   4:D\n  5:E\nDONE\n",
@@ -2101,7 +2069,7 @@ VAREND
             array(
                 'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_PREVENTINDENT,
+                    'flags' => LightnCandy::FLAG_PREVENTINDENT,
                     'partials' => array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
                 ),
                 'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n  1:A\n 2:B\n  3:C\n 4:D\n5:E\nDONE\n",
@@ -2111,7 +2079,6 @@ VAREND
                 'template' => "{{foo}}\n  {{bar}}\n",
                 'data' => array('foo' => 'ha', 'bar' => 'hey'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_PREVENTINDENT,
                 ),
                 'expected' => "ha\n  hey\n",
             ),
@@ -2120,7 +2087,6 @@ VAREND
                 'template' => "{{>test}}\n",
                 'data' => array('foo' => 'ha', 'bar' => 'hey'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_PREVENTINDENT,
                     'partials' => array('test' => "{{foo}}\n  {{bar}}\n"),
                 ),
                 'expected' => "ha\n  hey\n",
@@ -2130,7 +2096,7 @@ VAREND
                 'template' => " {{>test}}\n",
                 'data' => array('foo' => 'ha', 'bar' => 'hey'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_PREVENTINDENT,
+                    'flags' => LightnCandy::FLAG_PREVENTINDENT,
                     'partials' => array('test' => "{{foo}}\n  {{bar}}\n"),
                 ),
                 'expected' => " ha\n  hey\n",
@@ -2140,7 +2106,7 @@ VAREND
                 'template' => "\n {{>test}}\n",
                 'data' => array('foo' => 'ha', 'bar' => 'hey'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_PREVENTINDENT,
+                    'flags' => LightnCandy::FLAG_PREVENTINDENT,
                     'partials' => array('test' => "{{foo}}\n  {{bar}}\n"),
                 ),
                 'expected' => "\n ha\n  hey\n",
