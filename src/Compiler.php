@@ -469,14 +469,9 @@ VAREND
                     array_pop($context['stack']);
                     return "{$context['ops']['cnd_end']}";
                 }
-                if (!$context['flags']['nohbh']) {
-                    return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
-                }
-                break;
+                return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
             case 'with':
-                if (!$context['flags']['nohbh']) {
-                    return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
-                }
+                return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
         }
 
         if ($pop === ':') {
@@ -503,20 +498,18 @@ VAREND
     protected static function blockBegin(&$context, $vars)
     {
         $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($context, $vars[1]) : array(null, array());
-        if (!$context['flags']['nohbh']) {
-            switch (isset($vars[0][0]) ? $vars[0][0] : null) {
-                case 'if':
-                    $includeZero = (isset($vars['includeZero'][1]) && $vars['includeZero'][1]) ? 'true' : 'false';
-                    return "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, {$includeZero})){$context['ops']['cnd_then']}";
-                case 'unless':
-                    return "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, false)){$context['ops']['cnd_then']}";
-                case 'each':
-                    return static::section($context, $vars, true);
-                case 'with':
-                    if ($r = static::with($context, $vars)) {
-                        return $r;
-                    }
-            }
+        switch ($vars[0][0] ?? null) {
+            case 'if':
+                $includeZero = (isset($vars['includeZero'][1]) && $vars['includeZero'][1]) ? 'true' : 'false';
+                return "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, {$includeZero})){$context['ops']['cnd_then']}";
+            case 'unless':
+                return "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, false)){$context['ops']['cnd_then']}";
+            case 'each':
+                return static::section($context, $vars, true);
+            case 'with':
+                if ($r = static::with($context, $vars)) {
+                    return $r;
+                }
         }
 
         return static::section($context, $vars);

@@ -180,12 +180,12 @@ class Validator
      *
      * @expect null when input '', array(), array()
      * @expect 2 when input '^', array('usedFeature' => array('isec' => 1), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'elselvl' => array(), 'flags' => array('spvar' => 0), 'elsechain' => false, 'helperresolver' => 0), array(array('foo'))
-     * @expect true when input '/', array('stack' => array('[with]', '#'), 'level' => 1, 'currentToken' => array(0,0,0,0,0,0,0,'with'), 'flags' => array('nohbh' => 0)), array(array())
+     * @expect true when input '/', array('stack' => array('[with]', '#'), 'level' => 1, 'currentToken' => array(0,0,0,0,0,0,0,'with'), 'flags' => array()), array(array())
      * @expect 4 when input '#', array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elsechain' => false, 'elselvl' => array(), 'helperresolver' => 0), array(array('x'))
-     * @expect 5 when input '#', array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elsechain' => false, 'elselvl' => array(), 'helperresolver' => 0), array(array('if'))
-     * @expect 6 when input '#', array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('nohbh' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elsechain' => false, 'elselvl' => array(), 'helperresolver' => 0), array(array('with'))
-     * @expect 7 when input '#', array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elsechain' => false, 'elselvl' => array(), 'helperresolver' => 0), array(array('each'))
-     * @expect 8 when input '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elsechain' => false, 'elselvl' => array(), 'helperresolver' => 0), array(array('unless'))
+     * @expect 5 when input '#', array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elsechain' => false, 'elselvl' => array(), 'helperresolver' => 0), array(array('if'))
+     * @expect 6 when input '#', array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elsechain' => false, 'elselvl' => array(), 'helperresolver' => 0), array(array('with'))
+     * @expect 7 when input '#', array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elsechain' => false, 'elselvl' => array(), 'helperresolver' => 0), array(array('each'))
+     * @expect 8 when input '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elsechain' => false, 'elselvl' => array(), 'helperresolver' => 0), array(array('unless'))
      * @expect 9 when input '#', array('helpers' => array('abc' => ''), 'usedFeature' => array('helper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elsechain' => false, 'elselvl' => array()), array(array('abc'))
      * @expect 11 when input '#', array('helpers' => array('abc' => ''), 'usedFeature' => array('helper' => 10), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elsechain' => false, 'elselvl' => array()), array(array('abc'))
      * @expect true when input '>', array('partialresolver' => false, 'usedFeature' => array('partial' => 7), 'level' => 0, 'flags' => array('runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elsechain' => false, 'elselvl' => array()), array('test')
@@ -360,14 +360,8 @@ class Validator
      */
     protected static function builtin(&$context, $vars)
     {
-        if ($context['flags']['nohbh']) {
-            if (isset($vars[1][0])) {
-                $context['error'][] = "Do not support {{#{$vars[0][0]} var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag";
-            }
-        } else {
-            if (count($vars) < 2) {
-                $context['error'][] = "No argument after {{#{$vars[0][0]}}} !";
-            }
+        if (count($vars) < 2) {
+            $context['error'][] = "No argument after {{#{$vars[0][0]}}} !";
         }
         $context['usedFeature'][$vars[0][0]]++;
     }
@@ -488,11 +482,9 @@ class Validator
         $pop2 = ($c >= 0) ? $context['stack'][$c]: '';
         switch ($context['currentToken'][Token::POS_INNERTAG]) {
             case 'with':
-                if (!$context['flags']['nohbh']) {
-                    if ($pop2 !== '[with]') {
-                        $context['error'][] = 'Unexpect token: {{/with}} !';
-                        return;
-                    }
+                if ($pop2 !== '[with]') {
+                    $context['error'][] = 'Unexpect token: {{/with}} !';
+                    return;
                 }
                 return true;
         }
@@ -717,13 +709,11 @@ class Validator
     public static function log(&$context, $vars)
     {
         if (isset($vars[0][0]) && ($vars[0][0] === 'log')) {
-            if (!$context['flags']['nohbh']) {
-                if (count($vars) < 2) {
-                    $context['error'][] = "No argument after {{log}} !";
-                }
-                $context['usedFeature']['log']++;
-                return true;
+            if (count($vars) < 2) {
+                $context['error'][] = "No argument after {{log}} !";
             }
+            $context['usedFeature']['log']++;
+            return true;
         }
     }
 
@@ -738,15 +728,13 @@ class Validator
     public static function lookup(&$context, $vars)
     {
         if (isset($vars[0][0]) && ($vars[0][0] === 'lookup')) {
-            if (!$context['flags']['nohbh']) {
-                if (count($vars) < 2) {
-                    $context['error'][] = "No argument after {{lookup}} !";
-                } elseif (count($vars) < 3) {
-                    $context['error'][] = "{{lookup}} requires 2 arguments !";
-                }
-                $context['usedFeature']['lookup']++;
-                return true;
+            if (count($vars) < 2) {
+                $context['error'][] = "No argument after {{lookup}} !";
+            } elseif (count($vars) < 3) {
+                $context['error'][] = "{{lookup}} requires 2 arguments !";
             }
+            $context['usedFeature']['lookup']++;
+            return true;
         }
     }
 
@@ -773,7 +761,7 @@ class Validator
                 case 'with':
                 case 'each':
                 case 'lookup':
-                    return $context['flags']['nohbh'] ? false : true;
+                    return true;
             }
         }
 

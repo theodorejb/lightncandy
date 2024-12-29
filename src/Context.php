@@ -50,7 +50,6 @@ class Context extends Flags
                 'jslen' => $flags & static::FLAG_JSLENGTH,
                 'hbesc' => $flags & static::FLAG_HBESCAPE,
                 'this' => $flags & static::FLAG_THIS,
-                'nohbh' => $flags & static::FLAG_NOHBHELPERS,
                 'parent' => $flags & static::FLAG_PARENT,
                 'echo' => $flags & static::FLAG_ECHO,
                 'advar' => $flags & static::FLAG_ADVARNAME,

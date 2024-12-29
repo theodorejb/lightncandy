@@ -223,16 +223,6 @@ class regressionTest extends TestCase
             ),
 
             array(
-                'id' => 89,
-                'template' => '{{#with}}SHOW:{{.}} {{/with}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_NOHBHELPERS,
-                ),
-                'data' => array('with' => array(1, 3, 7), 'a' => array(2, 4, 9)),
-                'expected' => 'SHOW:1 SHOW:3 SHOW:7 ',
-            ),
-
-            array(
                 'id' => 90,
                 'template' => '{{#items}}{{#value}}{{.}}{{/value}}{{/items}}',
                 'data' => array('items' => array(array('value'=>'123'))),
@@ -2162,33 +2152,6 @@ VAREND
                     'flags' => LightnCandy::FLAG_HBESCAPE,
                 ),
                 'expected' => '&lt;a href&#x3D;&quot;#&quot;&gt;&#x27;&lt;/a&gt;',
-            ),
-
-            array(
-                'template' => '{{#if}}SHOW:{{.}} {{/if}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_NOHBHELPERS,
-                ),
-                'data' => array('if' => array(1, 3, 7), 'a' => array(2, 4, 9)),
-                'expected' => 'SHOW:1 SHOW:3 SHOW:7 ',
-            ),
-
-            array(
-                'template' => '{{#unless}}SHOW:{{.}} {{/unless}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_NOHBHELPERS,
-                ),
-                'data' => array('unless' => array(1, 3, 7), 'a' => array(2, 4, 9)),
-                'expected' => 'SHOW:1 SHOW:3 SHOW:7 ',
-            ),
-
-            array(
-                'template' => '{{#each}}SHOW:{{.}} {{/each}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_NOHBHELPERS,
-                ),
-                'data' => array('each' => array(1, 3, 7), 'a' => array(2, 4, 9)),
-                'expected' => 'SHOW:1 SHOW:3 SHOW:7 ',
             ),
 
             array(

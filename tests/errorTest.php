@@ -455,26 +455,6 @@ class errorTest extends TestCase
                 'expected' => 'Do not support {{>tests/test1 foo}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag',
             ),
             array(
-                'template' => '{{#with foo}}ABC{{/with}}',
-                'options' => array('flags' => LightnCandy::FLAG_NOHBHELPERS),
-                'expected' => 'Do not support {{#with var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag',
-            ),
-            array(
-                'template' => '{{#if foo}}ABC{{/if}}',
-                'options' => array('flags' => LightnCandy::FLAG_NOHBHELPERS),
-                'expected' => 'Do not support {{#if var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag',
-            ),
-            array(
-                'template' => '{{#unless foo}}ABC{{/unless}}',
-                'options' => array('flags' => LightnCandy::FLAG_NOHBHELPERS),
-                'expected' => 'Do not support {{#unless var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag',
-            ),
-            array(
-                'template' => '{{#each foo}}ABC{{/each}}',
-                'options' => array('flags' => LightnCandy::FLAG_NOHBHELPERS),
-                'expected' => 'Do not support {{#each var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag',
-            ),
-            array(
                 'template' => '{{abc}}',
                 'options' => array('helpers' => array('abc')),
                 'expected' => "You provide a custom helper named as 'abc' in options['helpers'], but the function abc() is not defined!",
