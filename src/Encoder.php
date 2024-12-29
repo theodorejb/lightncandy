@@ -33,19 +33,19 @@ class Encoder
      *
      * @return array<array|string|integer>|string|integer|null The raw value of the specified variable
      *
-     * @expect true when input array('flags' => array('jstrue' => 0, 'mustlam' => 0, 'lambda' => 0)), true
+     * @expect true when input array('flags' => array('jstrue' => 0, 'lambda' => 0)), true
      * @expect 'true' when input array('flags' => array('jstrue' => 1)), true
-     * @expect '' when input array('flags' => array('jstrue' => 0, 'mustlam' => 0, 'lambda' => 0)), false
+     * @expect '' when input array('flags' => array('jstrue' => 0, 'lambda' => 0)), false
      * @expect 'false' when input array('flags' => array('jstrue' => 1)), false
      * @expect false when input array('flags' => array('jstrue' => 1)), false, true
      * @expect 'Array' when input array('flags' => array('jstrue' => 1, 'jsobj' => 0)), array('a', 'b')
-     * @expect 'a,b' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a', 'b')
+     * @expect 'a,b' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'lambda' => 0)), array('a', 'b')
      * @expect '[object Object]' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', 'c' => 'b')
      * @expect '[object Object]' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('c' => 'b')
-     * @expect 'a,true' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a', true)
-     * @expect 'a,1' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a',true)
-     * @expect 'a,' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a',false)
-     * @expect 'a,false' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a',false)
+     * @expect 'a,true' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'lambda' => 0)), array('a', true)
+     * @expect 'a,1' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'lambda' => 0)), array('a',true)
+     * @expect 'a,' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'lambda' => 0)), array('a',false)
+     * @expect 'a,false' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'lambda' => 0)), array('a',false)
      */
     public static function raw($cx, $v, $ex = 0)
     {
@@ -92,9 +92,9 @@ class Encoder
      *
      * @return string The htmlencoded value of the specified variable
      *
-     * @expect 'a' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a'
-     * @expect 'a&amp;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a&b'
-     * @expect 'a&#039;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a\'b'
+     * @expect 'a' when input array('flags' => array('lambda' => 0)), 'a'
+     * @expect 'a&amp;b' when input array('flags' => array('lambda' => 0)), 'a&b'
+     * @expect 'a&#039;b' when input array('flags' => array('lambda' => 0)), 'a\'b'
      */
     public static function enc($cx, $var)
     {
@@ -109,10 +109,10 @@ class Encoder
      *
      * @return string The htmlencoded value of the specified variable
      *
-     * @expect 'a' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a'
-     * @expect 'a&amp;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a&b'
-     * @expect 'a&#x27;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a\'b'
-     * @expect '&#x60;a&#x27;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), '`a\'b'
+     * @expect 'a' when input array('flags' => array('lambda' => 0)), 'a'
+     * @expect 'a&amp;b' when input array('flags' => array('lambda' => 0)), 'a&b'
+     * @expect 'a&#x27;b' when input array('flags' => array('lambda' => 0)), 'a\'b'
+     * @expect '&#x60;a&#x27;b' when input array('flags' => array('lambda' => 0)), '`a\'b'
      */
     public static function encq($cx, $var)
     {
