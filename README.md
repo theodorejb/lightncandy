@@ -345,10 +345,6 @@ echo $renderer(array('name' => 'John'), array('debug' => LightnCandy\Runtime::DE
 echo $renderer(array('name' => 'John'), array('debug' => LightnCandy\Runtime::DEBUG_TAGS_HTML));
 ```
 
-The ANSI output will be: 
-
-<a href="tests/example_debug.php"><img src="https://github.com/zordius/lightncandy/raw/master/example_debug.png"/></a>
-
 Here are the list of LightnCandy\Runtime debug options for render function:
 
 * `DEBUG_ERROR_LOG` : error_log() when missing required data

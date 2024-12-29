@@ -49,13 +49,6 @@ jobs:
       shell: bash
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
-    - name: Push coverage/documents for php 7.4 only
-      if: ${{ matrix.php-versions == '7.4' }}
-      env:
-        BRANCH: ${{steps.extract_branch.outputs.branch}}
-        GHTK: ${{ secrets.GHTK }}
-        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: build/github-action-push
     - name: deply Github Pages
       if: ${{ matrix.php-versions == '7.4' }}
       uses: peaceiris/actions-gh-pages@v3
