@@ -305,7 +305,7 @@ class usageTest extends TestCase
             if (!isset($i['options']['flags'])) {
                 $i['options']['flags'] = 0;
             }
-            $i['expected'] = array_merge($default, isset($i['expected']) ? $i['expected'] : array());
+            $i['expected'] = array_merge($default, $i['expected'] ?? []);
             return array($i);
         }, $compileCases);
     }

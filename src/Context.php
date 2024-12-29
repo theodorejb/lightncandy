@@ -64,7 +64,6 @@ class Context extends Flags
                 'prop' => $flags & static::FLAG_PROPERTY,
                 'method' => $flags & static::FLAG_METHOD,
                 'runpart' => $flags & static::FLAG_RUNTIMEPARTIAL,
-                'rawblock' => $flags & static::FLAG_RAWBLOCK,
                 'partnc' => $flags & static::FLAG_PARTIALNEWCONTEXT,
                 'nostd' => $flags & static::FLAG_IGNORESTANDALONE,
                 'strpar' => $flags & static::FLAG_STRINGPARAMS,

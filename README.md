@@ -84,10 +84,9 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NAMEDARG.html">FLAG_NAMEDARG</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_SLASH.html">FLAG_SLASH</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ELSE.html">FLAG_ELSE</a>
-* `FLAG_RAWBLOCK`: support `{{{{raw_block}}}}any_char_or_{{foo}}_as_raw_string{{{{/raw_block}}}}`.
 * `FLAG_HANDLEBARSLAMBDA` : support lambda logic as handlebars.js specification. And, the rendering performance will be worse.
 * `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
-* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_THIS` + `FLAG_PARENT` + `FLAG_HBESCAPE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG` + `FLAG_SPVARS` + `FLAG_SLASH` + `FLAG_ELSE` + `FLAG_RAWBLOCK`.
+* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_THIS` + `FLAG_PARENT` + `FLAG_HBESCAPE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG` + `FLAG_SPVARS` + `FLAG_SLASH` + `FLAG_ELSE`.
 * `FLAG_HANDLEBARSJS` : support most handlebars.js + javascript behaviors and also keep performance good, same with `FLAG_JS` + `FLAG_HANDLEBARS`.
 * `FLAG_HANDLEBARSJS_FULL` : enable all supported handlebars.js behaviors but performance drop, same with `FLAG_HANDLEBARSJS` + `FLAG_INSTANCE` + `FLAG_RUNTIMEPARTIAL` + `FLAG_HANDLEBARSLAMBDA`.
 
@@ -500,7 +499,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{helper name1=var name2=var2}}` : Execute custom helper with named arguments (require `FLAG_NAMEDARG`)
 * `{{#helper ...}}...{{/helper}}` : Execute block custom helper
 * `{{helper (helper2 foo) bar}}` : Execute custom helpers as subexpression (require `FLAG_ADVARNAME`)
-* `{{{{raw_block}}}} {{will_not_parsed}} {{{{/raw_block}}}}` : Raw block (require `FLAG_RAWBLOCK`)
+* `{{{{raw_block}}}} {{will_not_parsed}} {{{{/raw_block}}}}` : Raw block
 * `{{#> foo}}block{{/foo}}` : Partial block, provide `foo` partial default content (require `FLAG_RUNTIMEPARTIAL`)
 * `{{#> @partial-block}}` : access partial block content inside a partial
 * `{{#*inline "partial_name"}}...{{/inline}}` : Inline partial, provide a partial and overwrite the original one.

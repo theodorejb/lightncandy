@@ -65,7 +65,7 @@ class Token
         $context['tokens']['startchar'] = substr($left, 0, 1);
         $context['tokens']['left'] = $left;
         $context['tokens']['right'] = $right;
-        $rawcount = $context['rawblock'] ? '{2}' : ($context['flags']['rawblock'] ? '{0,2}' : '?');
+        $rawcount = $context['rawblock'] ? '{2}' : '{0,2}';
         $left = preg_quote($left);
         $right = preg_quote($right);
 
