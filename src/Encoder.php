@@ -33,19 +33,14 @@ class Encoder
      *
      * @return array<array|string|integer>|string|integer|null The raw value of the specified variable
      *
-     * @expect true when input array('flags' => array('jstrue' => 0, 'lambda' => 0)), true
-     * @expect 'true' when input array('flags' => array('jstrue' => 1)), true
-     * @expect '' when input array('flags' => array('jstrue' => 0, 'lambda' => 0)), false
-     * @expect 'false' when input array('flags' => array('jstrue' => 1)), false
-     * @expect false when input array('flags' => array('jstrue' => 1)), false, true
-     * @expect 'Array' when input array('flags' => array('jstrue' => 1, 'jsobj' => 0)), array('a', 'b')
-     * @expect 'a,b' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'lambda' => 0)), array('a', 'b')
-     * @expect '[object Object]' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', 'c' => 'b')
-     * @expect '[object Object]' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('c' => 'b')
-     * @expect 'a,true' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'lambda' => 0)), array('a', true)
-     * @expect 'a,1' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'lambda' => 0)), array('a',true)
-     * @expect 'a,' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'lambda' => 0)), array('a',false)
-     * @expect 'a,false' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'lambda' => 0)), array('a',false)
+     * @expect 'true' when input array('flags' => array()), true
+     * @expect 'false' when input array('flags' => array()), false
+     * @expect false when input array('flags' => array()), false, true
+     * @expect 'a,b' when input array('flags' => array('lambda' => 0)), array('a', 'b')
+     * @expect '[object Object]' when input array('flags' => array()), array('a', 'c' => 'b')
+     * @expect '[object Object]' when input array('flags' => array()), array('c' => 'b')
+     * @expect 'a,true' when input array('flags' => array('lambda' => 0)), array('a', true)
+     * @expect 'a,false' when input array('flags' => array('lambda' => 0)), array('a',false)
      */
     public static function raw($cx, $v, $ex = 0)
     {
@@ -54,30 +49,22 @@ class Encoder
         }
 
         if ($v === true) {
-            if ($cx['flags']['jstrue']) {
-                return 'true';
-            }
+            return 'true';
         }
 
         if (($v === false)) {
-            if ($cx['flags']['jstrue']) {
-                return 'false';
-            }
+            return 'false';
         }
 
         if (is_array($v)) {
-            if ($cx['flags']['jsobj']) {
-                if (count(array_diff_key($v, array_keys(array_keys($v)))) > 0) {
-                    return '[object Object]';
-                } else {
-                    $ret = array();
-                    foreach ($v as $k => $vv) {
-                        $ret[] = static::raw($cx, $vv);
-                    }
-                    return join(',', $ret);
-                }
+            if (count(array_diff_key($v, array_keys(array_keys($v)))) > 0) {
+                return '[object Object]';
             } else {
-                return 'Array';
+                $ret = array();
+                foreach ($v as $k => $vv) {
+                    $ret[] = static::raw($cx, $vv);
+                }
+                return join(',', $ret);
             }
         }
 

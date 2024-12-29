@@ -68,12 +68,6 @@ LightnCandy::compile($template, array(
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_EXCEPTION.html">FLAG_ERROR_EXCEPTION</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RENDER_DEBUG.html">FLAG_RENDER_DEBUG</a>
 
-**JavaScript Compatibility**
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_JSTRUE.html">FLAG_JSTRUE</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_JSOBJECT.html">FLAG_JSOBJECT</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_JSLENGTH.html">FLAG_JSLENGTH</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_JS.html">FLAG_JS</a>
-
 **Handlebars Compatibility**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_THIS.html">FLAG_THIS</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_PARENT.html">FLAG_PARENT</a>
@@ -85,7 +79,7 @@ LightnCandy::compile($template, array(
 * `FLAG_HANDLEBARSLAMBDA` : support lambda logic as handlebars.js specification. And, the rendering performance will be worse.
 * `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
 * `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_THIS` + `FLAG_PARENT` + `FLAG_HBESCAPE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG` + `FLAG_SPVARS` + `FLAG_SLASH` + `FLAG_ELSE`.
-* `FLAG_HANDLEBARSJS` : support most handlebars.js + javascript behaviors and also keep performance good, same with `FLAG_JS` + `FLAG_HANDLEBARS`.
+* `FLAG_HANDLEBARSJS` : support most handlebars.js + javascript behaviors and also keep performance good, same as `FLAG_HANDLEBARS`.
 * `FLAG_HANDLEBARSJS_FULL` : enable all supported handlebars.js behaviors but performance drop, same with `FLAG_HANDLEBARSJS` + `FLAG_RUNTIMEPARTIAL` + `FLAG_HANDLEBARSLAMBDA`.
 
 **Handlebars Options**
@@ -423,16 +417,16 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 
 * Exact same CR/LF behavior with handlebars.js
 * Exact same CR/LF bahavior with mustache spec
-* Exact same 'true' or 'false' output with handlebars.js (require `FLAG_JSTRUE`)
-* Exact same '[object Object]' output or join(',' array) output with handlebars.js (require `FLAG_JSOBJECT`)
+* Exact same 'true' or 'false' output with handlebars.js
+* Exact same '[object Object]' output or join(',' array) output with handlebars.js
 * Can place heading/tailing space, tab, CR/LF inside `{{ var }}` or `{{{ var }}}`
 * Indent behavior of the partial same with mustache spec
 * `{{{value}}}` or `{{&value}}` : raw variable
-   * true as 'true' (require `FLAG_JSTRUE`)
+   * true as 'true'
    * false as 'false' (require `FLAG_TRUE`)
 * `{{value}}` : HTML escaped variable
-   * true as 'true' (require `FLAG_JSTRUE`)
-   * false as 'false' (require `FLAG_JSTRUE`)
+   * true as 'true'
+   * false as 'false'
 * `{{{path.to.value}}}` : dot notation, raw
 * `{{path.to.value}}` : dot notation, HTML escaped 
 * `{{.}}` : current context, HTML escaped

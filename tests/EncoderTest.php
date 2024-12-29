@@ -13,44 +13,29 @@ class EncoderTest extends TestCase
 {
     public function testOn_raw() {
         $method = new \ReflectionMethod('LightnCandy\Encoder', 'raw');
-        $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 0, 'lambda' => 0)), true
-        ))));
         $this->assertEquals('true', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1)), true
-        ))));
-        $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 0, 'lambda' => 0)), false
+            array('flags' => array()), true
         ))));
         $this->assertEquals('false', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1)), false
+            array('flags' => array()), false
         ))));
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1)), false, true
-        ))));
-        $this->assertEquals('Array', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1, 'jsobj' => 0)), array('a', 'b')
+            array('flags' => array()), false, true
         ))));
         $this->assertEquals('a,b', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'lambda' => 0)), array('a', 'b')
+            array('flags' => array('lambda' => 0)), array('a', 'b')
         ))));
         $this->assertEquals('[object Object]', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', 'c' => 'b')
+            array('flags' => array()), array('a', 'c' => 'b')
         ))));
         $this->assertEquals('[object Object]', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('c' => 'b')
+            array('flags' => array()), array('c' => 'b')
         ))));
         $this->assertEquals('a,true', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'lambda' => 0)), array('a', true)
-        ))));
-        $this->assertEquals('a,1', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'lambda' => 0)), array('a',true)
-        ))));
-        $this->assertEquals('a,', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'lambda' => 0)), array('a',false)
+            array('flags' => array('lambda' => 0)), array('a', true)
         ))));
         $this->assertEquals('a,false', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'lambda' => 0)), array('a',false)
+            array('flags' => array('lambda' => 0)), array('a',false)
         ))));
     }
     public function testOn_enc() {

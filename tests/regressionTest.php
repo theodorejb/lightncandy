@@ -935,16 +935,6 @@ VAREND
                 'template' => '{{foo.length}}',
                 'data' => array('foo' => array()),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
-                ),
-                'expected' => '',
-            ),
-
-            array(
-                'id' => 216,
-                'template' => '{{foo.length}}',
-                'data' => array('foo' => array()),
-                'options' => array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                 ),
                 'expected' => '0',
@@ -1224,7 +1214,6 @@ VAREND
                 'template' => '{{foo.length}}',
                 'data' => array('foo' => array(1, 2)),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_JSLENGTH
                 ),
                 'expected' => '2'
             ),

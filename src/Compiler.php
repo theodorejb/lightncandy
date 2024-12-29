@@ -77,9 +77,6 @@ class Compiler extends Validator
      */
     public static function composePHPRender($context, $code)
     {
-        $flagJStrue = Expression::boolString($context['flags']['jstrue']);
-        $flagJSObj = Expression::boolString($context['flags']['jsobj']);
-        $flagJSLen = Expression::boolString($context['flags']['jslen']);
         $flagSPVar = Expression::boolString($context['flags']['spvar']);
         $flagProp = Expression::boolString($context['flags']['prop']);
         $flagLambda = Expression::boolString($context['flags']['lambda']);
@@ -100,9 +97,6 @@ $stringObject{$safeString}{$use}return function (\$in = null, \$options = null) 
     \$partials = array($partials);
     \$cx = array(
         'flags' => array(
-            'jstrue' => $flagJStrue,
-            'jsobj' => $flagJSObj,
-            'jslen' => $flagJSLen,
             'spvar' => $flagSPVar,
             'prop' => $flagProp,
             'lambda' => $flagLambda,
@@ -227,24 +221,24 @@ VAREND
      * @return array<string> variable names
      *
      * @expect array('$in', 'this') when input array('flags'=>array('spvar'=>true,'debug'=>0)), array(null)
-     * @expect array('(($inary && isset($in[\'true\'])) ? $in[\'true\'] : null)', '[true]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0,'jslen'=>0)), array('true')
-     * @expect array('(($inary && isset($in[\'false\'])) ? $in[\'false\'] : null)', '[false]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0,'jslen'=>0)), array('false')
+     * @expect array('(($inary && isset($in[\'true\'])) ? $in[\'true\'] : null)', '[true]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0)), array('true')
+     * @expect array('(($inary && isset($in[\'false\'])) ? $in[\'false\'] : null)', '[false]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0)), array('false')
      * @expect array('true', 'true') when input array('flags'=>array('spvar'=>true,'debug'=>0)), array(-1, 'true')
      * @expect array('false', 'false') when input array('flags'=>array('spvar'=>true,'debug'=>0)), array(-1, 'false')
-     * @expect array('(($inary && isset($in[\'2\'])) ? $in[\'2\'] : null)', '[2]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0,'jslen'=>0)), array('2')
+     * @expect array('(($inary && isset($in[\'2\'])) ? $in[\'2\'] : null)', '[2]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0)), array('2')
      * @expect array('2', '2') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0)), array(-1, '2')
-     * @expect array('(($inary && isset($in[\'@index\'])) ? $in[\'@index\'] : null)', '[@index]') when input array('flags'=>array('spvar'=>false,'debug'=>0,'prop'=>0,'lambda'=>0,'jslen'=>0)), array('@index')
-     * @expect array("(isset(\$cx['sp_vars']['index']) ? \$cx['sp_vars']['index'] : null)", '@[index]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0,'jslen'=>0)), array('@index')
-     * @expect array("(isset(\$cx['sp_vars']['key']) ? \$cx['sp_vars']['key'] : null)", '@[key]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0,'jslen'=>0)), array('@key')
-     * @expect array("(isset(\$cx['sp_vars']['first']) ? \$cx['sp_vars']['first'] : null)", '@[first]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0,'jslen'=>0)), array('@first')
-     * @expect array("(isset(\$cx['sp_vars']['last']) ? \$cx['sp_vars']['last'] : null)", '@[last]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0,'jslen'=>0)), array('@last')
-     * @expect array('(($inary && isset($in[\'"a"\'])) ? $in[\'"a"\'] : null)', '["a"]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0,'jslen'=>0)), array('"a"')
+     * @expect array('(($inary && isset($in[\'@index\'])) ? $in[\'@index\'] : null)', '[@index]') when input array('flags'=>array('spvar'=>false,'debug'=>0,'prop'=>0,'lambda'=>0)), array('@index')
+     * @expect array("(isset(\$cx['sp_vars']['index']) ? \$cx['sp_vars']['index'] : null)", '@[index]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0)), array('@index')
+     * @expect array("(isset(\$cx['sp_vars']['key']) ? \$cx['sp_vars']['key'] : null)", '@[key]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0)), array('@key')
+     * @expect array("(isset(\$cx['sp_vars']['first']) ? \$cx['sp_vars']['first'] : null)", '@[first]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0)), array('@first')
+     * @expect array("(isset(\$cx['sp_vars']['last']) ? \$cx['sp_vars']['last'] : null)", '@[last]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0)), array('@last')
+     * @expect array('(($inary && isset($in[\'"a"\'])) ? $in[\'"a"\'] : null)', '["a"]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0)), array('"a"')
      * @expect array('"a"', '"a"') when input array('flags'=>array('spvar'=>true,'debug'=>0)), array(-1, '"a"')
-     * @expect array('(($inary && isset($in[\'a\'])) ? $in[\'a\'] : null)', '[a]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0,'jslen'=>0)), array('a')
-     * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0,'jslen'=>0)), array(1,'a')
-     * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0,'jslen'=>0)), array(3,'a')
-     * @expect array('(($inary && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0,'jslen'=>0)), array(null, 'id')
-     * @expect array('LR::v($cx, $in, isset($in) ? $in : null, array(\'id\'))', 'this.[id]') when input array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'lambda'=>0,'jslen'=>0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), array(null, 'id')
+     * @expect array('(($inary && isset($in[\'a\'])) ? $in[\'a\'] : null)', '[a]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0)), array('a')
+     * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0)), array(1,'a')
+     * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0)), array(3,'a')
+     * @expect array('(($inary && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0)), array(null, 'id')
+     * @expect array('LR::v($cx, $in, isset($in) ? $in : null, array(\'id\'))', 'this.[id]') when input array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'lambda'=>0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), array(null, 'id')
      */
     protected static function getVariableName(&$context, $var, $lookup = null, $args = null)
     {
@@ -310,12 +304,10 @@ VAREND
         $lenStart = '';
         $lenEnd = '';
 
-        if ($context['flags']['jslen']) {
-            if (($lookup === null) && ($k === 'length')) {
-                array_pop($checks);
-                $lenStart = '(' . ((count($checks) > 1) ? '(' : '') . implode(' && ', $checks) . ((count($checks) > 1) ? ')' : '') . " ? count($base" . Expression::arrayString($var) . ') : ';
-                $lenEnd = ')';
-            }
+        if (($lookup === null) && ($k === 'length')) {
+            array_pop($checks);
+            $lenStart = '(' . ((count($checks) > 1) ? '(' : '') . implode(' && ', $checks) . ((count($checks) > 1) ? ')' : '') . " ? count($base" . Expression::arrayString($var) . ') : ';
+            $lenEnd = ')';
         }
 
         return array("($check ? $base$n$L : $lenStart" . ($context['flags']['debug'] ? (static::getFuncName($context, 'miss', '') . "\$cx, '$exp')") : 'null') . ")$lenEnd", $lookup ? "lookup $exp $lookup[1]" : $exp);
@@ -644,11 +636,7 @@ VAREND
         $sep = $nosep ? '' : $context['ops']['seperator'];
         $ex = $nosep ? ', 1' : '';
 
-        if ($context['flags']['hbesc'] || $context['flags']['jsobj'] || $context['flags']['jstrue'] || $context['flags']['debug']) {
-            return $sep . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $v[1]) . "\$cx, {$v[0]}$ex){$sep}";
-        } else {
-            return $raw ? "{$sep}$v[0]{$sep}" : "{$sep}htmlspecialchars((string){$v[0]}, ENT_QUOTES, 'UTF-8'){$sep}";
-        }
+        return $sep . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $v[1]) . "\$cx, {$v[0]}$ex){$sep}";
     }
 
     /**
@@ -665,11 +653,7 @@ VAREND
     protected static function compileOutput(&$context, $variable, $expression, $raw, $nosep)
     {
         $sep = $nosep ? '' : $context['ops']['seperator'];
-        if ($context['flags']['hbesc'] || $context['flags']['jsobj'] || $context['flags']['jstrue'] || $context['flags']['debug'] || $nosep) {
-            return $sep . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $expression) . "\$cx, $variable)$sep";
-        } else {
-            return $raw ? "$sep$variable{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlspecialchars((string)$variable, ENT_QUOTES, 'UTF-8')$sep";
-        }
+        return $sep . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $expression) . "\$cx, $variable)$sep";
     }
 
     /**

@@ -32,8 +32,6 @@ class SafeString extends Encoder
 
     public static $jsContext = array(
         'flags' => array(
-            'jstrue' => 1,
-            'jsobj' => 1,
         )
     );
 
