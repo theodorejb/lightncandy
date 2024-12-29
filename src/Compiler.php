@@ -83,7 +83,6 @@ class Compiler extends Validator
         $flagSPVar = Expression::boolString($context['flags']['spvar']);
         $flagProp = Expression::boolString($context['flags']['prop']);
         $flagLambda = Expression::boolString($context['flags']['lambda']);
-        $flagEcho = Expression::boolString($context['flags']['echo']);
         $flagPartNC = Expression::boolString($context['flags']['partnc']);
         $flagKnownHlp = Expression::boolString($context['flags']['knohlp']);
 
@@ -108,7 +107,6 @@ $stringObject{$safeString}{$use}{$exportSafeString}return function (\$in = null,
             'spvar' => $flagSPVar,
             'prop' => $flagProp,
             'lambda' => $flagLambda,
-            'echo' => $flagEcho,
             'partnc' => $flagPartNC,
             'knohlp' => $flagKnownHlp,
             'debug' => isset(\$options['debug']) ? \$options['debug'] : $debug,

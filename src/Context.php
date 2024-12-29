@@ -51,7 +51,6 @@ class Context extends Flags
                 'hbesc' => $flags & static::FLAG_HBESCAPE,
                 'this' => $flags & static::FLAG_THIS,
                 'parent' => $flags & static::FLAG_PARENT,
-                'echo' => $flags & static::FLAG_ECHO,
                 'advar' => $flags & static::FLAG_ADVARNAME,
                 'namev' => $flags & static::FLAG_NAMEDARG,
                 'spvar' => $flags & static::FLAG_SPVARS,
@@ -136,18 +135,7 @@ class Context extends Flags
             'funcprefix' => uniqid('lcr'),
         );
 
-        $context['ops'] = $context['flags']['echo'] ? array(
-            'seperator' => ',',
-            'f_start' => 'echo ',
-            'f_end' => ';',
-            'op_start' => 'ob_start();echo ',
-            'op_end' => ';return ob_get_clean();',
-            'cnd_start' => ';if ',
-            'cnd_then' => '{echo ',
-            'cnd_else' => ';}else{echo ',
-            'cnd_end' => ';}echo ',
-            'cnd_nend' => ';}',
-        ) : array(
+        $context['ops'] = array(
             'seperator' => '.',
             'f_start' => 'return ',
             'f_end' => ';',

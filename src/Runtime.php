@@ -616,9 +616,6 @@ class Runtime extends Encoder
         }
 
         $options['fn'] = function ($context = '_NO_INPUT_HERE_', $data = null) use ($cx, &$_this, $cb, $options, $vars) {
-            if ($cx['flags']['echo']) {
-                ob_start();
-            }
             if (isset($data['data'])) {
                 $old_spvar = $cx['sp_vars'];
                 $cx['sp_vars'] = array_merge(array('root' => $old_spvar['root']), $data['data'], array('_parent' => $old_spvar));
@@ -640,14 +637,11 @@ class Runtime extends Encoder
             if (isset($data['data'])) {
                 $cx['sp_vars'] = $old_spvar;
             }
-            return $cx['flags']['echo'] ? ob_get_clean() : $ret;
+            return $ret;
         };
 
         if ($else) {
             $options['inverse'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $_this, $else) {
-                if ($cx['flags']['echo']) {
-                    ob_start();
-                }
                 if ($context === '_NO_INPUT_HERE_') {
                     $ret = $else($cx, $_this);
                 } else {
@@ -655,7 +649,7 @@ class Runtime extends Encoder
                     $ret = $else($cx, $context);
                     array_pop($cx['scopes']);
                 }
-                return $cx['flags']['echo'] ? ob_get_clean() : $ret;
+                return $ret;
             };
         } else {
             $options['inverse'] = function () {
