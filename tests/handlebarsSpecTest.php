@@ -200,7 +200,9 @@ class HandlebarsSpecTest extends TestCase
             $spec['expected'] = 'true true array';
         }
 
+        $hasTestFlags = false;
         foreach ($test_flags as $f) {
+            $hasTestFlags = true;
             // setup helpers
             $tested++;
             $helpers = array();
@@ -313,6 +315,10 @@ class HandlebarsSpecTest extends TestCase
             }
 
             $this->assertEquals($spec['expected'], $result, "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php\nPARSED: $parsed\nHELPERS:$helpersList");
+        }
+
+        if (!$hasTestFlags) {
+            $this->markTestSkipped('No test flags found');
         }
     }
 
