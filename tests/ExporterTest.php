@@ -11,9 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 
 class ExporterTest extends TestCase
 {
-    /**
-     * @covers LightnCandy\Exporter::closure
-     */
     public function testOn_closure() {
         $method = new \ReflectionMethod('LightnCandy\Exporter', 'closure');
         $method->setAccessible(true);

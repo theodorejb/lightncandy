@@ -11,9 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 
 class ParserTest extends TestCase
 {
-    /**
-     * @covers LightnCandy\Parser::getExpression
-     */
     public function testOn_getExpression() {
         $method = new \ReflectionMethod('LightnCandy\Parser', 'getExpression');
         $method->setAccessible(true);
@@ -66,9 +63,6 @@ class ParserTest extends TestCase
             'null', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
         ))));
     }
-    /**
-     * @covers LightnCandy\Parser::parse
-     */
     public function testOn_parse() {
         $method = new \ReflectionMethod('LightnCandy\Parser', 'parse');
         $this->assertEquals(array(false, array(array())), $method->invokeArgs(null, array_by_ref(array(
@@ -159,9 +153,6 @@ class ParserTest extends TestCase
             array(0,0,0,0,0,0,'>','\\\'foo\\\''), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
         ))));
     }
-    /**
-     * @covers LightnCandy\Parser::getPartialName
-     */
     public function testOn_getPartialName() {
         $method = new \ReflectionMethod('LightnCandy\Parser', 'getPartialName');
         $this->assertEquals(null, $method->invokeArgs(null, array_by_ref(array(
@@ -183,18 +174,12 @@ class ParserTest extends TestCase
             array(0, 'foo'), 1
         ))));
     }
-    /**
-     * @covers LightnCandy\Parser::subexpression
-     */
     public function testOn_subexpression() {
         $method = new \ReflectionMethod('LightnCandy\Parser', 'subexpression');
         $this->assertEquals(array(\LightnCandy\Parser::SUBEXP, array(array('a'), array('b')), '(a b)'), $method->invokeArgs(null, array_by_ref(array(
             '(a b)', array('usedFeature' => array('subexp' => 0), 'flags' => array('advar' => 0, 'namev' => 0, 'this' => 0, 'exhlp' => 1, 'strpar' => 0))
         ))));
     }
-    /**
-     * @covers LightnCandy\Parser::isSubExp
-     */
     public function testOn_isSubExp() {
         $method = new \ReflectionMethod('LightnCandy\Parser', 'isSubExp');
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
@@ -216,9 +201,6 @@ class ParserTest extends TestCase
             array(\LightnCandy\Parser::SUBEXP, 0, '')
         ))));
     }
-    /**
-     * @covers LightnCandy\Parser::advancedVariable
-     */
     public function testOn_advancedVariable() {
         $method = new \ReflectionMethod('LightnCandy\Parser', 'advancedVariable');
         $method->setAccessible(true);
@@ -244,9 +226,6 @@ class ParserTest extends TestCase
             array('[fo o]="bar"'), array('flags' => array('advar' => 1, 'namev' => 1, 'this' => 0)), 0
         ))));
     }
-    /**
-     * @covers LightnCandy\Parser::analyze
-     */
     public function testOn_analyze() {
         $method = new \ReflectionMethod('LightnCandy\Parser', 'analyze');
         $method->setAccessible(true);

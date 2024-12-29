@@ -11,9 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 
 class SafeStringTest extends TestCase
 {
-    /**
-     * @covers LightnCandy\SafeString::stripExtendedComments
-     */
     public function testOn_stripExtendedComments() {
         $method = new \ReflectionMethod('LightnCandy\SafeString', 'stripExtendedComments');
         $this->assertEquals('abc', $method->invokeArgs(null, array_by_ref(array(
@@ -26,9 +23,6 @@ class SafeStringTest extends TestCase
             'abc{{!----}}cde'
         ))));
     }
-    /**
-     * @covers LightnCandy\SafeString::escapeTemplate
-     */
     public function testOn_escapeTemplate() {
         $method = new \ReflectionMethod('LightnCandy\SafeString', 'escapeTemplate');
         $this->assertEquals('abc', $method->invokeArgs(null, array_by_ref(array(

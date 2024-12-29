@@ -11,9 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 
 class PartialTest extends TestCase
 {
-    /**
-     * @covers LightnCandy\Partial::prePartial
-     */
     public function testOn_prePartial() {
         $method = new \ReflectionMethod('LightnCandy\Partial', 'prePartial');
         $method->setAccessible(true);

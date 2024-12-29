@@ -14,6 +14,5 @@ Pull request is another good way. Before you submit your patch, please ensure yo
 git submodule init
 git submodule update
 composer install
-build/runphp build/gen_test.php
-build/test
+composer test
 ```

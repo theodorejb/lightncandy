@@ -43,27 +43,27 @@ class twoDimensionIterator implements Iterator {
         $this->rewind();
     }
 
-    function rewind() {
+    function rewind(): void {
         $this->position = 0;
         $this->x = 0;
         $this->y = 0;
     }
 
-    function current() {
+    function current(): mixed {
         return $this->x * $this->y;
     }
 
-    function key() {
+    function key(): mixed {
         return $this->x . 'x' . $this->y;
     }
 
-    function next() {
+    function next(): void {
         ++$this->position;
         $this->x = $this->position % $this->w;
         $this->y = floor($this->position / $this->w);
     }
 
-    function valid() {
+    function valid(): bool {
         return $this->position < $this->w * $this->h;
     }
 }

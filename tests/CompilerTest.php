@@ -11,9 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 
 class CompilerTest extends TestCase
 {
-    /**
-     * @covers LightnCandy\Compiler::getFuncName
-     */
     public function testOn_getFuncName() {
         $method = new \ReflectionMethod('LightnCandy\Compiler', 'getFuncName');
         $method->setAccessible(true);
@@ -30,9 +27,6 @@ class CompilerTest extends TestCase
             array('flags' => array('standalone' => 0, 'debug' => 1), 'runtime' => 'Runtime', 'runtimealias' => 'RR', 'funcprefix' => 'haha456'), 'test', 'abc'
         ))));
     }
-    /**
-     * @covers LightnCandy\Compiler::getVariableNames
-     */
     public function testOn_getVariableNames() {
         $method = new \ReflectionMethod('LightnCandy\Compiler', 'getVariableNames');
         $method->setAccessible(true);
@@ -46,9 +40,6 @@ class CompilerTest extends TestCase
             array('flags'=>array('spvar'=>true)), array('a' => null)
         ))));
     }
-    /**
-     * @covers LightnCandy\Compiler::getVariableName
-     */
     public function testOn_getVariableName() {
         $method = new \ReflectionMethod('LightnCandy\Compiler', 'getVariableName');
         $method->setAccessible(true);
@@ -110,9 +101,6 @@ class CompilerTest extends TestCase
             array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'lambda'=>0,'jslen'=>0,'standalone'=>0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), array(null, 'id')
         ))));
     }
-    /**
-     * @covers LightnCandy\Compiler::addUsageCount
-     */
     public function testOn_addUsageCount() {
         $method = new \ReflectionMethod('LightnCandy\Compiler', 'addUsageCount');
         $method->setAccessible(true);

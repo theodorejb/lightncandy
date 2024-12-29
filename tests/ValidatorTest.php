@@ -11,9 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 
 class ValidatorTest extends TestCase
 {
-    /**
-     * @covers LightnCandy\Validator::delimiter
-     */
     public function testOn_delimiter() {
         $method = new \ReflectionMethod('LightnCandy\Validator', 'delimiter');
         $method->setAccessible(true);
@@ -27,9 +24,6 @@ class ValidatorTest extends TestCase
             array(0, 0, 0, 0, 0, '{', '#', '...', '}'), array()
         ))));
     }
-    /**
-     * @covers LightnCandy\Validator::operator
-     */
     public function testOn_operator() {
         $method = new \ReflectionMethod('LightnCandy\Validator', 'operator');
         $method->setAccessible(true);

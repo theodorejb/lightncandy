@@ -11,9 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 
 class EncoderTest extends TestCase
 {
-    /**
-     * @covers LightnCandy\Encoder::raw
-     */
     public function testOn_raw() {
         $method = new \ReflectionMethod('LightnCandy\Encoder', 'raw');
         $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
@@ -56,9 +53,6 @@ class EncoderTest extends TestCase
             array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a',false)
         ))));
     }
-    /**
-     * @covers LightnCandy\Encoder::enc
-     */
     public function testOn_enc() {
         $method = new \ReflectionMethod('LightnCandy\Encoder', 'enc');
         $this->assertEquals('a', $method->invokeArgs(null, array_by_ref(array(
@@ -71,9 +65,6 @@ class EncoderTest extends TestCase
             array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a\'b'
         ))));
     }
-    /**
-     * @covers LightnCandy\Encoder::encq
-     */
     public function testOn_encq() {
         $method = new \ReflectionMethod('LightnCandy\Encoder', 'encq');
         $this->assertEquals('a', $method->invokeArgs(null, array_by_ref(array(

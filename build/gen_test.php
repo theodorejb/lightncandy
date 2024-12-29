@@ -54,9 +54,6 @@ VAR
 
         if (preg_match_all('/@expect (.+) when input (.+)( after (.+))?/', $method->getDocComment(), $matched)) {
             echo <<<VAR
-    /**
-     * @covers LightnCandy\\{$classname}::{$method->name}
-     */
     public function testOn_{$method->name}() {
         \$method = new \\ReflectionMethod('LightnCandy\\$classname', '{$method->name}');
 

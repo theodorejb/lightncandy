@@ -12,7 +12,7 @@ $errlog_fn = tempnam($tmpdir, 'terr_');
 function start_catch_error_log() {
     global $errlog_fn;
     date_default_timezone_set('GMT');
-    if (file_exists($errlog_fn)) {
+    if ($errlog_fn !== null && file_exists($errlog_fn)) {
         unlink($errlog_fn);
     }
     return ini_set('error_log', $errlog_fn);
@@ -21,7 +21,7 @@ function start_catch_error_log() {
 function stop_catch_error_log() {
     global $errlog_fn;
     ini_restore('error_log');
-    if (!file_exists($errlog_fn)) {
+    if ($errlog_fn === null || !file_exists($errlog_fn)) {
         return null;
     }
     return array_map(function ($l) {
@@ -68,9 +68,7 @@ class errorTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider renderErrorProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider("renderErrorProvider")]
     public function testRenderingException($test)
     {
         $php = LightnCandy::compile($test['template'], $test['options']);
@@ -85,9 +83,7 @@ class errorTest extends TestCase
         $this->fail("Expected to throw exception: {$test['expected']} . CODE: $php");
     }
 
-    /**
-     * @dataProvider renderErrorProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider("renderErrorProvider")]
     public function testRenderingErrorLog($test)
     {
         start_catch_error_log();
@@ -107,7 +103,7 @@ class errorTest extends TestCase
         }
     }
 
-    public function renderErrorProvider()
+    public static function renderErrorProvider()
     {
         $errorCases = array(
              array(
@@ -163,9 +159,7 @@ class errorTest extends TestCase
         }, $errorCases);
     }
 
-    /**
-     * @dataProvider errorProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider("errorProvider")]
     public function testErrors($test)
     {
         global $tmpdir;
@@ -182,7 +176,7 @@ class errorTest extends TestCase
         $this->assertEquals($test['expected'], $context['error'], "Code: $php");
     }
 
-    public function errorProvider()
+    public static function errorProvider()
     {
         $errorCases = array(
             array(

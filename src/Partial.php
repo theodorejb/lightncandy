@@ -197,6 +197,9 @@ class Partial
 
         $code = Compiler::compileTemplate($tmpContext, str_replace('function', static::$TMP_JS_FUNCTION_STR, $template));
         Context::merge($context, $tmpContext);
+        if ($code === null) {
+            $code = '';
+        }
         if (!$context['flags']['noind']) {
             $sp = ', $sp';
             $code = preg_replace('/^/m', "'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'", $code);

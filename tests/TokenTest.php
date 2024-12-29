@@ -11,9 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 
 class TokenTest extends TestCase
 {
-    /**
-     * @covers LightnCandy\Token::toString
-     */
     public function testOn_toString() {
         $method = new \ReflectionMethod('LightnCandy\Token', 'toString');
         $this->assertEquals('c', $method->invokeArgs(null, array_by_ref(array(

@@ -12,9 +12,7 @@ function getFunctionCode($func) {
 
 class MustacheSpecTest extends TestCase
 {
-    /**
-     * @dataProvider jsonSpecProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider("jsonSpecProvider")]
     public function testSpecs($spec)
     {
         global $tmpdir;
@@ -50,7 +48,7 @@ class MustacheSpecTest extends TestCase
         }
     }
 
-    public function jsonSpecProvider()
+    public static function jsonSpecProvider()
     {
         $ret = array();
 

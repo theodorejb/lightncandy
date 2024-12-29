@@ -7,9 +7,7 @@ require_once('tests/helpers_for_test.php');
 
 class usageTest extends TestCase
 {
-    /**
-     * @dataProvider compileProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider("compileProvider")]
     public function testUsedFeature($test)
     {
         LightnCandy::compile($test['template'], $test['options']);
@@ -17,7 +15,7 @@ class usageTest extends TestCase
         $this->assertEquals($test['expected'], $context['usedFeature']);
     }
 
-    public function compileProvider()
+    public static function compileProvider()
     {
         $default = array(
             'rootthis' => 0,

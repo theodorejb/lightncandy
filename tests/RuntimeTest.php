@@ -11,9 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 
 class RuntimeTest extends TestCase
 {
-    /**
-     * @covers LightnCandy\Runtime::debug
-     */
     public function testOn_debug() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'debug');
         $this->assertEquals('{{123}}', $method->invokeArgs(null, array_by_ref(array(
@@ -23,9 +20,6 @@ class RuntimeTest extends TestCase
             '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML), 'runtime' => 'LightnCandy\\Runtime'), false, null, false, function () {return 'A';}
         ))));
     }
-    /**
-     * @covers LightnCandy\Runtime::v
-     */
     public function testOn_v() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'v');
         $this->assertEquals(null, $method->invokeArgs(null, array_by_ref(array(
@@ -41,9 +35,6 @@ class RuntimeTest extends TestCase
             array('scopes' => array(), 'flags' => array('prop' => 1, 'method' => 0, 'mustlok' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
         ))));
     }
-    /**
-     * @covers LightnCandy\Runtime::ifvar
-     */
     public function testOn_ifvar() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'ifvar');
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
@@ -77,9 +68,6 @@ class RuntimeTest extends TestCase
             array(), array(0), false
         ))));
     }
-    /**
-     * @covers LightnCandy\Runtime::isec
-     */
     public function testOn_isec() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'isec');
         $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
@@ -101,9 +89,6 @@ class RuntimeTest extends TestCase
             array(), array('1')
         ))));
     }
-    /**
-     * @covers LightnCandy\Runtime::enc
-     */
     public function testOn_enc() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'enc');
         $this->assertEquals('a', $method->invokeArgs(null, array_by_ref(array(
@@ -119,9 +104,6 @@ class RuntimeTest extends TestCase
             null, new \LightnCandy\SafeString('a&b')
         ))));
     }
-    /**
-     * @covers LightnCandy\Runtime::encq
-     */
     public function testOn_encq() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'encq');
         $this->assertEquals('a', $method->invokeArgs(null, array_by_ref(array(
@@ -137,9 +119,6 @@ class RuntimeTest extends TestCase
             array('flags' => array('mustlam' => 0, 'lambda' => 0)), '`a\'b'
         ))));
     }
-    /**
-     * @covers LightnCandy\Runtime::sec
-     */
     public function testOn_sec() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'sec');
         $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
@@ -215,9 +194,6 @@ class RuntimeTest extends TestCase
             array('scopes' => array(), 'flags' => array('spvar' => 1, 'mustlam' => 0, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), null, 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
         ))));
     }
-    /**
-     * @covers LightnCandy\Runtime::wi
-     */
     public function testOn_wi() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'wi');
         $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(

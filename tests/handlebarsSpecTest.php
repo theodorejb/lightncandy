@@ -65,9 +65,7 @@ class Utils {
 
 class HandlebarsSpecTest extends TestCase
 {
-    /**
-     * @dataProvider jsonSpecProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider("jsonSpecProvider")]
     public function testSpecs($spec)
     {
         global $tmpdir;
@@ -318,7 +316,7 @@ class HandlebarsSpecTest extends TestCase
         }
     }
 
-    public function jsonSpecProvider()
+    public static function jsonSpecProvider()
     {
         $ret = array();
 

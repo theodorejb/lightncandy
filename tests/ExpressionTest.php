@@ -11,9 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 
 class ExpressionTest extends TestCase
 {
-    /**
-     * @covers LightnCandy\Expression::boolString
-     */
     public function testOn_boolString() {
         $method = new \ReflectionMethod('LightnCandy\Expression', 'boolString');
         $this->assertEquals('true', $method->invokeArgs(null, array_by_ref(array(
@@ -29,9 +26,6 @@ class ExpressionTest extends TestCase
             -1
         ))));
     }
-    /**
-     * @covers LightnCandy\Expression::listString
-     */
     public function testOn_listString() {
         $method = new \ReflectionMethod('LightnCandy\Expression', 'listString');
         $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
@@ -44,9 +38,6 @@ class ExpressionTest extends TestCase
             array('a', 'b', 'c')
         ))));
     }
-    /**
-     * @covers LightnCandy\Expression::arrayString
-     */
     public function testOn_arrayString() {
         $method = new \ReflectionMethod('LightnCandy\Expression', 'arrayString');
         $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
@@ -59,9 +50,6 @@ class ExpressionTest extends TestCase
             array('a', 'b', 'c')
         ))));
     }
-    /**
-     * @covers LightnCandy\Expression::analyze
-     */
     public function testOn_analyze() {
         $method = new \ReflectionMethod('LightnCandy\Expression', 'analyze');
         $this->assertEquals(array(0, false, array('foo')), $method->invokeArgs(null, array_by_ref(array(
@@ -71,9 +59,6 @@ class ExpressionTest extends TestCase
             array('flags' => array('spvar' => 0)), array(1, 'foo')
         ))));
     }
-    /**
-     * @covers LightnCandy\Expression::toString
-     */
     public function testOn_toString() {
         $method = new \ReflectionMethod('LightnCandy\Expression', 'toString');
         $this->assertEquals('[a].[b]', $method->invokeArgs(null, array_by_ref(array(

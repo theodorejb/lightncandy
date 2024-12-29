@@ -11,9 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 
 class ContextTest extends TestCase
 {
-    /**
-     * @covers LightnCandy\Context::updateHelperTable
-     */
     public function testOn_updateHelperTable() {
         $method = new \ReflectionMethod('LightnCandy\Context', 'updateHelperTable');
         $method->setAccessible(true);

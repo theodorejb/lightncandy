@@ -10,9 +10,7 @@ $tmpdir = sys_get_temp_dir();
 
 class regressionTest extends TestCase
 {
-    /**
-     * @dataProvider issueProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider("issueProvider")]
     public function testIssues($issue)
     {
         global $tmpdir;
@@ -28,7 +26,7 @@ class regressionTest extends TestCase
         $this->assertEquals($issue['expected'], $renderer(isset($issue['data']) ? $issue['data'] : null, array('debug' => $issue['debug'])), "PHP CODE:\n$php\n$parsed");
     }
 
-    public function issueProvider()
+    public static function issueProvider()
     {
         $test_helpers = array('ouch' =>function() {
             return 'ok';
