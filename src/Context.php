@@ -61,7 +61,6 @@ class Context extends Flags
                 'else' => $flags & static::FLAG_ELSE,
                 'exhlp' => $flags & static::FLAG_EXTHELPER,
                 'lambda' => $flags & static::FLAG_HANDLEBARSLAMBDA,
-                'mustlok' => $flags & static::FLAG_MUSTACHELOOKUP,
                 'mustlam' => $flags & static::FLAG_MUSTACHELAMBDA,
                 'mustsec' => $flags & static::FLAG_MUSTACHESECTION,
                 'noind' => $flags & static::FLAG_PREVENTINDENT,

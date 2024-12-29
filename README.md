@@ -78,11 +78,10 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_JS.html">FLAG_JS</a>
 
 **Mustache Compatibility**
-* `FLAG_MUSTACHELOOKUP` : align recursive lookup up behaviors with mustache specification. And, the rendering performance will be worse.
 * `FLAG_MUSTACHELAMBDA` : support simple lambda logic as mustache specification. And, the rendering performance will be worse.
 * `FLAG_NOHBHELPERS` : Do not compile handlebars.js builtin helpers. With this option, `{{#with}}`, `{{#if}}`, `{{#unless}}`, `{{#each}}` means normal section, and `{{#with foo}}`, `{{#if foo}}`, `{{#unless foo}}`, `{{#each foo}}` will cause compile error.
 * `FLAG_MUSTACHESECTION` : align section context behaviors with mustache.js.
-* `FLAG_MUSTACHE` : support all mustache specification but performance drop, same with `FLAG_ERROR_SKIPPARTIAL` + `FLAG_MUSTACHELOOKUP` + `FLAG_MUSTACHELAMBDA` + `FLAG_NOHBHELPERS` + `FLAG_RUNTIMEPARTIAL` + `FLAG_JSTRUE` + `FLAG_JSOBJECT`.
+* `FLAG_MUSTACHE` : support all mustache specification but performance drop, same with `FLAG_ERROR_SKIPPARTIAL` + `FLAG_MUSTACHELAMBDA` + `FLAG_NOHBHELPERS` + `FLAG_RUNTIMEPARTIAL` + `FLAG_JSTRUE` + `FLAG_JSOBJECT`.
 
 **Handlebars Compatibility**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_THIS.html">FLAG_THIS</a>
@@ -97,7 +96,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
 * `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_THIS` + `FLAG_PARENT` + `FLAG_HBESCAPE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG` + `FLAG_SPVARS` + `FLAG_SLASH` + `FLAG_ELSE` + `FLAG_RAWBLOCK`.
 * `FLAG_HANDLEBARSJS` : support most handlebars.js + javascript behaviors and also keep performance good, same with `FLAG_JS` + `FLAG_HANDLEBARS`.
-* `FLAG_HANDLEBARSJS_FULL` : enable all supported handlebars.js behaviors but performance drop, same with `FLAG_HANDLEBARSJS` + `FLAG_INSTANCE` + `FLAG_RUNTIMEPARTIAL` + `FLAG_MUSTACHELOOKUP` + `FLAG_HANDLEBARSLAMBDA`.
+* `FLAG_HANDLEBARSJS_FULL` : enable all supported handlebars.js behaviors but performance drop, same with `FLAG_HANDLEBARSJS` + `FLAG_INSTANCE` + `FLAG_RUNTIMEPARTIAL` + `FLAG_HANDLEBARSLAMBDA`.
 
 **Handlebars Options**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NOESCAPE.html">FLAG_NOESCAPE</a>
@@ -445,7 +444,6 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * Exact same '[object Object]' output or join(',' array) output with handlebars.js (require `FLAG_JSOBJECT`)
 * Can place heading/tailing space, tab, CR/LF inside `{{ var }}` or `{{{ var }}}`
 * Indent behavior of the partial same with mustache spec
-* Recursive variable lookup to parent context behavior same with mustache spec (require `FLAG_MUSTACHELOOKUP`)
 * `{{{value}}}` or `{{&value}}` : raw variable
    * true as 'true' (require `FLAG_JSTRUE`)
    * false as 'false' (require `FLAG_TRUE`)

@@ -148,10 +148,10 @@ class Runtime extends Encoder
      *
      * @return null|string Return the value or null when not found
      *
-     * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0, 'mustlok' => 0)), null, 0, array('a', 'b')
-     * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0), 'mustlok' => 0), null, array('a' => array('b' => 3)), array('a', 'b')
-     * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0, 'mustlok' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
-     * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 1, 'method' => 0, 'mustlok' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
+     * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0)), null, 0, array('a', 'b')
+     * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0)), null, array('a' => array('b' => 3)), array('a', 'b')
+     * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
+     * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 1, 'method' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
      */
     public static function v($cx, $in, $base, $path, $args = null)
     {
@@ -186,10 +186,6 @@ class Runtime extends Encoder
                             continue;
                         }
                     }
-                }
-                if ($cx['flags']['mustlok']) {
-                    unset($v);
-                    break;
                 }
                 return null;
             }
