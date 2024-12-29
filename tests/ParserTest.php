@@ -114,13 +114,13 @@ class ParserTest extends TestCase
             array(0,0,0,0,0,0,0,'a q="b c"'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
         ))));
         $this->assertEquals(array(false, array(array(-2, array(array('foo'), array('bar')), '(foo bar)'))), $method->invokeArgs(null, array_by_ref(array(
-            array(0,0,0,0,0,0,0,'(foo bar)'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 1, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
+            array(0,0,0,0,0,0,0,'(foo bar)'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
         ))));
         $this->assertEquals(array(false, array(array('foo'), array("'=='"), array('bar'))), $method->invokeArgs(null, array_by_ref(array(
             array(0,0,0,0,0,0,0,"foo '==' bar"), array('flags' => array('strpar' => 0, 'advar' => 1, 'namev' => 1, 'noesc' => 0, 'this' => 0), 'rawblock' => false)
         ))));
         $this->assertEquals(array(false, array(array(-2, array(array('foo'), array('bar')), '( foo bar)'))), $method->invokeArgs(null, array_by_ref(array(
-            array(0,0,0,0,0,0,0,'( foo bar)'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 1, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
+            array(0,0,0,0,0,0,0,'( foo bar)'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
         ))));
         $this->assertEquals(array(false, array(array('a'), array(-1, '\' b c\''))), $method->invokeArgs(null, array_by_ref(array(
             array(0,0,0,0,0,0,0,'a " b c"'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
@@ -138,19 +138,19 @@ class ParserTest extends TestCase
             array(0,0,0,0,0,0,0,"a q=\' d e\'"), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
         ))));
         $this->assertEquals(array(false, array('q' => array(-2, array(array('foo'), array('bar')), '( foo bar)'))), $method->invokeArgs(null, array_by_ref(array(
-            array(0,0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false, 'helperresolver' => 0)
+            array(0,0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
         ))));
         $this->assertEquals(array(false, array(array('foo'))), $method->invokeArgs(null, array_by_ref(array(
-            array(0,0,0,0,0,0,'>','foo'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
+            array(0,0,0,0,0,0,'>','foo'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
         ))));
         $this->assertEquals(array(false, array(array('foo'))), $method->invokeArgs(null, array_by_ref(array(
-            array(0,0,0,0,0,0,'>','"foo"'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
+            array(0,0,0,0,0,0,'>','"foo"'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
         ))));
         $this->assertEquals(array(false, array(array('foo'))), $method->invokeArgs(null, array_by_ref(array(
-            array(0,0,0,0,0,0,'>','[foo] '), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
+            array(0,0,0,0,0,0,'>','[foo] '), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
         ))));
         $this->assertEquals(array(false, array(array('foo'))), $method->invokeArgs(null, array_by_ref(array(
-            array(0,0,0,0,0,0,'>','\\\'foo\\\''), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
+            array(0,0,0,0,0,0,'>','\\\'foo\\\''), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
         ))));
     }
     public function testOn_getPartialName() {
@@ -177,7 +177,7 @@ class ParserTest extends TestCase
     public function testOn_subexpression() {
         $method = new \ReflectionMethod('LightnCandy\Parser', 'subexpression');
         $this->assertEquals(array(\LightnCandy\Parser::SUBEXP, array(array('a'), array('b')), '(a b)'), $method->invokeArgs(null, array_by_ref(array(
-            '(a b)', array('usedFeature' => array('subexp' => 0), 'flags' => array('advar' => 0, 'namev' => 0, 'this' => 0, 'exhlp' => 1, 'strpar' => 0))
+            '(a b)', array('usedFeature' => array('subexp' => 0), 'flags' => array('advar' => 0, 'namev' => 0, 'this' => 0, 'strpar' => 0))
         ))));
     }
     public function testOn_isSubExp() {

@@ -5,7 +5,7 @@ use LightnCandy\Runtime;
 use PHPUnit\Framework\TestCase;
 
 $tmpdir = sys_get_temp_dir();
-$hb_test_flag = LightnCandy::FLAG_HANDLEBARSJS_FULL | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_EXTHELPER;
+$hb_test_flag = LightnCandy::FLAG_HANDLEBARSJS_FULL | LightnCandy::FLAG_ERROR_EXCEPTION;
 $tested = 0;
 $standalone = false;
 $test_flags = array($hb_test_flag | LightnCandy::FLAG_STANDALONEPHP);

@@ -44,9 +44,8 @@ class regressionTest extends TestCase
                 'id' => 44,
                 'template' => '<div class="terms-text"> {{render "artists-terms"}} </div>',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_EXTHELPER,
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => array(
-                        'url',
                         'render' => function($view,$data = array()) {
                             return 'OK!';
                          }
@@ -884,34 +883,6 @@ VAREND
             ),
 
             array(
-                'id' => 201,
-                'template' => '{{foo "world"}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
-                    'helperresolver' => function ($cx, $name) {
-                        return function ($name, $option) {
-                            return "Hello, $name";
-                        };
-                    }
-                ),
-                'expected' => 'Hello, world',
-            ),
-
-            array(
-                'id' => 201,
-                'template' => '{{#foo "test"}}World{{/foo}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
-                    'helperresolver' => function ($cx, $name) {
-                        return function ($name, $option) {
-                            return "$name = " . $option['fn']();
-                        };
-                    }
-                ),
-                'expected' => 'test = World',
-            ),
-
-            array(
                 'id' => 204,
                 'template' => '{{#> test name="A"}}B{{/test}}{{#> test name="C"}}D{{/test}}',
                 'data' => array('bar' => true),
@@ -1203,22 +1174,6 @@ VAREND
                     'flags' => LightnCandy::FLAG_HANDLEBARS,
                 ),
                 'expected' => '1-2-'
-            ),
-
-            array(
-                'id' => 251,
-                'template' => '{{>foo}}',
-                'data' => array('bar' => 'BAD'),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_EXTHELPER,
-                    'partials' => array('foo' => '{{bar}}'),
-                    'helperresolver' => function ($cx, $name) {
-                        return function () {
-                            return "OK!";
-                        };
-                    }
-                ),
-                'expected' => 'OK!'
             ),
 
             array(

@@ -51,7 +51,6 @@ class Flags
 
     // PHP behavior flags
     const FLAG_STANDALONEPHP = 4;
-    const FLAG_EXTHELPER = 8192;
     const FLAG_PROPERTY = 32768;
     const FLAG_RUNTIMEPARTIAL = 1048576;
     const FLAG_NOESCAPE = 67108864;

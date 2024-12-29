@@ -100,7 +100,6 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 
 **PHP**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_STANDALONEPHP.html">FLAG_STANDALONEPHP</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_EXTHELPER.html">FLAG_EXTHELPER</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RUNTIMEPARTIAL.html">FLAG_RUNTIMEPARTIAL</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_PROPERTY.html">FLAG_PROPERTY</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_BESTPERFORMANCE.html">FLAG_BESTPERFORMANCE</a>
@@ -119,7 +118,6 @@ Custom Helper
 * <a href="https://zordius.github.io/HandlebarsCookbook/9001-customhelper.html">Custom Helpers in LighnCandy</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/9002-helperoptions.html">The $options Object</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/9003-helperescaping.html">Use SafeString</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/9901-lcop-helperresolver.html">The helperresolver option</a>
 
 Custom Helper Examples
 ----------------------

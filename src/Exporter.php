@@ -61,7 +61,7 @@ class Exporter
             if (!isset($context['usedCount']['helpers'][$name])) {
                 continue;
             }
-            if ((is_object($func) && ($func instanceof \Closure)) || ($context['flags']['exhlp'] == 0)) {
+            if (is_object($func) && ($func instanceof \Closure)) {
                 $ret .= ("            '$name' => " . static::closure($context, $func) . ",\n");
                 continue;
             }

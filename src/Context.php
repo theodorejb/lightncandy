@@ -56,7 +56,6 @@ class Context extends Flags
                 'spvar' => $flags & static::FLAG_SPVARS,
                 'slash' => $flags & static::FLAG_SLASH,
                 'else' => $flags & static::FLAG_ELSE,
-                'exhlp' => $flags & static::FLAG_EXTHELPER,
                 'lambda' => $flags & static::FLAG_HANDLEBARSLAMBDA,
                 'noind' => $flags & static::FLAG_PREVENTINDENT,
                 'debug' => $flags & static::FLAG_RENDER_DEBUG,
@@ -125,7 +124,6 @@ class Context extends Flags
             'helpers' => array(),
             'renderex' => isset($options['renderex']) ? $options['renderex'] : '',
             'prepartial' => (isset($options['prepartial']) && is_callable($options['prepartial'])) ? $options['prepartial'] : false,
-            'helperresolver' => (isset($options['helperresolver']) && is_callable($options['helperresolver'])) ? $options['helperresolver'] : false,
             'partialresolver' => (isset($options['partialresolver']) && is_callable($options['partialresolver'])) ? $options['partialresolver'] : false,
             'runtime' => isset($options['runtime']) ? $options['runtime'] : '\\LightnCandy\\Runtime',
             'runtimealias' => 'LR',
@@ -169,10 +167,9 @@ class Context extends Flags
      * @return array<string,array|string|integer> context with generated helper table
      *
      * @expect array() when input array(), array()
-     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('abc' => 1)) when input array('flags' => array('exhlp' => 1)), array('helpers' => array('abc'))
-     * @expect array('error' => array('You provide a custom helper named as \'abc\' in options[\'helpers\'], but the function abc() is not defined!'), 'flags' => array('exhlp' => 0)) when input array('error' => array(), 'flags' => array('exhlp' => 0)), array('helpers' => array('abc'))
-     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('\\LightnCandy\\Runtime::raw' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('\\LightnCandy\\Runtime::raw'))
-     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('test' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => '\\LightnCandy\\Runtime::raw'))
+     * @expect array('error' => array('You provide a custom helper named as \'abc\' in options[\'helpers\'], but the function abc() is not defined!'), 'flags' => array()) when input array('error' => array(), 'flags' => array()), array('helpers' => array('abc'))
+     * @expect array('flags' => array(), 'helpers' => array('\\LightnCandy\\Runtime::raw' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array(), 'helpers' => array()), array('helpers' => array('\\LightnCandy\\Runtime::raw'))
+     * @expect array('flags' => array(), 'helpers' => array('test' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array(), 'helpers' => array()), array('helpers' => array('test' => '\\LightnCandy\\Runtime::raw'))
      */
     protected static function updateHelperTable(&$context, $options, $tname = 'helpers')
     {
@@ -185,12 +182,7 @@ class Context extends Flags
                     if (is_array($func)) {
                         $context['error'][] = "I found an array in $tname with key as $name, please fix it.";
                     } else {
-                        if ($context['flags']['exhlp']) {
-                            // Regist helper names only
-                            $context[$tname][$tn] = 1;
-                        } else {
-                            $context['error'][] = "You provide a custom helper named as '$tn' in options['$tname'], but the function $func() is not defined!";
-                        }
+                        $context['error'][] = "You provide a custom helper named as '$tn' in options['$tname'], but the function $func() is not defined!";
                     }
                 }
             }
