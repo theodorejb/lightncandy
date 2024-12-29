@@ -15,7 +15,7 @@ class MustacheSpecTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider("jsonSpecProvider")]
     public function testSpecs($spec)
     {
-        global $tmpdir;
+        $tmpdir = sys_get_temp_dir();
 
         $flag = LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_ERROR_EXCEPTION;
         if (

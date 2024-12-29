@@ -162,8 +162,6 @@ class errorTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider("errorProvider")]
     public function testErrors($test)
     {
-        global $tmpdir;
-
         $php = LightnCandy::compile($test['template'], $test['options']);
         $context = LightnCandy::getContext();
 

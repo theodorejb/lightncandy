@@ -68,7 +68,7 @@ class HandlebarsSpecTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider("jsonSpecProvider")]
     public function testSpecs($spec)
     {
-        global $tmpdir;
+        $tmpdir = sys_get_temp_dir();
         global $tested;
         global $test_flags;
         global $standalone;

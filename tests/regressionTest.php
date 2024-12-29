@@ -6,16 +6,12 @@ use PHPUnit\Framework\TestCase;
 
 require_once('tests/helpers_for_test.php');
 
-$tmpdir = sys_get_temp_dir();
-
 class regressionTest extends TestCase
 {
     #[\PHPUnit\Framework\Attributes\DataProvider("issueProvider")]
     public function testIssues($issue)
     {
-        global $tmpdir;
-
-        $php = LightnCandy::compile($issue['template'], isset($issue['options']) ? $issue['options'] : null);
+        $php = LightnCandy::compile($issue['template'], $issue['options'] ?? null);
         $context = LightnCandy::getContext();
         $parsed = print_r(LightnCandy::$lastParsed, true);
         if (count($context['error'])) {
@@ -23,7 +19,7 @@ class regressionTest extends TestCase
         }
         $renderer = LightnCandy::prepare($php);
 
-        $this->assertEquals($issue['expected'], $renderer(isset($issue['data']) ? $issue['data'] : null, array('debug' => $issue['debug'])), "PHP CODE:\n$php\n$parsed");
+        $this->assertEquals($issue['expected'], $renderer($issue['data'] ?? null, array('debug' => $issue['debug'])), "PHP CODE:\n$php\n$parsed");
     }
 
     public static function issueProvider()
