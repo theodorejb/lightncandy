@@ -78,7 +78,6 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 
 **Mustache Compatibility**
 * `FLAG_NOHBHELPERS` : Do not compile handlebars.js builtin helpers. With this option, `{{#with}}`, `{{#if}}`, `{{#unless}}`, `{{#each}}` means normal section, and `{{#with foo}}`, `{{#if foo}}`, `{{#unless foo}}`, `{{#each foo}}` will cause compile error.
-* `FLAG_MUSTACHESECTION` : align section context behaviors with mustache.js.
 * `FLAG_MUSTACHE` : support all mustache specification but performance drop, same with `FLAG_NOHBHELPERS` + `FLAG_RUNTIMEPARTIAL` + `FLAG_JSTRUE` + `FLAG_JSOBJECT`.
 
 **Handlebars Compatibility**
