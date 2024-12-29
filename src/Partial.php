@@ -63,7 +63,7 @@ class Partial
             return static::compileDynamic($context, $name);
         }
 
-        if (!$context['flags']['skippartial'] && !$isPB) {
+        if (!$isPB) {
             $context['error'][] = "Can not find partial for '$name', you should provide partials or partialresolver in options";
         }
     }

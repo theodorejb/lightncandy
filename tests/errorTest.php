@@ -74,7 +74,7 @@ class errorTest extends TestCase
         $php = LightnCandy::compile($test['template'], $test['options']);
         $renderer = LightnCandy::prepare($php);
         try {
-            $input = isset($test['data']) ? $test['data'] : null;
+            $input = $test['data'] ?? null;
             $renderer($input, array('debug' => Runtime::DEBUG_ERROR_EXCEPTION));
         } catch (\Exception $E) {
             $this->assertEquals($test['expected'], $E->getMessage());
@@ -116,13 +116,6 @@ class errorTest extends TestCase
                    ),
                  ),
                  'expected' => "Can not find partial named as '@partial-block' !!",
-             ),
-             array(
-                 'template' => '{{> abc}}',
-                 'options' => array(
-                   'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_SKIPPARTIAL,
-                 ),
-                 'expected' => "Can not find partial named as 'abc' !!",
              ),
              array(
                  'template' => '{{> @partial-block}}',

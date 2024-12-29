@@ -68,7 +68,6 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 **Error Handling**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_LOG.html">FLAG_ERROR_LOG</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_EXCEPTION.html">FLAG_ERROR_EXCEPTION</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_SKIPPARTIAL.html">FLAG_ERROR_SKIPPARTIAL</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RENDER_DEBUG.html">FLAG_RENDER_DEBUG</a>
 
 **JavaScript Compatibility**
@@ -81,7 +80,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_MUSTACHELAMBDA` : support simple lambda logic as mustache specification. And, the rendering performance will be worse.
 * `FLAG_NOHBHELPERS` : Do not compile handlebars.js builtin helpers. With this option, `{{#with}}`, `{{#if}}`, `{{#unless}}`, `{{#each}}` means normal section, and `{{#with foo}}`, `{{#if foo}}`, `{{#unless foo}}`, `{{#each foo}}` will cause compile error.
 * `FLAG_MUSTACHESECTION` : align section context behaviors with mustache.js.
-* `FLAG_MUSTACHE` : support all mustache specification but performance drop, same with `FLAG_ERROR_SKIPPARTIAL` + `FLAG_MUSTACHELAMBDA` + `FLAG_NOHBHELPERS` + `FLAG_RUNTIMEPARTIAL` + `FLAG_JSTRUE` + `FLAG_JSOBJECT`.
+* `FLAG_MUSTACHE` : support all mustache specification but performance drop, same with `FLAG_MUSTACHELAMBDA` + `FLAG_NOHBHELPERS` + `FLAG_RUNTIMEPARTIAL` + `FLAG_JSTRUE` + `FLAG_JSOBJECT`.
 
 **Handlebars Compatibility**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_THIS.html">FLAG_THIS</a>

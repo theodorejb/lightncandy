@@ -43,7 +43,6 @@ class Context extends Flags
             'flags' => array(
                 'errorlog' => $flags & static::FLAG_ERROR_LOG,
                 'exception' => $flags & static::FLAG_ERROR_EXCEPTION,
-                'skippartial' => $flags & static::FLAG_ERROR_SKIPPARTIAL,
                 'standalone' => $flags & static::FLAG_STANDALONEPHP,
                 'noesc' => $flags & static::FLAG_NOESCAPE,
                 'jstrue' => $flags & static::FLAG_JSTRUE,
