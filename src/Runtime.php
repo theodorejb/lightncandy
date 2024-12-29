@@ -148,10 +148,10 @@ class Runtime extends Encoder
      *
      * @return null|string Return the value or null when not found
      *
-     * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0)), null, 0, array('a', 'b')
-     * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0)), null, array('a' => array('b' => 3)), array('a', 'b')
-     * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
-     * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 1, 'method' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
+     * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0)), null, 0, array('a', 'b')
+     * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 0)), null, array('a' => array('b' => 3)), array('a', 'b')
+     * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
+     * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 1)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
      */
     public static function v($cx, $in, $base, $path, $args = null)
     {
@@ -173,18 +173,6 @@ class Runtime extends Encoder
                     if ($cx['flags']['prop'] && !($v instanceof \Closure) && isset($v->$name)) {
                         $v = $v->$name;
                         continue;
-                    }
-                    if ($cx['flags']['method'] && is_callable(array($v, $name))) {
-                        try {
-                            $v = $v->$name();
-                            continue;
-                        } catch (\BadMethodCallException $e) {}
-                    }
-                    if ($v instanceof \ArrayAccess) {
-                        if (isset($v[$name])) {
-                            $v = $v[$name];
-                            continue;
-                        }
                     }
                 }
                 return null;
@@ -509,7 +497,7 @@ class Runtime extends Encoder
                 return $b;
             } elseif (is_array($a)) {
                 return array_merge($a, $b);
-            } elseif ($cx['flags']['method'] || $cx['flags']['prop']) {
+            } elseif ($cx['flags']['prop']) {
                 if (!is_object($a)) {
                     $a = new StringObject($a);
                 }

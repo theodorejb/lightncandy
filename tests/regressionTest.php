@@ -57,16 +57,6 @@ class regressionTest extends TestCase
             ),
 
             array(
-                'id' => 45,
-                'template' => '{{{a.b.c}}}, {{a.b.bar}}, {{a.b.prop}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_INSTANCE | LightnCandy::FLAG_HANDLEBARSJS,
-                ),
-                'data' => array('a' => array('b' => new foo)),
-                'expected' => ', OK!, Yes!'
-            ),
-
-            array(
                 'id' => 46,
                 'template' => '{{{this.id}}}, {{a.id}}',
                 'options' => array(
@@ -683,17 +673,6 @@ class regressionTest extends TestCase
             ),
 
             array(
-                'id' => 147,
-                'template' => '{{> test/test3 foo="bar"}}',
-                'data' => new foo(),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_INSTANCE,
-                    'partials' => array('test/test3' => '{{bar}}, {{foo}}'),
-                ),
-                'expected' => 'OK!, bar'
-            ),
-
-            array(
                 'id' => 150,
                 'template' => '{{{.}}}',
                 'data' => array('hello' => 'world'),
@@ -1290,7 +1269,7 @@ VAREND
                 'template' => '{{foo.length}}',
                 'data' => array('foo' => array(1, 2)),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_JSLENGTH | LightnCandy::FLAG_METHOD
+                    'flags' => LightnCandy::FLAG_JSLENGTH
                 ),
                 'expected' => '2'
             ),
@@ -1999,20 +1978,6 @@ VAREND
  <li>12. <a href="http://yahoo.com">You&Me!</a></li>
 </ul>
 VAREND
-            ),
-
-            array(
-                'template' => '{{test.test}} == {{test.test3}}',
-                'data' => array('test' => new myClass()),
-                'options' => array('flags' => LightnCandy::FLAG_INSTANCE),
-                'expected' => "testMethod OK! == -- test3:Array\n(\n)\n",
-            ),
-
-            array(
-                'template' => '{{test.test}} == {{test.bar}}',
-                'data' => array('test' => new foo()),
-                'options' => array('flags' => LightnCandy::FLAG_INSTANCE),
-                'expected' => ' == OK!',
             ),
 
             array(

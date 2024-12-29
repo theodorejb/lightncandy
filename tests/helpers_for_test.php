@@ -23,8 +23,6 @@ class myClass {
 }
 
 class foo {
-    public $prop = 'Yes!';
-
     static function bar() {
         return 'OK!';
     }

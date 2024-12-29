@@ -62,7 +62,6 @@ class Context extends Flags
                 'noind' => $flags & static::FLAG_PREVENTINDENT,
                 'debug' => $flags & static::FLAG_RENDER_DEBUG,
                 'prop' => $flags & static::FLAG_PROPERTY,
-                'method' => $flags & static::FLAG_METHOD,
                 'runpart' => $flags & static::FLAG_RUNTIMEPARTIAL,
                 'partnc' => $flags & static::FLAG_PARTIALNEWCONTEXT,
                 'nostd' => $flags & static::FLAG_IGNORESTANDALONE,
