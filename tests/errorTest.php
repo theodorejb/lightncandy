@@ -590,7 +590,7 @@ class errorTest extends TestCase
             array(
                 'template' => '{{ #2 }}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_BESTPERFORMANCE,
+                    'flags' => 0,
                 ),
                 'expected' => array(
                     'Unclosed token {{#2}} !!',

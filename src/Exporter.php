@@ -32,8 +32,8 @@ class Exporter
      *
      * @return string
      *
-     * @expect 'function($a) {return;}' when input array('flags' => array('standalone' => 0)),  function ($a) {return;}
-     * @expect 'function($a) {return;}' when input array('flags' => array('standalone' => 0)),   function ($a) {return;}
+     * @expect 'function($a) {return;}' when input array('flags' => array()),  function ($a) {return;}
+     * @expect 'function($a) {return;}' when input array('flags' => array()),   function ($a) {return;}
      */
     protected static function closure($context, $closure)
     {
@@ -81,7 +81,7 @@ class Exporter
      */
     protected static function replaceSafeString($context, $str)
     {
-        return $context['flags']['standalone'] ? str_replace($context['safestring'], $context['safestringalias'], $str) : $str;
+        return $str;
     }
 
     /**
@@ -184,12 +184,7 @@ class Exporter
      */
     public static function stringobject($context)
     {
-        if ($context['flags']['standalone'] == 0) {
-            return 'use \\LightnCandy\\StringObject as StringObject;';
-        }
-        $class = new \ReflectionClass('\\LightnCandy\\StringObject');
-        $meta = static::getMeta($class);
-        return "if (!class_exists(\"StringObject\")) {\n{$meta['code']}}\n";
+        return 'use \\LightnCandy\\StringObject as StringObject;';
     }
 
     /**
@@ -238,18 +233,7 @@ class Exporter
      */
     public static function constants($context)
     {
-        if ($context['flags']['standalone'] == 0) {
-            return 'array()';
-        }
-
-        $class = new \ReflectionClass($context['runtime']);
-        $constants = $class->getConstants();
-        $ret = " array(\n";
-        foreach ($constants as $name => $value) {
-            $ret .= "            '$name' => ".  (is_string($value) ? "'$value'" : $value) . ",\n";
-        }
-        $ret .= "        )";
-        return $ret;
+        return 'array()';
     }
 
     /**

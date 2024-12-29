@@ -59,11 +59,9 @@ You can apply more options by running `LightnCandy::compile($template, $options)
 
 ```php
 LightnCandy::compile($template, array(
-    'flags' => LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_STANDALONEPHP
+    'flags' => LightnCandy::FLAG_ERROR_LOG
 ));
 ```
-
-Default is to compile the template as PHP, which can be run as fast as possible (flags = <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_BESTPERFORMANCE.html">FLAG_BESTPERFORMANCE</a>).
 
 **Error Handling**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_LOG.html">FLAG_ERROR_LOG</a>
@@ -99,10 +97,8 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_PREVENTINDENT` : align partial indent behavior with mustache specification. This is same with handlebars.js preventIndent copmile time option.
 
 **PHP**
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_STANDALONEPHP.html">FLAG_STANDALONEPHP</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RUNTIMEPARTIAL.html">FLAG_RUNTIMEPARTIAL</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_PROPERTY.html">FLAG_PROPERTY</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_BESTPERFORMANCE.html">FLAG_BESTPERFORMANCE</a>
 
 Partial Support
 ---------------
@@ -399,7 +395,7 @@ $php = LightnCandy::compile($template, array(
 ));
 ```
 
-Please make sure `MyRunTime` exists when compile() or rendering based on your `FLAG_STANDALONEPHP` .
+Please make sure `MyRunTime` exists when compile().
 
 Unsupported Feature
 -------------------

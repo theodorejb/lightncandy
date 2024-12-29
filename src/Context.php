@@ -37,13 +37,12 @@ class Context extends Flags
             $options = array();
         }
 
-        $flags = isset($options['flags']) ? $options['flags'] : static::FLAG_BESTPERFORMANCE;
+        $flags = $options['flags'] ?? 0;
 
         $context = array(
             'flags' => array(
                 'errorlog' => $flags & static::FLAG_ERROR_LOG,
                 'exception' => $flags & static::FLAG_ERROR_EXCEPTION,
-                'standalone' => $flags & static::FLAG_STANDALONEPHP,
                 'noesc' => $flags & static::FLAG_NOESCAPE,
                 'jstrue' => $flags & static::FLAG_JSTRUE,
                 'jsobj' => $flags & static::FLAG_JSOBJECT,

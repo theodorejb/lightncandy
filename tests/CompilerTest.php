@@ -15,16 +15,13 @@ class CompilerTest extends TestCase
         $method = new \ReflectionMethod('LightnCandy\Compiler', 'getFuncName');
         $method->setAccessible(true);
         $this->assertEquals('LR::test(', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('standalone' => 0, 'debug' => 0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), 'test', ''
+            array('flags' => array('debug' => 0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), 'test', ''
         ))));
         $this->assertEquals('LL::test2(', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('standalone' => 0, 'debug' => 0), 'runtime' => 'Runtime', 'runtimealias' => 'LL'), 'test2', ''
-        ))));
-        $this->assertEquals("lala_abctest3(", $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('standalone' => 1, 'debug' => 0), 'runtime' => 'Runtime', 'runtimealias' => 0, 'funcprefix' => 'lala_abc'), 'test3', ''
+            array('flags' => array('debug' => 0), 'runtime' => 'Runtime', 'runtimealias' => 'LL'), 'test2', ''
         ))));
         $this->assertEquals('RR::debug(\'abc\', \'test\', ', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('standalone' => 0, 'debug' => 1), 'runtime' => 'Runtime', 'runtimealias' => 'RR', 'funcprefix' => 'haha456'), 'test', 'abc'
+            array('flags' => array('debug' => 1), 'runtime' => 'Runtime', 'runtimealias' => 'RR', 'funcprefix' => 'haha456'), 'test', 'abc'
         ))));
     }
     public function testOn_getVariableNames() {
@@ -98,7 +95,7 @@ class CompilerTest extends TestCase
             array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'lambda'=>0,'jslen'=>0)), array(null, 'id')
         ))));
         $this->assertEquals(array('LR::v($cx, $in, isset($in) ? $in : null, array(\'id\'))', 'this.[id]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'lambda'=>0,'jslen'=>0,'standalone'=>0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), array(null, 'id')
+            array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'lambda'=>0,'jslen'=>0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), array(null, 'id')
         ))));
     }
     public function testOn_addUsageCount() {

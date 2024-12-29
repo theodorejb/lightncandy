@@ -31,11 +31,11 @@ class LightnCandy extends Flags
      * Compile handlebars template into PHP code.
      *
      * @param string $template handlebars template string
-     * @param array<string,array|string|integer> $options LightnCandy compile time and run time options, default is array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
+     * @param array<string,array|string|integer> $options LightnCandy compile time and run time options
      *
      * @return string|false Compiled PHP code when successed. If error happened and compile failed, return false.
      */
-    public static function compile($template, $options = array('flags' => self::FLAG_BESTPERFORMANCE))
+    public static function compile($template, $options = array('flags' => 0))
     {
         $context = Context::create($options);
 
@@ -59,13 +59,13 @@ class LightnCandy extends Flags
      * Compile handlebars partial into PHP function code.
      *
      * @param string $template handlebars template string
-     * @param array<string,array|string|integer> $options LightnCandy compile time and run time options, default is array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
+     * @param array<string,array|string|integer> $options LightnCandy compile time and run time options
      *
      * @return string|false Compiled PHP code when successed. If error happened and compile failed, return false.
      *
      * @expect false when input '{{"}}', array('flags' => LightnCandy::FLAG_HANDLEBARS)
      */
-    public static function compilePartial($template, $options = array('flags' => self::FLAG_BESTPERFORMANCE))
+    public static function compilePartial($template, $options = array('flags' => 0))
     {
         $context = Context::create($options);
 

@@ -231,7 +231,7 @@ class regressionTest extends TestCase
                 'id' => 110,
                 'template' => 'ABC{{#block "YES!"}}DEF{{foo}}GHI{{/block}}JKL',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => array(
                         'block' => function ($name, $options) {
                             return "1-$name-2-" . $options['fn']() . '-3';
@@ -257,7 +257,7 @@ class regressionTest extends TestCase
                 'id' => 114,
                 'template' => '{{^myeach .}}OK:{{.}},{{else}}NOT GOOD{{/myeach}}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => array(
                         'myeach' => function ($context, $options) {
                             $ret = '';
@@ -1573,7 +1573,7 @@ VAREND
             array(
                 'template' => '{{hash abc=["def=123"]}}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => array(
                         'hash' => function ($options) {
                             $ret = '';
@@ -1591,7 +1591,7 @@ VAREND
             array(
                 'template' => '{{hash abc=[\'def=123\']}}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => array(
                         'hash' => function ($options) {
                             $ret = '';
@@ -1609,7 +1609,7 @@ VAREND
             array(
                 'template' => 'ABC{{#block "YES!"}}DEF{{foo}}GHI{{else}}NO~{{/block}}JKL',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => array(
                         'block' => function ($name, $options) {
                             return "1-$name-2-" . $options['fn']() . '-3';
@@ -1642,7 +1642,7 @@ VAREND
             array(
                 'template' => 'ABC{{#block "YES!"}}TRUE{{else}}DEF{{foo}}GHI{{/block}}JKL',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => array(
                         'block' => function ($name, $options) {
                             return "1-$name-2-" . $options['inverse']() . '-3';
