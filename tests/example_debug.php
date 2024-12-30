@@ -22,7 +22,7 @@ section Value: {{.}}
 ";
 
 $php = LightnCandy::compile($template, array(
-    'flags' => LightnCandy::FLAG_RENDER_DEBUG | LightnCandy::FLAG_HANDLEBARSJS
+    'flags' => LightnCandy::FLAG_RENDER_DEBUG
 ));
 
 $renderer = LightnCandy::prepare($php);

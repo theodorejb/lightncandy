@@ -439,16 +439,12 @@ class errorTest extends TestCase
             array(
                 'template' => '{{1 + 2}}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => array('test_join'),
                 ),
                 'expected' => "Wrong variable naming as '+' in {{1 + 2}} ! You should wrap ! \" # % & ' * + , ; < = > { | } ~ into [ ]",
             ),
             array(
                 'template' => '{{> (foo) bar}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                ),
                 'expected' => array(
                     "Can not find custom helper function defination foo() !",
                     "You use dynamic partial name as '(foo)', this only works with option FLAG_RUNTIMEPARTIAL enabled",
@@ -456,9 +452,6 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{{{#foo}}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                ),
                 'expected' => array(
                     'Bad token {{{{#foo}}} ! Do you mean {{{{#foo}}}} ?',
                     'Wrong raw block begin with {{{{#foo}}} ! Remove "#" to fix this issue.',
@@ -467,9 +460,6 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{{{foo}}}} {{ {{{{/bar}}}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                ),
                 'expected' => array(
                     'Unclosed token {{{{foo}}}} !!',
                 )
@@ -477,7 +467,6 @@ class errorTest extends TestCase
             array(
                 'template' => '{{foo (foo (foo 1 2) 3))}}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                      'helpers' => array(
                          'foo' => function () {
                              return;
@@ -490,9 +479,6 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{{{foo}}}} {{ {{{{#foo}}}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                ),
                 'expected' => array(
                     'Unclosed token {{{{foo}}}} !!',
                 )

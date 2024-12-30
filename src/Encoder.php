@@ -36,11 +36,11 @@ class Encoder
      * @expect 'true' when input array('flags' => array()), true
      * @expect 'false' when input array('flags' => array()), false
      * @expect false when input array('flags' => array()), false, true
-     * @expect 'a,b' when input array('flags' => array('lambda' => 0)), array('a', 'b')
+     * @expect 'a,b' when input array('flags' => array()), array('a', 'b')
      * @expect '[object Object]' when input array('flags' => array()), array('a', 'c' => 'b')
      * @expect '[object Object]' when input array('flags' => array()), array('c' => 'b')
-     * @expect 'a,true' when input array('flags' => array('lambda' => 0)), array('a', true)
-     * @expect 'a,false' when input array('flags' => array('lambda' => 0)), array('a',false)
+     * @expect 'a,true' when input array('flags' => array()), array('a', true)
+     * @expect 'a,false' when input array('flags' => array()), array('a',false)
      */
     public static function raw($cx, $v, $ex = 0)
     {
@@ -79,9 +79,9 @@ class Encoder
      *
      * @return string The htmlencoded value of the specified variable
      *
-     * @expect 'a' when input array('flags' => array('lambda' => 0)), 'a'
-     * @expect 'a&amp;b' when input array('flags' => array('lambda' => 0)), 'a&b'
-     * @expect 'a&#039;b' when input array('flags' => array('lambda' => 0)), 'a\'b'
+     * @expect 'a' when input array('flags' => array()), 'a'
+     * @expect 'a&amp;b' when input array('flags' => array()), 'a&b'
+     * @expect 'a&#039;b' when input array('flags' => array()), 'a\'b'
      */
     public static function enc($cx, $var)
     {
@@ -96,10 +96,10 @@ class Encoder
      *
      * @return string The htmlencoded value of the specified variable
      *
-     * @expect 'a' when input array('flags' => array('lambda' => 0)), 'a'
-     * @expect 'a&amp;b' when input array('flags' => array('lambda' => 0)), 'a&b'
-     * @expect 'a&#x27;b' when input array('flags' => array('lambda' => 0)), 'a\'b'
-     * @expect '&#x60;a&#x27;b' when input array('flags' => array('lambda' => 0)), '`a\'b'
+     * @expect 'a' when input array('flags' => array()), 'a'
+     * @expect 'a&amp;b' when input array('flags' => array()), 'a&b'
+     * @expect 'a&#x27;b' when input array('flags' => array()), 'a\'b'
+     * @expect '&#x60;a&#x27;b' when input array('flags' => array()), '`a\'b'
      */
     public static function encq($cx, $var)
     {

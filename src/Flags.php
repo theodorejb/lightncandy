@@ -30,7 +30,6 @@ class Flags
 
     // Handlebars.js compatibility
     const FLAG_PREVENTINDENT = 131072;
-    const FLAG_HANDLEBARSLAMBDA = 268435456;
     const FLAG_PARTIALNEWCONTEXT = 536870912;
     const FLAG_IGNORESTANDALONE = 1073741824;
     const FLAG_STRINGPARAMS = 2147483648;
@@ -43,8 +42,4 @@ class Flags
 
     // Template rendering time debug flags
     const FLAG_RENDER_DEBUG = 524288;
-
-    // alias flags
-    const FLAG_HANDLEBARSJS = 192945080;
-    const FLAG_HANDLEBARSJS_FULL = 429235128; // FLAG_HANDLEBARSJS + FLAG_RUNTIMEPARTIAL
 }

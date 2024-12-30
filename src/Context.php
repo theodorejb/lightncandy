@@ -44,7 +44,6 @@ class Context extends Flags
                 'errorlog' => $flags & static::FLAG_ERROR_LOG,
                 'exception' => $flags & static::FLAG_ERROR_EXCEPTION,
                 'noesc' => $flags & static::FLAG_NOESCAPE,
-                'lambda' => $flags & static::FLAG_HANDLEBARSLAMBDA,
                 'noind' => $flags & static::FLAG_PREVENTINDENT,
                 'debug' => $flags & static::FLAG_RENDER_DEBUG,
                 'prop' => $flags & static::FLAG_PROPERTY,

@@ -150,7 +150,6 @@ class usageTest extends TestCase
              array(
                  'template' => '{{&../../../OK}} {{../OK}}',
                  'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => array(
                         'mytest' => function ($context) {
                             return $context;
@@ -167,7 +166,6 @@ class usageTest extends TestCase
              array(
                  'template' => '{{mytest ../../../OK}} {{../OK}}',
                  'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => array(
                         'mytest' => function ($context) {
                             return $context;
@@ -184,7 +182,6 @@ class usageTest extends TestCase
              array(
                  'template' => '{{mytest . .}}',
                  'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => array(
                         'mytest' => function ($a, $b) {
                             return '';
@@ -202,7 +199,6 @@ class usageTest extends TestCase
              array(
                  'template' => '{{mytest (mytest ..)}}',
                  'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => array(
                         'mytest' => function ($context) {
                             return $context;
@@ -220,7 +216,6 @@ class usageTest extends TestCase
              array(
                  'template' => '{{mytest (mytest ..) .}}',
                  'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => array(
                         'mytest' => function ($context) {
                             return $context;
@@ -240,7 +235,6 @@ class usageTest extends TestCase
              array(
                  'template' => '{{mytest (mytest (mytest ..)) .}}',
                  'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => array(
                         'mytest' => function ($context) {
                             return $context;
@@ -261,7 +255,6 @@ class usageTest extends TestCase
                  'id' => '134',
                  'template' => '{{#if 1}}{{keys (keys ../names)}}{{/if}}',
                  'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => array(
                         'keys' => function ($context) {
                             return $context;
@@ -280,9 +273,6 @@ class usageTest extends TestCase
              array(
                  'id' => '196',
                  'template' => '{{log "this is a test"}}',
-                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                ),
                  'expected' => array(
                      'log' => 1,
                      'enc' => 1,

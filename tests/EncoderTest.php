@@ -23,7 +23,7 @@ class EncoderTest extends TestCase
             array('flags' => array()), false, true
         ))));
         $this->assertEquals('a,b', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), array('a', 'b')
+            array('flags' => array()), array('a', 'b')
         ))));
         $this->assertEquals('[object Object]', $method->invokeArgs(null, array_by_ref(array(
             array('flags' => array()), array('a', 'c' => 'b')
@@ -32,37 +32,37 @@ class EncoderTest extends TestCase
             array('flags' => array()), array('c' => 'b')
         ))));
         $this->assertEquals('a,true', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), array('a', true)
+            array('flags' => array()), array('a', true)
         ))));
         $this->assertEquals('a,false', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), array('a',false)
+            array('flags' => array()), array('a',false)
         ))));
     }
     public function testOn_enc() {
         $method = new \ReflectionMethod('LightnCandy\Encoder', 'enc');
         $this->assertEquals('a', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 'a'
+            array('flags' => array()), 'a'
         ))));
         $this->assertEquals('a&amp;b', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 'a&b'
+            array('flags' => array()), 'a&b'
         ))));
         $this->assertEquals('a&#039;b', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 'a\'b'
+            array('flags' => array()), 'a\'b'
         ))));
     }
     public function testOn_encq() {
         $method = new \ReflectionMethod('LightnCandy\Encoder', 'encq');
         $this->assertEquals('a', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 'a'
+            array('flags' => array()), 'a'
         ))));
         $this->assertEquals('a&amp;b', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 'a&b'
+            array('flags' => array()), 'a&b'
         ))));
         $this->assertEquals('a&#x27;b', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 'a\'b'
+            array('flags' => array()), 'a\'b'
         ))));
         $this->assertEquals('&#x60;a&#x27;b', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), '`a\'b'
+            array('flags' => array()), '`a\'b'
         ))));
     }
 }

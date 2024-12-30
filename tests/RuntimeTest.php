@@ -92,13 +92,13 @@ class RuntimeTest extends TestCase
     public function testOn_enc() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'enc');
         $this->assertEquals('a', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 'a'
+            array('flags' => array()), 'a'
         ))));
         $this->assertEquals('a&amp;b', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 'a&b'
+            array('flags' => array()), 'a&b'
         ))));
         $this->assertEquals('a&#039;b', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 'a\'b'
+            array('flags' => array()), 'a\'b'
         ))));
         $this->assertEquals('a&b', $method->invokeArgs(null, array_by_ref(array(
             null, new \LightnCandy\SafeString('a&b')
@@ -107,91 +107,91 @@ class RuntimeTest extends TestCase
     public function testOn_encq() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'encq');
         $this->assertEquals('a', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 'a'
+            array('flags' => array()), 'a'
         ))));
         $this->assertEquals('a&amp;b', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 'a&b'
+            array('flags' => array()), 'a&b'
         ))));
         $this->assertEquals('a&#x27;b', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 'a\'b'
+            array('flags' => array()), 'a\'b'
         ))));
         $this->assertEquals('&#x60;a&#x27;b', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), '`a\'b'
+            array('flags' => array()), '`a\'b'
         ))));
     }
     public function testOn_sec() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'sec');
         $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), false, null, false, false, function () {return 'A';}
+            array('flags' => array()), false, null, false, false, function () {return 'A';}
         ))));
         $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), null, null, null, false, function () {return 'A';}
+            array('flags' => array()), null, null, null, false, function () {return 'A';}
         ))));
         $this->assertEquals('A', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), true, null, true, false, function () {return 'A';}
+            array('flags' => array()), true, null, true, false, function () {return 'A';}
         ))));
         $this->assertEquals('A', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 0, null, 0, false, function () {return 'A';}
+            array('flags' => array()), 0, null, 0, false, function () {return 'A';}
         ))));
         $this->assertEquals('-a=', $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array(), 'flags' => array('lambda' => 0)), array('a'), null, array('a'), false, function ($c, $i) {return "-$i=";}
+            array('scopes' => array(), 'flags' => array()), array('a'), null, array('a'), false, function ($c, $i) {return "-$i=";}
         ))));
         $this->assertEquals('-a=-b=', $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array(), 'flags' => array('lambda' => 0)), array('a','b'), null, array('a','b'), false, function ($c, $i) {return "-$i=";}
+            array('scopes' => array(), 'flags' => array()), array('a','b'), null, array('a','b'), false, function ($c, $i) {return "-$i=";}
         ))));
         $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array(), 'flags' => array('lambda' => 0)), 'abc', null, 'abc', true, function ($c, $i) {return "-$i=";}
+            array('scopes' => array(), 'flags' => array()), 'abc', null, 'abc', true, function ($c, $i) {return "-$i=";}
         ))));
         $this->assertEquals('-b=', $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array(), 'flags' => array('lambda' => 0)), array('a' => 'b'), null, array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
+            array('scopes' => array(), 'flags' => array()), array('a' => 'b'), null, array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
         ))));
         $this->assertEquals('b', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 'b', null, 'b', false, function ($c, $i) {return print_r($i, true);}
+            array('flags' => array()), 'b', null, 'b', false, function ($c, $i) {return print_r($i, true);}
         ))));
         $this->assertEquals('1', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 1, null, 1, false, function ($c, $i) {return print_r($i, true);}
+            array('flags' => array()), 1, null, 1, false, function ($c, $i) {return print_r($i, true);}
         ))));
         $this->assertEquals('0', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 0, null, 0, false, function ($c, $i) {return print_r($i, true);}
+            array('flags' => array()), 0, null, 0, false, function ($c, $i) {return print_r($i, true);}
         ))));
         $this->assertEquals('{"b":"c"}', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), array('b' => 'c'), null, array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
+            array('flags' => array()), array('b' => 'c'), null, array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
         ))));
         $this->assertEquals('inv', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), array(), null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array()), array(), null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ))));
         $this->assertEquals('inv', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), array(), null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array()), array(), null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ))));
         $this->assertEquals('inv', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), false, null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array()), false, null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ))));
         $this->assertEquals('inv', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), false, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array()), false, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ))));
         $this->assertEquals('inv', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), '', null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array()), '', null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ))));
         $this->assertEquals('cb', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), '', null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array()), '', null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ))));
         $this->assertEquals('inv', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 0, null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array()), 0, null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ))));
         $this->assertEquals('cb', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), 0, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array()), 0, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ))));
         $this->assertEquals('inv', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), new stdClass, null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array()), new stdClass, null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ))));
         $this->assertEquals('cb', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('lambda' => 0)), new stdClass, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array()), new stdClass, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ))));
         $this->assertEquals('268', $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array(), 'flags' => array('lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,4), null, 0, false, function ($c, $i) {return $i * 2;}
+            array('scopes' => array(), 'flags' => array(), 'sp_vars'=>array('root' => 0)), array(1,3,4), null, 0, false, function ($c, $i) {return $i * 2;}
         ))));
         $this->assertEquals('038', $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array(), 'flags' => array('lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), null, 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
+            array('scopes' => array(), 'flags' => array(), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), null, 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
         ))));
     }
     public function testOn_wi() {

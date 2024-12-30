@@ -78,7 +78,6 @@ class Compiler extends Validator
     public static function composePHPRender($context, $code)
     {
         $flagProp = Expression::boolString($context['flags']['prop']);
-        $flagLambda = Expression::boolString($context['flags']['lambda']);
         $flagPartNC = Expression::boolString($context['flags']['partnc']);
         $flagKnownHlp = Expression::boolString($context['flags']['knohlp']);
 
@@ -97,7 +96,6 @@ $stringObject{$safeString}{$use}return function (\$in = null, \$options = null) 
     \$cx = array(
         'flags' => array(
             'prop' => $flagProp,
-            'lambda' => $flagLambda,
             'partnc' => $flagPartNC,
             'knohlp' => $flagKnownHlp,
             'debug' => isset(\$options['debug']) ? \$options['debug'] : $debug,
@@ -189,10 +187,6 @@ VAREND
     {
         $ret = static::customHelper($context, $vars, true, true, true);
 
-        if (($ret === null) && $context['flags']['lambda']) {
-            $ret = static::compileVariable($context, $vars, true, true);
-        }
-
         return array($ret ? $ret : '', 'FIXME: $subExpression');
     }
 
@@ -219,23 +213,23 @@ VAREND
      * @return array<string> variable names
      *
      * @expect array('$in', 'this') when input array('flags'=>array('debug'=>0)), array(null)
-     * @expect array('(($inary && isset($in[\'true\'])) ? $in[\'true\'] : null)', '[true]') when input array('flags'=>array('debug'=>0,'prop'=>0,'lambda'=>0)), array('true')
-     * @expect array('(($inary && isset($in[\'false\'])) ? $in[\'false\'] : null)', '[false]') when input array('flags'=>array('debug'=>0,'prop'=>0,'lambda'=>0)), array('false')
+     * @expect array('(($inary && isset($in[\'true\'])) ? $in[\'true\'] : null)', '[true]') when input array('flags'=>array('debug'=>0,'prop'=>0)), array('true')
+     * @expect array('(($inary && isset($in[\'false\'])) ? $in[\'false\'] : null)', '[false]') when input array('flags'=>array('debug'=>0,'prop'=>0)), array('false')
      * @expect array('true', 'true') when input array('flags'=>array('debug'=>0)), array(-1, 'true')
      * @expect array('false', 'false') when input array('flags'=>array('debug'=>0)), array(-1, 'false')
-     * @expect array('(($inary && isset($in[\'2\'])) ? $in[\'2\'] : null)', '[2]') when input array('flags'=>array('debug'=>0,'prop'=>0,'lambda'=>0)), array('2')
+     * @expect array('(($inary && isset($in[\'2\'])) ? $in[\'2\'] : null)', '[2]') when input array('flags'=>array('debug'=>0,'prop'=>0)), array('2')
      * @expect array('2', '2') when input array('flags'=>array('debug'=>0,'prop'=>0)), array(-1, '2')
-     * @expect array("(isset(\$cx['sp_vars']['index']) ? \$cx['sp_vars']['index'] : null)", '@[index]') when input array('flags'=>array('debug'=>0,'prop'=>0,'lambda'=>0)), array('@index')
-     * @expect array("(isset(\$cx['sp_vars']['key']) ? \$cx['sp_vars']['key'] : null)", '@[key]') when input array('flags'=>array('debug'=>0,'prop'=>0,'lambda'=>0)), array('@key')
-     * @expect array("(isset(\$cx['sp_vars']['first']) ? \$cx['sp_vars']['first'] : null)", '@[first]') when input array('flags'=>array('debug'=>0,'prop'=>0,'lambda'=>0)), array('@first')
-     * @expect array("(isset(\$cx['sp_vars']['last']) ? \$cx['sp_vars']['last'] : null)", '@[last]') when input array('flags'=>array('debug'=>0,'prop'=>0,'lambda'=>0)), array('@last')
-     * @expect array('(($inary && isset($in[\'"a"\'])) ? $in[\'"a"\'] : null)', '["a"]') when input array('flags'=>array('debug'=>0,'prop'=>0,'lambda'=>0)), array('"a"')
+     * @expect array("(isset(\$cx['sp_vars']['index']) ? \$cx['sp_vars']['index'] : null)", '@[index]') when input array('flags'=>array('debug'=>0,'prop'=>0)), array('@index')
+     * @expect array("(isset(\$cx['sp_vars']['key']) ? \$cx['sp_vars']['key'] : null)", '@[key]') when input array('flags'=>array('debug'=>0,'prop'=>0)), array('@key')
+     * @expect array("(isset(\$cx['sp_vars']['first']) ? \$cx['sp_vars']['first'] : null)", '@[first]') when input array('flags'=>array('debug'=>0,'prop'=>0)), array('@first')
+     * @expect array("(isset(\$cx['sp_vars']['last']) ? \$cx['sp_vars']['last'] : null)", '@[last]') when input array('flags'=>array('debug'=>0,'prop'=>0)), array('@last')
+     * @expect array('(($inary && isset($in[\'"a"\'])) ? $in[\'"a"\'] : null)', '["a"]') when input array('flags'=>array('debug'=>0,'prop'=>0)), array('"a"')
      * @expect array('"a"', '"a"') when input array('flags'=>array('debug'=>0)), array(-1, '"a"')
-     * @expect array('(($inary && isset($in[\'a\'])) ? $in[\'a\'] : null)', '[a]') when input array('flags'=>array('debug'=>0,'prop'=>0,'lambda'=>0)), array('a')
-     * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input array('flags'=>array('debug'=>0,'prop'=>0,'lambda'=>0)), array(1,'a')
-     * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input array('flags'=>array('debug'=>0,'prop'=>0,'lambda'=>0)), array(3,'a')
-     * @expect array('(($inary && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]') when input array('flags'=>array('debug'=>0,'prop'=>0,'lambda'=>0)), array(null, 'id')
-     * @expect array('LR::v($cx, $in, isset($in) ? $in : null, array(\'id\'))', 'this.[id]') when input array('flags'=>array('prop'=>true,'debug'=>0,'lambda'=>0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), array(null, 'id')
+     * @expect array('(($inary && isset($in[\'a\'])) ? $in[\'a\'] : null)', '[a]') when input array('flags'=>array('debug'=>0,'prop'=>0)), array('a')
+     * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input array('flags'=>array('debug'=>0,'prop'=>0)), array(1,'a')
+     * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input array('flags'=>array('debug'=>0,'prop'=>0)), array(3,'a')
+     * @expect array('(($inary && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]') when input array('flags'=>array('debug'=>0,'prop'=>0)), array(null, 'id')
+     * @expect array('LR::v($cx, $in, isset($in) ? $in : null, array(\'id\'))', 'this.[id]') when input array('flags'=>array('prop'=>true,'debug'=>0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), array(null, 'id')
      */
     protected static function getVariableName(&$context, $var, $lookup = null, $args = null)
     {
@@ -269,7 +263,7 @@ VAREND
 
         // To support recursive context lookup, instance properties + methods and lambdas
         // the only way is using slower rendering time variable resolver.
-        if ($context['flags']['prop'] || $context['flags']['lambda']) {
+        if ($context['flags']['prop']) {
             $L = Expression::listString($var);
             $L = ($L === '') ? array() : array($L);
             if ($lookup) {
@@ -517,12 +511,7 @@ VAREND
             $be = $bp ? (' as |' . implode(' ', $bp) . '|') : '';
             array_shift($vars);
         }
-        if ($context['flags']['lambda'] && !$isEach) {
-            $V = array_shift($vars);
-            $v = static::getVariableName($context, $V, null, count($vars) ? static::getVariableNames($context, $vars) : array('0',array('')));
-        } else {
-            $v = static::getVariableNameOrSubExpression($context, $vars[0]);
-        }
+        $v = static::getVariableNameOrSubExpression($context, $vars[0]);
         $each = $isEach ? 'true' : 'false';
         return $context['ops']['seperator'] . static::getFuncName($context, 'sec', ($isEach ? 'each ' : '') . $v[1] . $be) . "\$cx, {$v[0]}, $bs, \$in, $each, function(\$cx, \$in) {{$context['ops']['array_check']}{$context['ops']['f_start']}";
     }
@@ -665,12 +654,7 @@ VAREND
      */
     protected static function compileVariable(&$context, &$vars, $raw, $nosep)
     {
-        if ($context['flags']['lambda']) {
-            $V = array_shift($vars);
-            $v = static::getVariableName($context, $V, null, count($vars) ? static::getVariableNames($context, $vars) : array('0',array('')));
-        } else {
-            $v = static::getVariableName($context, $vars[0]);
-        }
+        $v = static::getVariableName($context, $vars[0]);
         return static::compileOutput($context, $v[0], $v[1], $raw, $nosep);
     }
 
