@@ -11,12 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 
 class LightnCandyTest extends TestCase
 {
-    public function testOn_compilePartial() {
-        $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'compilePartial');
-        $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
-            '{{"}}', array()
-        ))));
-    }
     public function testOn_handleError() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'handleError');
         $method->setAccessible(true);

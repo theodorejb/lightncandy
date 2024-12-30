@@ -56,36 +56,6 @@ class LightnCandy extends Flags
     }
 
     /**
-     * Compile handlebars partial into PHP function code.
-     *
-     * @param string $template handlebars template string
-     * @param array<string,array|string|integer> $options LightnCandy compile time and run time options
-     *
-     * @return string|false Compiled PHP code when successful. If error happened and compile failed, return false.
-     *
-     * @expect false when input '{{"}}', array()
-     */
-    public static function compilePartial($template, array $options = [])
-    {
-        $context = Context::create($options);
-
-        if (static::handleError($context)) {
-            return false;
-        }
-
-        $code = Partial::compile($context, SafeString::escapeTemplate($template));
-
-        static::$lastParsed = Compiler::$lastParsed;
-
-        // return false when fatal error
-        if (static::handleError($context)) {
-            return false;
-        }
-
-        return $code;
-    }
-
-    /**
      * Handle exists error and return error status.
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
