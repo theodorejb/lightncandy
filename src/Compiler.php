@@ -107,7 +107,6 @@ $stringObject{$safeString}{$use}return function (\$in = null, \$options = null) 
         'blparam' => array(),
         'partialid' => 0,
     );
-    {$context['renderex']}
     {$context['ops']['array_check']}
     {$context['ops']['op_start']}'$code'{$context['ops']['op_end']}
 };

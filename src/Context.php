@@ -102,7 +102,6 @@ class Context extends Flags
             'partialblock' => array(),
             'inlinepartial' => array(),
             'helpers' => array(),
-            'renderex' => isset($options['renderex']) ? $options['renderex'] : '',
             'safestring' => '\\LightnCandy\\SafeString',
             'safestringalias' => isset($options['safestring']) ? $options['safestring'] : 'LS',
             'rawblock' => false,
