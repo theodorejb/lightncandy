@@ -76,14 +76,6 @@ class usageTest extends TestCase
              array(
                  'template' => 'abc{{this}}',
                  'expected' => array(
-                     'enc' => 1
-                 ),
-             ),
-
-             array(
-                 'template' => 'abc{{this}}',
-                 'options' => array('flags' => LightnCandy::FLAG_THIS),
-                 'expected' => array(
                      'enc' => 1,
                      'this' => 1,
                      'rootthis' => 1,

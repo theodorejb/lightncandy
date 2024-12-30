@@ -58,9 +58,7 @@ class regressionTest extends TestCase
             array(
                 'id' => 46,
                 'template' => '{{{this.id}}}, {{a.id}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_THIS,
-                ),
+                'options' => array(),
                 'data' => array('id' => 'bla bla bla', 'a' => array('id' => 'OK!')),
                 'expected' => 'bla bla bla, OK!'
             ),
@@ -975,7 +973,7 @@ VAREND
                 'template' => '{{#> foo bar}}a,b,{{.}},{{!-- comment --}},d{{/foo}}',
                 'data' => array('bar' => 'BA!'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_THIS | LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_PARENT,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_PARENT,
                     'partials' => array('foo' => 'hello, {{> @partial-block}}')
                 ),
                 'expected' => 'hello, a,b,BA!,,d',
@@ -986,7 +984,7 @@ VAREND
                 'template' => '{{#> foo bar}}{{#if .}}OK! {{.}}{{else}}no bar{{/if}}{{/foo}}',
                 'data' => array('bar' => 'BA!'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_THIS | LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_PARENT,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_PARENT,
                     'partials' => array('foo' => 'hello, {{> @partial-block}}')
                 ),
                 'expected' => 'hello, OK! BA!no bar',
@@ -997,7 +995,7 @@ VAREND
                 'template' => '{{#> foo bar}}{{#if .}}OK! {{.}}{{else}}no bar{{/if}}{{/foo}}',
                 'data' => array('bar' => 'BA!'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_THIS | LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_PARENT | LightnCandy::FLAG_ELSE,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_PARENT | LightnCandy::FLAG_ELSE,
                     'partials' => array('foo' => 'hello, {{> @partial-block}}')
                 ),
                 'expected' => 'hello, OK! BA!',
@@ -1623,7 +1621,7 @@ VAREND
                 'template' => 'A{{#each .}}-{{#each .}}={{.}},{{@key}},{{@index}},{{@../index}}~{{/each}}%{{/each}}B',
                 'data' => array(array('a' => 'b'), array('c' => 'd'), array('e' => 'f')),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_PARENT | LightnCandy::FLAG_THIS | LightnCandy::FLAG_SPVARS,
+                    'flags' => LightnCandy::FLAG_PARENT | LightnCandy::FLAG_SPVARS,
                 ),
                 'expected' => 'A-=b,a,0,0~%-=d,c,0,1~%-=f,e,0,2~%B',
             ),
@@ -1702,14 +1700,14 @@ VAREND
 
             array(
                 'template' => '-{{.}}-',
-                'options' => array('flags' => LightnCandy::FLAG_THIS),
+                'options' => array(),
                 'data' => 'abc',
                 'expected' => '-abc-',
             ),
 
             array(
                 'template' => '-{{this}}-',
-                'options' => array('flags' => LightnCandy::FLAG_THIS),
+                'options' => array(),
                 'data' => 123,
                 'expected' => '-123-',
             ),

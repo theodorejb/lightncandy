@@ -45,7 +45,6 @@ class Context extends Flags
                 'exception' => $flags & static::FLAG_ERROR_EXCEPTION,
                 'noesc' => $flags & static::FLAG_NOESCAPE,
                 'hbesc' => $flags & static::FLAG_HBESCAPE,
-                'this' => $flags & static::FLAG_THIS,
                 'parent' => $flags & static::FLAG_PARENT,
                 'advar' => $flags & static::FLAG_ADVARNAME,
                 'namev' => $flags & static::FLAG_NAMEDARG,
