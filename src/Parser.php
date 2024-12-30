@@ -90,19 +90,19 @@ class Parser extends Token
      * @return array<integer,string> Return variable name array
      *
      * @expect array() when input 'this', array('flags' => array('strpar' => 0, 'advar' => 0)), 0
-     * @expect array(1) when input '..', array('flags' => array('strpar' => 0, 'advar' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(1) when input '../', array('flags' => array('strpar' => 0, 'advar' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(1) when input '../.', array('flags' => array('strpar' => 0, 'advar' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(1) when input '../this', array('flags' => array('strpar' => 0, 'advar' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(1, 'a') when input '../a', array('flags' => array('strpar' => 0, 'advar' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(2, 'a', 'b') when input '../../a.b', array('flags' => array('strpar' => 0, 'advar' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(2, '[a]', 'b') when input '../../[a].b', array('flags' => array('strpar' => 0, 'advar' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(2, 'a', 'b') when input '../../[a].b', array('flags' => array('strpar' => 0, 'advar' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(0, 'id') when input 'this.id', array('flags' => array('strpar' => 0, 'advar' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(0, 'id') when input './id', array('flags' => array('strpar' => 0, 'advar' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(\LightnCandy\Parser::LITERAL, '\'a.b\'') when input '"a.b"', array('flags' => array('strpar' => 0, 'advar' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
-     * @expect array(\LightnCandy\Parser::LITERAL, '123') when input '123', array('flags' => array('strpar' => 0, 'advar' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
-     * @expect array(\LightnCandy\Parser::LITERAL, 'null') when input 'null', array('flags' => array('strpar' => 0, 'advar' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
+     * @expect array(1) when input '..', array('flags' => array('strpar' => 0, 'advar' => 0), 'usedFeature' => array('parent' => 0)), 0
+     * @expect array(1) when input '../', array('flags' => array('strpar' => 0, 'advar' => 0), 'usedFeature' => array('parent' => 0)), 0
+     * @expect array(1) when input '../.', array('flags' => array('strpar' => 0, 'advar' => 0), 'usedFeature' => array('parent' => 0)), 0
+     * @expect array(1) when input '../this', array('flags' => array('strpar' => 0, 'advar' => 0), 'usedFeature' => array('parent' => 0)), 0
+     * @expect array(1, 'a') when input '../a', array('flags' => array('strpar' => 0, 'advar' => 0), 'usedFeature' => array('parent' => 0)), 0
+     * @expect array(2, 'a', 'b') when input '../../a.b', array('flags' => array('strpar' => 0, 'advar' => 0), 'usedFeature' => array('parent' => 0)), 0
+     * @expect array(2, '[a]', 'b') when input '../../[a].b', array('flags' => array('strpar' => 0, 'advar' => 0), 'usedFeature' => array('parent' => 0)), 0
+     * @expect array(2, 'a', 'b') when input '../../[a].b', array('flags' => array('strpar' => 0, 'advar' => 1), 'usedFeature' => array('parent' => 0)), 0
+     * @expect array(0, 'id') when input 'this.id', array('flags' => array('strpar' => 0, 'advar' => 1), 'usedFeature' => array('parent' => 0)), 0
+     * @expect array(0, 'id') when input './id', array('flags' => array('strpar' => 0, 'advar' => 1), 'usedFeature' => array('parent' => 0)), 0
+     * @expect array(\LightnCandy\Parser::LITERAL, '\'a.b\'') when input '"a.b"', array('flags' => array('strpar' => 0, 'advar' => 1), 'usedFeature' => array('parent' => 0)), 1
+     * @expect array(\LightnCandy\Parser::LITERAL, '123') when input '123', array('flags' => array('strpar' => 0, 'advar' => 1), 'usedFeature' => array('parent' => 0)), 1
+     * @expect array(\LightnCandy\Parser::LITERAL, 'null') when input 'null', array('flags' => array('strpar' => 0, 'advar' => 1), 'usedFeature' => array('parent' => 0)), 1
      */
     protected static function getExpression($v, &$context, $pos)
     {
@@ -148,9 +148,6 @@ class Parser extends Token
         $strp = (($pos !== 0) && $context['flags']['strpar']);
         if ($levels && !$strp) {
             $ret[] = $levels;
-            if (!$context['flags']['parent']) {
-                $context['error'][] = 'Do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
-            }
             $context['usedFeature']['parent'] ++;
         }
 

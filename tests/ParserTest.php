@@ -18,43 +18,43 @@ class ParserTest extends TestCase
             'this', array('flags' => array('strpar' => 0, 'advar' => 0)), 0
         ))));
         $this->assertEquals(array(1), $method->invokeArgs(null, array_by_ref(array(
-            '..', array('flags' => array('strpar' => 0, 'advar' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+            '..', array('flags' => array('strpar' => 0, 'advar' => 0), 'usedFeature' => array('parent' => 0)), 0
         ))));
         $this->assertEquals(array(1), $method->invokeArgs(null, array_by_ref(array(
-            '../', array('flags' => array('strpar' => 0, 'advar' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+            '../', array('flags' => array('strpar' => 0, 'advar' => 0), 'usedFeature' => array('parent' => 0)), 0
         ))));
         $this->assertEquals(array(1), $method->invokeArgs(null, array_by_ref(array(
-            '../.', array('flags' => array('strpar' => 0, 'advar' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+            '../.', array('flags' => array('strpar' => 0, 'advar' => 0), 'usedFeature' => array('parent' => 0)), 0
         ))));
         $this->assertEquals(array(1), $method->invokeArgs(null, array_by_ref(array(
-            '../this', array('flags' => array('strpar' => 0, 'advar' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+            '../this', array('flags' => array('strpar' => 0, 'advar' => 0), 'usedFeature' => array('parent' => 0)), 0
         ))));
         $this->assertEquals(array(1, 'a'), $method->invokeArgs(null, array_by_ref(array(
-            '../a', array('flags' => array('strpar' => 0, 'advar' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+            '../a', array('flags' => array('strpar' => 0, 'advar' => 0), 'usedFeature' => array('parent' => 0)), 0
         ))));
         $this->assertEquals(array(2, 'a', 'b'), $method->invokeArgs(null, array_by_ref(array(
-            '../../a.b', array('flags' => array('strpar' => 0, 'advar' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+            '../../a.b', array('flags' => array('strpar' => 0, 'advar' => 0), 'usedFeature' => array('parent' => 0)), 0
         ))));
         $this->assertEquals(array(2, '[a]', 'b'), $method->invokeArgs(null, array_by_ref(array(
-            '../../[a].b', array('flags' => array('strpar' => 0, 'advar' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+            '../../[a].b', array('flags' => array('strpar' => 0, 'advar' => 0), 'usedFeature' => array('parent' => 0)), 0
         ))));
         $this->assertEquals(array(2, 'a', 'b'), $method->invokeArgs(null, array_by_ref(array(
-            '../../[a].b', array('flags' => array('strpar' => 0, 'advar' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+            '../../[a].b', array('flags' => array('strpar' => 0, 'advar' => 1), 'usedFeature' => array('parent' => 0)), 0
         ))));
         $this->assertEquals(array(0, 'id'), $method->invokeArgs(null, array_by_ref(array(
-            'this.id', array('flags' => array('strpar' => 0, 'advar' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+            'this.id', array('flags' => array('strpar' => 0, 'advar' => 1), 'usedFeature' => array('parent' => 0)), 0
         ))));
         $this->assertEquals(array(0, 'id'), $method->invokeArgs(null, array_by_ref(array(
-            './id', array('flags' => array('strpar' => 0, 'advar' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+            './id', array('flags' => array('strpar' => 0, 'advar' => 1), 'usedFeature' => array('parent' => 0)), 0
         ))));
         $this->assertEquals(array(\LightnCandy\Parser::LITERAL, '\'a.b\''), $method->invokeArgs(null, array_by_ref(array(
-            '"a.b"', array('flags' => array('strpar' => 0, 'advar' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
+            '"a.b"', array('flags' => array('strpar' => 0, 'advar' => 1), 'usedFeature' => array('parent' => 0)), 1
         ))));
         $this->assertEquals(array(\LightnCandy\Parser::LITERAL, '123'), $method->invokeArgs(null, array_by_ref(array(
-            '123', array('flags' => array('strpar' => 0, 'advar' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
+            '123', array('flags' => array('strpar' => 0, 'advar' => 1), 'usedFeature' => array('parent' => 0)), 1
         ))));
         $this->assertEquals(array(\LightnCandy\Parser::LITERAL, 'null'), $method->invokeArgs(null, array_by_ref(array(
-            'null', array('flags' => array('strpar' => 0, 'advar' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
+            'null', array('flags' => array('strpar' => 0, 'advar' => 1), 'usedFeature' => array('parent' => 0)), 1
         ))));
     }
     public function testOn_parse() {

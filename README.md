@@ -69,7 +69,6 @@ LightnCandy::compile($template, array(
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RENDER_DEBUG.html">FLAG_RENDER_DEBUG</a>
 
 **Handlebars Compatibility**
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_PARENT.html">FLAG_PARENT</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_HBESCAPE.html">FLAG_HBESCAPE</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ADVARNAME.html">FLAG_ADVARNAME</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NAMEDARG.html">FLAG_NAMEDARG</a>
@@ -77,7 +76,7 @@ LightnCandy::compile($template, array(
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ELSE.html">FLAG_ELSE</a>
 * `FLAG_HANDLEBARSLAMBDA` : support lambda logic as handlebars.js specification. And, the rendering performance will be worse.
 * `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
-* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_PARENT` + `FLAG_HBESCAPE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG` + `FLAG_SPVARS` + `FLAG_SLASH` + `FLAG_ELSE`.
+* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_HBESCAPE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG` + `FLAG_SPVARS` + `FLAG_SLASH` + `FLAG_ELSE`.
 * `FLAG_HANDLEBARSJS` : support most handlebars.js + javascript behaviors and also keep performance good, same as `FLAG_HANDLEBARS`.
 * `FLAG_HANDLEBARSJS_FULL` : enable all supported handlebars.js behaviors but performance drop, same with `FLAG_HANDLEBARSJS` + `FLAG_RUNTIMEPARTIAL` + `FLAG_HANDLEBARSLAMBDA`.
 
@@ -460,7 +459,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#with var}}` : change context scope. If the var is false or an empty array, skip included section.
 * `{{#with bar as |foo|}}` : change context to bar and set the value as foo. (require `FLAG_ADVARNAME`)
 * `{{lookup foo bar}}` : lookup foo by value of bar as key.
-* `{{../var}}` : parent template scope. (require `FLAG_PARENT`)
+* `{{../var}}` : parent template scope.
 * `{{>file}}` : partial; include another template inside a template.
 * `{{>file foo}}` : partial with new context (require `FLAG_RUNTIMEPARTIAL`)
 * `{{>file foo bar=another}}` : partial with new context which mixed with followed key value (require `FLAG_RUNTIMEPARTIAL`)
@@ -471,8 +470,8 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{@first}}` : true when looping at first item. (require `FLAG_SPVARS`)
 * `{{@last}}` : true when looping at last item. (require `FLAG_SPVARS`)
 * `{{@root.path.to.value}}` : references to root context then follow the path. (require `FLAG_SPVARS`)
-* `{{@../index}}` : access to parent loop index. (require `FLAG_SPVARS` and `FLAG_PARENT`)
-* `{{@../key}}` : access to parent loop key. (require `FLAG_SPVARS` and `FLAG_PARENT`)
+* `{{@../index}}` : access to parent loop index. (require `FLAG_SPVARS`)
+* `{{@../key}}` : access to parent loop key. (require `FLAG_SPVARS`)
 * `{{foo.[ba.r].[#spec].0.ok}}` : references to $CurrentConext['foo']['ba.r']['#spec'][0]['ok'] . (require `FLAG_ADVARNAME`)
 * `{{~any_valid_tag}}` : Space control, remove all previous spacing (includes CR/LF, tab, space; stop on any none spacing character)
 * `{{any_valid_tag~}}` : Space control, remove all next spacing (includes CR/LF, tab, space; stop on any none spacing character)

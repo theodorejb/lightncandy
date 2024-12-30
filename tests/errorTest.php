@@ -382,14 +382,6 @@ class errorTest extends TestCase
                 'expected' => 'Unexpect token {{/bar}} ! Previous token {{#[foo]}} is not closed',
             ),
             array(
-                'template' => '{{../foo}}',
-                'expected' => 'Do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag',
-            ),
-            array(
-                'template' => '{{..}}',
-                'expected' => 'Do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag',
-            ),
-            array(
                 'template' => '{{test_join [a]=b}}',
                 'options' => array(
                     'flags' => LightnCandy::FLAG_NAMEDARG,
