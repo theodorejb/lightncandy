@@ -24,7 +24,7 @@ $partials = array(
 
 $phpStr = LightnCandy::compile($template, array(
   // Used compile flags
-  'flags' => LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_HANDLEBARS,
+  'flags' => LightnCandy::FLAG_ERROR_EXCEPTION,
   'helpers' => $helpers,
   'partials' => $partials,
 ));

@@ -61,11 +61,11 @@ class LightnCandy extends Flags
      * @param string $template handlebars template string
      * @param array<string,array|string|integer> $options LightnCandy compile time and run time options
      *
-     * @return string|false Compiled PHP code when successed. If error happened and compile failed, return false.
+     * @return string|false Compiled PHP code when successful. If error happened and compile failed, return false.
      *
-     * @expect false when input '{{"}}', array('flags' => LightnCandy::FLAG_HANDLEBARS)
+     * @expect false when input '{{"}}', array()
      */
-    public static function compilePartial($template, $options = array('flags' => 0))
+    public static function compilePartial($template, array $options = [])
     {
         $context = Context::create($options);
 

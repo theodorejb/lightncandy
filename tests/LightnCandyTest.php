@@ -14,7 +14,7 @@ class LightnCandyTest extends TestCase
     public function testOn_compilePartial() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'compilePartial');
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
-            '{{"}}', array('flags' => LightnCandy::FLAG_HANDLEBARS)
+            '{{"}}', array()
         ))));
     }
     public function testOn_handleError() {

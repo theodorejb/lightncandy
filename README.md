@@ -70,8 +70,7 @@ LightnCandy::compile($template, array(
 
 **Handlebars Compatibility**
 * `FLAG_HANDLEBARSLAMBDA` : support lambda logic as handlebars.js specification. And, the rendering performance will be worse.
-* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good.
-* `FLAG_HANDLEBARSJS` : support most handlebars.js + javascript behaviors and also keep performance good, same as `FLAG_HANDLEBARS`.
+* `FLAG_HANDLEBARSJS` : support most handlebars.js + javascript behaviors and also keep performance good.
 * `FLAG_HANDLEBARSJS_FULL` : enable all supported handlebars.js behaviors but performance drop, same with `FLAG_HANDLEBARSJS` + `FLAG_RUNTIMEPARTIAL` + `FLAG_HANDLEBARSLAMBDA`.
 
 **Handlebars Options**

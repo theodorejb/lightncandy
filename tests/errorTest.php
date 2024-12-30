@@ -109,7 +109,7 @@ class errorTest extends TestCase
              array(
                  'template' => "{{#> testPartial}}\n  {{#> innerPartial}}\n   {{> @partial-block}}\n  {{/innerPartial}}\n{{/testPartial}}",
                  'options' => array(
-                   'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                   'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                    'partials' => array(
                      'testPartial' => 'testPartial => {{> @partial-block}} <=',
                      'innerPartial' => 'innerPartial -> {{> @partial-block}} <-',
@@ -120,7 +120,7 @@ class errorTest extends TestCase
              array(
                  'template' => '{{> @partial-block}}',
                  'options' => array(
-                   'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                   'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                  ),
                  'expected' => "Can not find partial named as '@partial-block' !!",
              ),

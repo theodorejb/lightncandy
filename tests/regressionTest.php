@@ -879,7 +879,7 @@ VAREND
                 'template' => '{{#> test name="A"}}B{{/test}}{{#> test name="C"}}D{{/test}}',
                 'data' => array('bar' => true),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'test' => '{{name}}:{{> @partial-block}},',
                     )
@@ -891,9 +891,6 @@ VAREND
                 'id' => 206,
                 'template' => '{{#with bar}}{{#../foo}}YES!{{/../foo}}{{/with}}',
                 'data' => array('foo' => 999, 'bar' => true),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
-                ),
                 'expected' => 'YES!',
             ),
 
@@ -902,7 +899,6 @@ VAREND
                 'template' => '{{#if foo}}foo{{else if bar}}{{#moo moo}}moo{{/moo}}{{/if}}',
                 'data' => array('foo' => true),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helpers' => array(
                         'moo' => function($arg1) {
                             return ($arg1 === null);
@@ -916,9 +912,6 @@ VAREND
                 'id' => 213,
                 'template' => '{{#with .}}bad{{else}}Good!{{/with}}',
                 'data' => array(),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
-                ),
                 'expected' => 'Good!',
             ),
 
@@ -988,7 +981,6 @@ VAREND
                 'id' => 227,
                 'template' => '{{#if moo}}A{{else if bar}}B{{else foo}}C{{/if}}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_ERROR_EXCEPTION,
                     'helpers' => array(
                         'foo' => function($options) {
                             return $options['fn']();
@@ -1002,9 +994,6 @@ VAREND
                 'id' => 227,
                 'template' => '{{#if moo}}A{{else if bar}}B{{else with foo}}C{{.}}{{/if}}',
                 'data' => array('foo' => 'D'),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_ERROR_EXCEPTION
-                ),
                 'expected' => 'CD'
             ),
 
@@ -1012,9 +1001,6 @@ VAREND
                 'id' => 227,
                 'template' => '{{#if moo}}A{{else if bar}}B{{else each foo}}C{{.}}{{/if}}',
                 'data' => array('foo' => array(1, 3, 5)),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_ERROR_EXCEPTION
-                ),
                 'expected' => 'C1C3C5'
             ),
 
@@ -1022,9 +1008,6 @@ VAREND
                 'id' => 229,
                 'template' => '{{#if foo.bar.moo}}TRUE{{else}}FALSE{{/if}}',
                 'data' => array(),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_ERROR_EXCEPTION
-                ),
                 'expected' => 'FALSE'
             ),
 
@@ -1033,7 +1016,6 @@ VAREND
                 'template' => '{{#if foo}}FOO{{else}}BAR{{/if}}',
                 'data' => array(),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helpers' => array(
                         'if' => function($arg, $options) {
                             return $options['fn']();
@@ -1048,7 +1030,7 @@ VAREND
                 'template' => '{{> (lookup foo 2)}}',
                 'data' => array('foo' => array('a', 'b', 'c')),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'a' => '1st',
                         'b' => '2nd',
@@ -1063,7 +1045,7 @@ VAREND
                 'template' => '{{#> "myPartial"}}{{#> myOtherPartial}}{{ @root.foo}}{{/myOtherPartial}}{{/"myPartial"}}',
                 'data' => array('foo' => 'hello!'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'myPartial' => '<div>outer {{> @partial-block}}</div>',
                         'myOtherPartial' => '<div>inner {{> @partial-block}}</div>'
@@ -1076,7 +1058,7 @@ VAREND
                 'id' => 236,
                 'template' => 'A{{#> foo}}B{{#> bar}}C{{>moo}}D{{/bar}}E{{/foo}}F',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_HANDLEBARS,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'foo' => 'FOO>{{> @partial-block}}<FOO',
                         'bar' => 'bar>{{> @partial-block}}<bar',
@@ -1104,9 +1086,6 @@ VAREND
                 'id' => 243,
                 'template' => '{{lookup . 3}}',
                 'data' => array('3' => 'OK'),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
-                ),
                 'expected' => 'OK'
             ),
 
@@ -1114,9 +1093,6 @@ VAREND
                 'id' => 243,
                 'template' => '{{lookup . "test"}}',
                 'data' => array('test' => 'OK'),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
-                ),
                 'expected' => 'OK'
             ),
 
@@ -1125,7 +1101,7 @@ VAREND
                 'template' => '{{#>outer}}content{{/outer}}',
                 'data' => array('test' => 'OK'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'outer' => 'outer+{{#>nested}}~{{>@partial-block}}~{{/nested}}+outer-end',
                         'nested' => 'nested={{>@partial-block}}=nested-end'
@@ -1141,9 +1117,6 @@ VAREND
                     array('bar' => 1),
                     array('bar' => 2),
                 )),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
-                ),
                 'expected' => '1-2-'
             ),
 
@@ -1155,7 +1128,6 @@ VAREND
                     array(3, 5)
                 )),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helpers' => array(
                         'foo' => function($arg1) {
                             return is_array($arg1) ? 'OK' : 'bad';
@@ -1170,7 +1142,6 @@ VAREND
                 'template' => '{{foo.bar}}',
                 'data' => array('foo' => array('bar' => 'OK!')),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helpers' => array(
                         'foo' => function() {
                             return 'bad';
@@ -1184,9 +1155,6 @@ VAREND
                 'id' => 254,
                 'template' => '{{#if a}}a{{else if b}}b{{else}}c{{/if}}{{#if a}}a{{else if b}}b{{/if}}',
                 'data' => array('b' => 1),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS
-                ),
                 'expected' => 'bb'
             ),
 
@@ -1213,7 +1181,6 @@ VAREND
                 'id' => 257,
                 'template' => '{{foo a=(foo a=(foo a="ok"))}}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helpers' => array(
                         'foo' => function($opt) {
                             return $opt['hash']['a'];
@@ -1227,9 +1194,6 @@ VAREND
                 'id' => 261,
                 'template' => '{{#each foo as |bar|}}?{{bar.0}}{{/each}}',
                 'data' => array('foo' => array(array('a'), array('b'))),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS
-                ),
                 'expected' => '?a?b'
             ),
 
@@ -1238,7 +1202,7 @@ VAREND
                 'template' => '{{#each . as |v k|}}#{{k}}>{{v}}|{{.}}{{/each}}',
                 'data' => array('a' => 'b', 'c' => 'd'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_PROPERTY,
+                    'flags' => LightnCandy::FLAG_PROPERTY,
                 ),
                 'expected' => '#a>b|b#c>d|d'
             ),
@@ -1247,7 +1211,6 @@ VAREND
                 'id' => 268,
                 'template' => '{{foo}}{{bar}}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helpers' => array(
                         'foo' => function($opt) {
                             $opt['_this']['change'] = true;
@@ -1271,9 +1234,6 @@ VAREND
                          array('bar' => true, 'moo' => 'D'),
                     )
                 ),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
-                ),
                 'expected' => '-=-=--=D'
             ),
 
@@ -1281,7 +1241,6 @@ VAREND
                 'id' => 281,
                 'template' => '{{echo (echo "foo bar (moo).")}}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helpers' => array(
                         'echo' => function($arg1) {
                             return "ECHO: $arg1";
@@ -1306,7 +1265,7 @@ VAREND
                 'template' => '{{> (lookup foo 2)}}',
                 'data' => array('foo' => array('a', 'b', 'c')),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'a' => '1st',
                         'b' => '2nd',
@@ -1428,7 +1387,7 @@ VAREND
                 'id' => 302,
                 'template' => "{{#*inline \"t1\"}}{{#if imageUrl}}<span />{{else}}<div />{{/if}}{{/inline}}{{#*inline \"t2\"}}{{#if imageUrl}}<span />{{else}}<div />{{/if}}{{/inline}}{{#*inline \"t3\"}}{{#if imageUrl}}<span />{{else}}<div />{{/if}}{{/inline}}",
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                 ),
                 'expected' => '',
             ),
@@ -1437,7 +1396,7 @@ VAREND
                 'id' => 303,
                 'template' => '{{#*inline "t1"}} {{#if url}} <a /> {{else if imageUrl}} <img /> {{else}} <span /> {{/if}} {{/inline}}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                 ),
                 'expected' => ''
             ),
@@ -1446,7 +1405,6 @@ VAREND
                 'id' => 315,
                 'template' => '{{#each foo}}#{{@key}}({{@index}})={{.}}-{{moo}}-{{@irr}}{{/each}}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_ERROR_EXCEPTION,
                     'helpers' => array(
                         'moo' => function($opts) {
                             $opts['data']['irr'] = '123';
@@ -1467,9 +1425,6 @@ VAREND
             array(
                 'template' => '{{#each . as |v k|}}#{{k}}{{/each}}',
                 'data' => array('a' => array(), 'c' => array()),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS
-                ),
                 'expected' => '#a#c'
             ),
 
@@ -1892,14 +1847,12 @@ VAREND
 
             array(
                 'template' => "   {{#if foo}}\nYES\n{{else}}\nNO\n{{/if}}\n",
-                'options' => array('flags' => LightnCandy::FLAG_HANDLEBARS),
                 'expected' => "NO\n",
             ),
 
             array(
                 'template' => "  {{#each foo}}\n{{@key}}: {{.}}\n{{/each}}\nDONE",
                 'data' => array('foo' => array('a' => 'A', 'b' => 'BOY!')),
-                'options' => array('flags' => LightnCandy::FLAG_HANDLEBARS),
                 'expected' => "a: A\nb: BOY!\nDONE",
             ),
 
@@ -2017,7 +1970,7 @@ VAREND
             array(
                 'template' => "{{#> testPartial}}\n ERROR: testPartial is not found!\n  {{#> innerPartial}}\n   ERROR: innerPartial is not found!\n   ERROR: innerPartial is not found!\n  {{/innerPartial}}\n ERROR: testPartial is not found!\n {{/testPartial}}",
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                 ),
                 'expected' => " ERROR: testPartial is not found!\n   ERROR: innerPartial is not found!\n   ERROR: innerPartial is not found!\n ERROR: testPartial is not found!\n",
             ),
