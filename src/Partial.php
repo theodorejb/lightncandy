@@ -64,7 +64,7 @@ class Partial
         }
 
         if (!$isPB) {
-            $context['error'][] = "Can not find partial for '$name', you should provide partials or partialresolver in options";
+            $context['error'][] = "Can not find partial for '$name', you should provide partials in options";
         }
     }
 
@@ -100,24 +100,6 @@ class Partial
         }
         if (isset($context['partials'][$name])) {
             return static::prePartial($context, $context['partials'][$name], $name);
-        }
-
-        return static::resolver($context, $name);
-    }
-
-    /**
-     * use partialresolver to resolve partial, return the partial content
-     *
-     * @param array<string,array|string|integer> $context Current context of compiler progress.
-     * @param string $name partial name
-     *
-     * @return string|null $content partial content
-     */
-    public static function resolver(&$context, &$name)
-    {
-        if ($context['partialresolver']) {
-            $cnt = $context['partialresolver']($context, $name);
-            return static::prePartial($context, $cnt, $name);
         }
     }
 

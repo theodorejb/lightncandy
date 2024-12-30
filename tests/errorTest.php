@@ -406,7 +406,7 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{>not_found}}',
-                'expected' => "Can not find partial for 'not_found', you should provide partials or partialresolver in options",
+                'expected' => "Can not find partial for 'not_found', you should provide partials in options",
             ),
             array(
                 'template' => '{{>tests/test1 foo}}',

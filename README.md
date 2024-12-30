@@ -92,7 +92,6 @@ Partial Support
 * <a href="https://zordius.github.io/HandlebarsCookbook/0011-partial.html">Example of compile time partial</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/0024-partialcontext.html">Example of partial context changing</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/0028-dynamicpartial.html">use dynamic partial</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/9902-lcop-partialresolver.html">The partialresolver option</a>
 
 Custom Helper
 -------------

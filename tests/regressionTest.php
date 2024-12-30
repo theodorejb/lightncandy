@@ -2015,16 +2015,6 @@ VAREND
             ),
 
             array(
-                'template' => '{{>foo}} and {{>bar}}',
-                'options' => array(
-                    'partialresolver' => function ($context, $name) {
-                        return "PARTIAL: $name";
-                    }
-                ),
-                'expected' => 'PARTIAL: foo and PARTIAL: bar',
-            ),
-
-            array(
                 'template' => "{{#> testPartial}}\n ERROR: testPartial is not found!\n  {{#> innerPartial}}\n   ERROR: innerPartial is not found!\n   ERROR: innerPartial is not found!\n  {{/innerPartial}}\n ERROR: testPartial is not found!\n {{/testPartial}}",
                 'options' => array(
                     'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
