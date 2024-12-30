@@ -357,7 +357,6 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{a=b}}',
-                'options' => array('flags' => LightnCandy::FLAG_NAMEDARG),
                 'expected' => 'Do not support name=value in {{a=b}}, you should use it after a custom helper.',
             ),
             array(
@@ -557,12 +556,6 @@ class errorTest extends TestCase
                 ),
                 'expected' => array(
                     'Unclosed token {{#2}} !!',
-                )
-            ),
-            array(
-                'template' => '{{foo a=b}}',
-                'expected' => array(
-                    "Wrong variable naming as 'a=b' in {{foo a=b}} ! If you try to use foo=bar param, you should enable LightnCandy::FLAG_NAMEDARG !",
                 )
             ),
         );

@@ -192,31 +192,31 @@ class Parser extends Token
      *
      * @return array<boolean|integer|array> Return parsed result
      *
-     * @expect array(false, array(array())) when input array(0,0,0,0,0,0,0,''), array('flags' => array('strpar' => 0, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(true, array(array())) when input array(0,0,0,'{{',0,'{',0,''), array('flags' => array('strpar' => 0, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(true, array(array())) when input array(0,0,0,0,0,0,0,''), array('flags' => array('strpar' => 0, 'namev' => 0, 'noesc' => 1), 'rawblock' => false)
-     * @expect array(false, array(array('a'))) when input array(0,0,0,0,0,0,0,'a'), array('flags' => array('strpar' => 0, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), array('b'))) when input array(0,0,0,0,0,0,0,'a  b'), array('flags' => array('strpar' => 0, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), array(-1, '\'b c\''))) when input array(0,0,0,0,0,0,0,'a "b c"'), array('flags' => array('strpar' => 0, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), array('b c'))) when input array(0,0,0,0,0,0,0,'a [b c]'), array('flags' => array('strpar' => 0, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), array('b c'))) when input array(0,0,0,0,0,0,0,'a [b c]'), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), 'q' => array('b c'))) when input array(0,0,0,0,0,0,0,'a q=[b c]'), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), array('q=[b c'))) when input array(0,0,0,0,0,0,0,'a [q=[b c]'), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), 'q' => array('b'), array('c'))) when input array(0,0,0,0,0,0,0,'a [q]=b c'), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), 'q' => array(-1, '\'b c\''))) when input array(0,0,0,0,0,0,0,'a q="b c"'), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array(-2, array(array('foo'), array('bar')), '(foo bar)'))) when input array(0,0,0,0,0,0,0,'(foo bar)'), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('foo'), array("'=='"), array('bar'))) when input array(0,0,0,0,0,0,0,"foo '==' bar"), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array(-2, array(array('foo'), array('bar')), '( foo bar)'))) when input array(0,0,0,0,0,0,0,'( foo bar)'), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), array(-1, '\' b c\''))) when input array(0,0,0,0,0,0,0,'a " b c"'), array('flags' => array('strpar' => 0, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), 'q' => array(-1, '\' b c\''))) when input array(0,0,0,0,0,0,0,'a q=" b c"'), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('foo'), array(-1, "' =='"), array('bar'))) when input array(0,0,0,0,0,0,0,"foo \' ==\' bar"), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), array(' b c'))) when input array(0,0,0,0,0,0,0,'a [ b c]'), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), 'q' => array(-1, "' d e'"))) when input array(0,0,0,0,0,0,0,"a q=\' d e\'"), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array('q' => array(-2, array(array('foo'), array('bar')), '( foo bar)'))) when input array(0,0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','foo'), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','"foo"'), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','[foo] '), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','\\\'foo\\\''), array('flags' => array('strpar' => 0, 'namev' => 1, 'noesc' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
+     * @expect array(false, array(array())) when input array(0,0,0,0,0,0,0,''), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(true, array(array())) when input array(0,0,0,'{{',0,'{',0,''), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(true, array(array())) when input array(0,0,0,0,0,0,0,''), array('flags' => array('strpar' => 0, 'noesc' => 1), 'rawblock' => false)
+     * @expect array(false, array(array('a'))) when input array(0,0,0,0,0,0,0,'a'), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), array('b'))) when input array(0,0,0,0,0,0,0,'a  b'), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), array(-1, '\'b c\''))) when input array(0,0,0,0,0,0,0,'a "b c"'), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), array('b c'))) when input array(0,0,0,0,0,0,0,'a [b c]'), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), array('b c'))) when input array(0,0,0,0,0,0,0,'a [b c]'), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), 'q' => array('b c'))) when input array(0,0,0,0,0,0,0,'a q=[b c]'), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), array('q=[b c'))) when input array(0,0,0,0,0,0,0,'a [q=[b c]'), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), 'q' => array('b'), array('c'))) when input array(0,0,0,0,0,0,0,'a [q]=b c'), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), 'q' => array(-1, '\'b c\''))) when input array(0,0,0,0,0,0,0,'a q="b c"'), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array(-2, array(array('foo'), array('bar')), '(foo bar)'))) when input array(0,0,0,0,0,0,0,'(foo bar)'), array('flags' => array('strpar' => 0, 'noesc' => 0, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('foo'), array("'=='"), array('bar'))) when input array(0,0,0,0,0,0,0,"foo '==' bar"), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array(-2, array(array('foo'), array('bar')), '( foo bar)'))) when input array(0,0,0,0,0,0,0,'( foo bar)'), array('flags' => array('strpar' => 0, 'noesc' => 0, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), array(-1, '\' b c\''))) when input array(0,0,0,0,0,0,0,'a " b c"'), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), 'q' => array(-1, '\' b c\''))) when input array(0,0,0,0,0,0,0,'a q=" b c"'), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('foo'), array(-1, "' =='"), array('bar'))) when input array(0,0,0,0,0,0,0,"foo \' ==\' bar"), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), array(' b c'))) when input array(0,0,0,0,0,0,0,'a [ b c]'), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), 'q' => array(-1, "' d e'"))) when input array(0,0,0,0,0,0,0,"a q=\' d e\'"), array('flags' => array('strpar' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array('q' => array(-2, array(array('foo'), array('bar')), '( foo bar)'))) when input array(0,0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('strpar' => 0, 'noesc' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','foo'), array('flags' => array('strpar' => 0, 'noesc' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','"foo"'), array('flags' => array('strpar' => 0, 'noesc' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','[foo] '), array('flags' => array('strpar' => 0, 'noesc' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','\\\'foo\\\''), array('flags' => array('strpar' => 0, 'noesc' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
      */
     public static function parse(&$token, &$context)
     {
@@ -271,7 +271,7 @@ class Parser extends Token
      *
      * @return array<boolean|integer|array> Return parsed result
      *
-     * @expect array(\LightnCandy\Parser::SUBEXP, array(array('a'), array('b')), '(a b)') when input '(a b)', array('usedFeature' => array('subexp' => 0), 'flags' => array('namev' => 0, 'strpar' => 0))
+     * @expect array(\LightnCandy\Parser::SUBEXP, array(array('a'), array('b')), '(a b)') when input '(a b)', array('usedFeature' => array('subexp' => 0), 'flags' => array('strpar' => 0))
      */
     public static function subexpression($expression, &$context)
     {
@@ -314,12 +314,12 @@ class Parser extends Token
      *
      * @return array<boolean|integer|array> Return parsed result
      *
-     * @expect array(array()) when input array('this'), array('flags' => array('namev' => 1)), 0
-     * @expect array(array('a')) when input array('a'), array('flags' => array('namev' => 1, 'strpar' => 0)), 0
-     * @expect array(array('a'), array('b')) when input array('a', 'b'), array('flags' => array('namev' => 1, 'strpar' => 0)), 0
-     * @expect array('a' => array('b')) when input array('a=b'), array('flags' => array('namev' => 1, 'strpar' => 0)), 0
-     * @expect array('fo o' => array(\LightnCandy\Parser::LITERAL, '123')) when input array('[fo o]=123'), array('flags' => array('namev' => 1)), 0
-     * @expect array('fo o' => array(\LightnCandy\Parser::LITERAL, '\'bar\'')) when input array('[fo o]="bar"'), array('flags' => array('namev' => 1)), 0
+     * @expect array(array()) when input array('this'), array('flags' => array()), 0
+     * @expect array(array('a')) when input array('a'), array('flags' => array('strpar' => 0)), 0
+     * @expect array(array('a'), array('b')) when input array('a', 'b'), array('flags' => array('strpar' => 0)), 0
+     * @expect array('a' => array('b')) when input array('a=b'), array('flags' => array('strpar' => 0)), 0
+     * @expect array('fo o' => array(\LightnCandy\Parser::LITERAL, '123')) when input array('[fo o]=123'), array('flags' => array()), 0
+     * @expect array('fo o' => array(\LightnCandy\Parser::LITERAL, '\'bar\'')) when input array('[fo o]="bar"'), array('flags' => array()), 0
      */
     protected static function advancedVariable($vars, &$context, $token)
     {
@@ -339,15 +339,13 @@ class Parser extends Token
                 continue;
             }
 
-            if ($context['flags']['namev']) {
-                if (preg_match('/^((\\[([^\\]]+)\\])|([^=^["\']+))=(.+)$/', $var, $m)) {
-                    $idx = $m[3] ? $m[3] : $m[4];
-                    $var = $m[5];
-                    // handle foo=(...)
-                    if (preg_match(SafeString::IS_SUBEXP_SEARCH, $var)) {
-                        $ret[$idx] = static::subexpression($var, $context);
-                        continue;
-                    }
+            if (preg_match('/^((\\[([^\\]]+)\\])|([^=^["\']+))=(.+)$/', $var, $m)) {
+                $idx = $m[3] ? $m[3] : $m[4];
+                $var = $m[5];
+                // handle foo=(...)
+                if (preg_match(SafeString::IS_SUBEXP_SEARCH, $var)) {
+                    $ret[$idx] = static::subexpression($var, $context);
+                    continue;
                 }
             }
 
@@ -367,11 +365,7 @@ class Parser extends Token
                     // Scan for invalid charactors which not be protected by [ ]
                     // now make ( and ) pass, later fix
                     if (preg_match('/[!"#%\'*+,;<=>{|}~]/', $name)) {
-                        if (!$context['flags']['namev'] && preg_match('/.+=.+/', $name)) {
-                            $context['error'][] = "Wrong variable naming as '$var' in $token ! If you try to use foo=bar param, you should enable LightnCandy::FLAG_NAMEDARG !";
-                        } else {
-                            $context['error'][] = "Wrong variable naming as '$var' in $token ! You should wrap ! \" # % & ' * + , ; < = > { | } ~ into [ ]";
-                        }
+                        $context['error'][] = "Wrong variable naming as '$var' in $token ! You should wrap ! \" # % & ' * + , ; < = > { | } ~ into [ ]";
                     }
                 }
             }

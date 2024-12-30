@@ -69,12 +69,11 @@ LightnCandy::compile($template, array(
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RENDER_DEBUG.html">FLAG_RENDER_DEBUG</a>
 
 **Handlebars Compatibility**
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NAMEDARG.html">FLAG_NAMEDARG</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_SLASH.html">FLAG_SLASH</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ELSE.html">FLAG_ELSE</a>
 * `FLAG_HANDLEBARSLAMBDA` : support lambda logic as handlebars.js specification. And, the rendering performance will be worse.
 * `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
-* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_NAMEDARG` + `FLAG_SPVARS` + `FLAG_SLASH` + `FLAG_ELSE`.
+* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_SPVARS` + `FLAG_SLASH` + `FLAG_ELSE`.
 * `FLAG_HANDLEBARSJS` : support most handlebars.js + javascript behaviors and also keep performance good, same as `FLAG_HANDLEBARS`.
 * `FLAG_HANDLEBARSJS_FULL` : enable all supported handlebars.js behaviors but performance drop, same with `FLAG_HANDLEBARSJS` + `FLAG_RUNTIMEPARTIAL` + `FLAG_HANDLEBARSLAMBDA`.
 
@@ -446,7 +445,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#each bar as |foo|}}` : echo loop on bar and set the value as foo.
 * `{{#each bar as |foo moo|}}` : echo loop on bar, set the value as foo, set the index as moo.
 * `{{#if var}}` : run if logic with original scope (null, false, empty Array and '' will skip this block)
-* `{{#if foo includeZero=true}}` : result as true when foo === 0 (require `FLAG_NAMEDARG`)
+* `{{#if foo includeZero=true}}` : result as true when foo === 0
 * `{{/if}}` : end if
 * `{{else}}` or `{{^}}` : run else logic, should between `{{#if var}}` and `{{/if}}` ; or between `{{#unless var}}` and `{{/unless}}`; or between `{{#foo}}` and `{{/foo}}`; or between `{{#each var}}` and `{{/each}}`; or between `{{#with var}}` and `{{/with}}`. (require `FLAG_ELSE`)
 * `{{#if foo}} ... {{else if bar}} ... {{/if}}` : chained if else blocks
@@ -477,7 +476,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{helper var}}` : Execute custom helper then render the HTML escaped result
 * `{{helper "str"}}` or `{{helper 'str'}}` : Execute custom helper with string arguments
 * `{{helper 123 null true false undefined}}` : Pass number, true, false, null or undefined into helper
-* `{{helper name1=var name2=var2}}` : Execute custom helper with named arguments (require `FLAG_NAMEDARG`)
+* `{{helper name1=var name2=var2}}` : Execute custom helper with named arguments
 * `{{#helper ...}}...{{/helper}}` : Execute block custom helper
 * `{{helper (helper2 foo) bar}}` : Execute custom helpers as subexpression
 * `{{{{raw_block}}}} {{will_not_parsed}} {{{{/raw_block}}}}` : Raw block
