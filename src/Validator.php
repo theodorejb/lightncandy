@@ -212,12 +212,7 @@ class Validator
 
             case '^':
                 if (!isset($vars[0][0])) {
-                    if (!$context['flags']['else']) {
-                        $context['error'][] = 'Do not support {{^}}, you should do compile with LightnCandy::FLAG_ELSE flag';
-                        return;
-                    } else {
-                        return static::doElse($context, $vars);
-                    }
+                    return static::doElse($context, $vars);
                 }
 
                 static::doElseChain($context);
@@ -620,7 +615,7 @@ class Validator
         list($raw, $vars) = Parser::parse($token, $context);
 
         // Handle spacing (standalone tags, partial indent)
-        static::spacing($token, $context, (($token[Token::POS_OP] === '') || ($token[Token::POS_OP] === '&')) && (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')) || ($context['flags']['nostd'] > 0));
+        static::spacing($token, $context, (($token[Token::POS_OP] === '') || ($token[Token::POS_OP] === '&')) && (!isset($vars[0][0]) || ($vars[0][0] !== 'else')) || ($context['flags']['nostd'] > 0));
 
         $inlinepartial = static::inlinePartial($context, $vars);
         $partialblock = static::partialBlock($context, $vars);
@@ -660,7 +655,7 @@ class Validator
             return array($raw, $vars);
         }
 
-        if (($vars[0][0] === 'else') && $context['flags']['else']) {
+        if ($vars[0][0] === 'else') {
             static::doElse($context, $vars);
             return array($raw, $vars);
         }

@@ -864,18 +864,12 @@ VAREND
             array(
                 'id' => 199,
                 'template' => '{{#if foo}}1{{else if bar}}2{{else}}3{{/if}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_ELSE,
-                ),
                 'expected' => '3',
             ),
 
             array(
                 'id' => 199,
                 'template' => '{{#if foo}}1{{else if bar}}2{{/if}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_ELSE,
-                ),
                 'data' => array('bar' => true),
                 'expected' => '2',
             ),
@@ -985,17 +979,6 @@ VAREND
                 'data' => array('bar' => 'BA!'),
                 'options' => array(
                     'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION,
-                    'partials' => array('foo' => 'hello, {{> @partial-block}}')
-                ),
-                'expected' => 'hello, OK! BA!no bar',
-            ),
-
-            array(
-                'id' => 224,
-                'template' => '{{#> foo bar}}{{#if .}}OK! {{.}}{{else}}no bar{{/if}}{{/foo}}',
-                'data' => array('bar' => 'BA!'),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_ELSE,
                     'partials' => array('foo' => 'hello, {{> @partial-block}}')
                 ),
                 'expected' => 'hello, OK! BA!',
@@ -1710,7 +1693,6 @@ VAREND
 
             array(
                 'template' => '{{#if .}}YES{{else}}NO{{/if}}',
-                'options' => array('flags' => LightnCandy::FLAG_ELSE),
                 'data' => true,
                 'expected' => 'YES',
             ),
@@ -1754,7 +1736,6 @@ VAREND
             array(
                 'template' => '{{#myif foo}}YES{{else}}NO{{/myif}}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_ELSE,
                     'helpers' => array('myif'),
                 ),
                 'expected' => 'NO',
@@ -1764,7 +1745,6 @@ VAREND
                 'template' => '{{#myif foo}}YES{{else}}NO{{/myif}}',
                 'data' => array('foo' => 1),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_ELSE,
                     'helpers' => array('myif'),
                 ),
                 'expected' => 'YES',
@@ -1774,26 +1754,15 @@ VAREND
                 'template' => '{{#mylogic 0 foo bar}}YES:{{.}}{{else}}NO:{{.}}{{/mylogic}}',
                 'data' => array('foo' => 'FOO', 'bar' => 'BAR'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_ELSE,
                     'helpers' => array('mylogic'),
                 ),
                 'expected' => 'NO:BAR',
             ),
 
             array(
-                'template' => '{{#mylogic 0 foo bar}}YES:{{.}}{{else}}NO:{{.}}{{/mylogic}}',
-                'data' => array('foo' => 'FOO', 'bar' => 'BAR'),
-                'options' => array(
-                    'helpers' => array('mylogic'),
-                ),
-                'expected' => '',
-            ),
-
-            array(
                 'template' => '{{#mylogic true foo bar}}YES:{{.}}{{else}}NO:{{.}}{{/mylogic}}',
                 'data' => array('foo' => 'FOO', 'bar' => 'BAR'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_ELSE,
                     'helpers' => array('mylogic'),
                 ),
                 'expected' => 'YES:FOO',
@@ -1847,18 +1816,12 @@ VAREND
             array(
                 'template' => '{{#with people}}Yes , {{name}}{{else}}No, {{name}}{{/with}}',
                 'data' => array('people' => array('name' => 'Peter'), 'name' => 'NoOne'),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_ELSE,
-                ),
                 'expected' => 'Yes , Peter',
             ),
 
             array(
                 'template' => '{{#with people}}Yes , {{name}}{{else}}No, {{name}}{{/with}}',
                 'data' => array('name' => 'NoOne'),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_ELSE,
-                ),
                 'expected' => 'No, NoOne',
             ),
 

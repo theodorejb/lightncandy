@@ -360,10 +360,6 @@ class errorTest extends TestCase
                 'expected' => 'Do not support name=value in {{a=b}}, you should use it after a custom helper.',
             ),
             array(
-                'template' => '{{#foo}}1{{^}}2{{/foo}}',
-                'expected' => 'Do not support {{^}}, you should do compile with LightnCandy::FLAG_ELSE flag',
-            ),
-            array(
                 'template' => '{{#with a}OK!{{/with}}',
                 'expected' => array(
                     'Wrong variable naming as \'a}OK!{{/with\' in {{#with a}OK!{{/with}} ! You should wrap ! " # % & \' * + , ; < = > { | } ~ into [ ]',
@@ -503,9 +499,6 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{else}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_ELSE,
-                ),
                 'expected' => array(
                     '{{else}} only valid in if, unless, each, and #section context',
                 )

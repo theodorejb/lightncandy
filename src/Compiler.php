@@ -333,7 +333,7 @@ VAREND
             if ($ret = static::customHelper($context, $vars, $raw, true)) {
                 return static::compileOutput($context, $ret, 'FIXME: helper', $raw, false);
             }
-            if ($context['flags']['else'] && ($vars[0][0] === 'else')) {
+            if ($vars[0][0] === 'else') {
                 return static::doElse($context, $vars);
             }
             if ($vars[0][0] === 'lookup') {

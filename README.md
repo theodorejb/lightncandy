@@ -69,9 +69,8 @@ LightnCandy::compile($template, array(
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RENDER_DEBUG.html">FLAG_RENDER_DEBUG</a>
 
 **Handlebars Compatibility**
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ELSE.html">FLAG_ELSE</a>
 * `FLAG_HANDLEBARSLAMBDA` : support lambda logic as handlebars.js specification. And, the rendering performance will be worse.
-* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_ELSE`.
+* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good.
 * `FLAG_HANDLEBARSJS` : support most handlebars.js + javascript behaviors and also keep performance good, same as `FLAG_HANDLEBARS`.
 * `FLAG_HANDLEBARSJS_FULL` : enable all supported handlebars.js behaviors but performance drop, same with `FLAG_HANDLEBARSJS` + `FLAG_RUNTIMEPARTIAL` + `FLAG_HANDLEBARSLAMBDA`.
 
@@ -445,7 +444,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#if var}}` : run if logic with original scope (null, false, empty Array and '' will skip this block)
 * `{{#if foo includeZero=true}}` : result as true when foo === 0
 * `{{/if}}` : end if
-* `{{else}}` or `{{^}}` : run else logic, should between `{{#if var}}` and `{{/if}}` ; or between `{{#unless var}}` and `{{/unless}}`; or between `{{#foo}}` and `{{/foo}}`; or between `{{#each var}}` and `{{/each}}`; or between `{{#with var}}` and `{{/with}}`. (require `FLAG_ELSE`)
+* `{{else}}` or `{{^}}` : run else logic, should between `{{#if var}}` and `{{/if}}` ; or between `{{#unless var}}` and `{{/unless}}`; or between `{{#foo}}` and `{{/foo}}`; or between `{{#each var}}` and `{{/each}}`; or between `{{#with var}}` and `{{/with}}`.
 * `{{#if foo}} ... {{else if bar}} ... {{/if}}` : chained if else blocks
 * `{{#unless var}}` : run unless logic with original scope (null, false, empty Array and '' will render this block)
 * `{{#unless foo}} ... {{else if bar}} ... {{/unless}}` : chained unless else blocks
