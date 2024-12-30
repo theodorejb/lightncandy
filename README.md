@@ -72,7 +72,6 @@ LightnCandy::compile($template, array(
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NOESCAPE.html">FLAG_NOESCAPE</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_PARTIALNEWCONTEXT.html">FLAG_PARTIALNEWCONTEXT</a>
 * `FLAG_IGNORESTANDALONE` : prevent standalone detection on `{{#foo}}`, `{{/foo}}` or `{{^}}`, the behavior is same with handlebars.js ignoreStandalone compile time option.
-* `FLAG_KNOWNHELPERSONLY`: Only pass current context to lambda, the behavior is same with handlebars.js knownHelpersOnly compile time option.
 * `FLAG_PREVENTINDENT` : align partial indent behavior with mustache specification. This is same with handlebars.js preventIndent copmile time option.
 
 **PHP**
