@@ -1314,6 +1314,13 @@ VAREND
             ),
 
             array(
+                'id' => 369,
+                'template' => '{{#each paragraphs}}<p>{{this}}</p>{{else}}<p class="empty">{{foo}}</p>{{/each}}',
+                'data' => array('foo' => 'bar'),
+                'expected' => '<p class="empty">bar</p>'
+            ),
+
+            array(
                 'template' => '{{#each . as |v k|}}#{{k}}{{/each}}',
                 'data' => array('a' => array(), 'c' => array()),
                 'expected' => '#a#c'

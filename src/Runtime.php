@@ -397,7 +397,7 @@ class Runtime extends Encoder
         }
         if ($each) {
             if ($else !== null) {
-                $ret = $else($cx, $v);
+                $ret = $else($cx, $in);
                 return $ret;
             }
             return '';
