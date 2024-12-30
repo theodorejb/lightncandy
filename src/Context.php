@@ -44,7 +44,6 @@ class Context extends Flags
                 'errorlog' => $flags & static::FLAG_ERROR_LOG,
                 'exception' => $flags & static::FLAG_ERROR_EXCEPTION,
                 'noesc' => $flags & static::FLAG_NOESCAPE,
-                'hbesc' => $flags & static::FLAG_HBESCAPE,
                 'advar' => $flags & static::FLAG_ADVARNAME,
                 'namev' => $flags & static::FLAG_NAMEDARG,
                 'spvar' => $flags & static::FLAG_SPVARS,
@@ -140,7 +139,7 @@ class Context extends Flags
             'cnd_nend' => ')',
         );
 
-        $context['ops']['enc'] = $context['flags']['hbesc'] ? 'encq' : 'enc';
+        $context['ops']['enc'] = 'encq';
         $context['ops']['array_check'] = '$inary=is_array($in);';
         static::updateHelperTable($context, $options);
 

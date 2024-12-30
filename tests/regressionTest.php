@@ -2049,15 +2049,12 @@ VAREND
             array(
                 'template' => "{{foo}}",
                 'data' => array('foo' => 'A&B " \' ='),
-                'expected' => "A&amp;B &quot; &#039; =",
+                'expected' => "A&amp;B &quot; &#x27; &#x3D;",
             ),
 
             array(
                 'template' => "{{foo}}",
                 'data' => array('foo' => '<a href="#">\'</a>'),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_HBESCAPE,
-                ),
                 'expected' => '&lt;a href&#x3D;&quot;#&quot;&gt;&#x27;&lt;/a&gt;',
             ),
 
