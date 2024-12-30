@@ -79,12 +79,13 @@ class Compiler extends Validator
     {
         $flagProp = Expression::boolString($context['flags']['prop']);
         $flagPartNC = Expression::boolString($context['flags']['partnc']);
+        $runtime = Runtime::class;
 
         $constants = Exporter::constants($context);
         $helpers = Exporter::helpers($context);
         $partials = implode(",\n", $context['partialCode']);
         $debug = Runtime::DEBUG_ERROR_LOG;
-        $use = "use {$context['runtime']} as {$context['runtimealias']};";
+        $use = "use {$runtime} as LR;";
         $stringObject = $context['flags']['prop'] ? Exporter::stringobject($context) : '';
         $safeString = ($context['usedFeature']['enc'] > 0) ? "use {$context['safestring']} as SafeString;" : '';
         // Return generated PHP code string.
@@ -105,7 +106,6 @@ $stringObject{$safeString}{$use}return function (\$in = null, \$options = null) 
         'sp_vars' => isset(\$options['data']) ? array_merge(array('root' => \$in), \$options['data']) : array('root' => \$in),
         'blparam' => array(),
         'partialid' => 0,
-        'runtime' => '{$context['runtime']}',
     );
     {$context['renderex']}
     {$context['ops']['array_check']}
@@ -124,9 +124,9 @@ VAREND
      *
      * @return string compiled Function name
      *
-     * @expect 'LR::test(' when input array('flags' => array('debug' => 0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), 'test', ''
-     * @expect 'LL::test2(' when input array('flags' => array('debug' => 0), 'runtime' => 'Runtime', 'runtimealias' => 'LL'), 'test2', ''
-     * @expect 'RR::debug(\'abc\', \'test\', ' when input array('flags' => array('debug' => 1), 'runtime' => 'Runtime', 'runtimealias' => 'RR', 'funcprefix' => 'haha456'), 'test', 'abc'
+     * @expect 'LR::test(' when input array('flags' => array('debug' => 0)), 'test', ''
+     * @expect 'LR::test2(' when input array('flags' => array('debug' => 0)), 'test2', ''
+     * @expect 'LR::debug(\'abc\', \'test\', ' when input array('flags' => array('debug' => 1), 'funcprefix' => 'haha456'), 'test', 'abc'
      */
     protected static function getFuncName(&$context, $name, $tag)
     {
@@ -140,7 +140,7 @@ VAREND
             $dbg = '';
         }
 
-        return "{$context['runtimealias']}::$name($dbg";
+        return "LR::$name($dbg";
     }
 
     /**
@@ -227,7 +227,7 @@ VAREND
      * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input array('flags'=>array('debug'=>0,'prop'=>0)), array(1,'a')
      * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input array('flags'=>array('debug'=>0,'prop'=>0)), array(3,'a')
      * @expect array('(($inary && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]') when input array('flags'=>array('debug'=>0,'prop'=>0)), array(null, 'id')
-     * @expect array('LR::v($cx, $in, isset($in) ? $in : null, array(\'id\'))', 'this.[id]') when input array('flags'=>array('prop'=>true,'debug'=>0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), array(null, 'id')
+     * @expect array('LR::v($cx, $in, isset($in) ? $in : null, array(\'id\'))', 'this.[id]') when input array('flags'=>array('prop'=>true,'debug'=>0)), array(null, 'id')
      */
     protected static function getVariableName(&$context, $var, $lookup = null, $args = null)
     {

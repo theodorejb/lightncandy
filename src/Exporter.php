@@ -196,7 +196,7 @@ class Exporter
      */
     public static function runtime($context)
     {
-        $class = new \ReflectionClass($context['runtime']);
+        $class = new \ReflectionClass(Runtime::class);
         $ret = '';
         $methods = static::getClassMethods($context, $class);
 

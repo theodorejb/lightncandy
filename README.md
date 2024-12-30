@@ -3,12 +3,9 @@ LightnCandy
 
 ⚡🍭 An extremely fast PHP implementation of handlebars ( http://handlebarsjs.com/ ) and mustache ( http://mustache.github.io/ ).
 
-Package on packagist: [![Latest Stable Version](https://poser.pugx.org/zordius/lightncandy/v/stable.svg)](https://packagist.org/packages/zordius/lightncandy) [![License](https://poser.pugx.org/zordius/lightncandy/license.svg)](https://github.com/zordius/lightncandy/blob/master/LICENSE.md) [![Total Downloads](https://poser.pugx.org/zordius/lightncandy/downloads)](https://packagist.org/packages/zordius/lightncandy)
-
 Features
 --------
 
-* Logicless template: mustache ( http://mustache.github.com/ ) or handlebars ( http://handlebarsjs.com/ ) .
 * Compile template to **pure PHP** code. Examples:
    * <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.tmpl">Template A</a> generated <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.php">PHP A</a>
    * <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.tmpl">Template B</a> generated <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.php">PHP B</a>
@@ -19,11 +16,8 @@ Features
    * Detail performance test reports can be found <a href="https://github.com/zordius/HandlebarsTest">here</a>, go http://zordius.github.io/HandlebarsTest/ to see charts.
 * **SMALL!** all PHP files in 189K
 * **ROBUST!**
-   * 100% supports <a href="https://github.com/mustache/spec">mustache spec v1.1.3</a>. For the optional lambda module, supports 4 of 10 specs.
    * Supports almost all <a href="https://github.com/jbboehr/handlebars-spec">handlebars.js spec</a>
    * Output <a href="https://github.com/zordius/HandlebarsTest/blob/master/FEATURES.md">SAME</a> with <a href="https://github.com/wycats/handlebars.js">handlebars.js</a>
-* **FLEXIBLE!**
-   * Lot of <a href="#compile-options">options</a> to change features and behaviors.
 * Context generation
    * Analyze used features from your template (execute `LightnCandy::getContext()` to get it) .
 * Debug
@@ -332,45 +326,10 @@ function ($in) {
 
 Please make sure the passed in `renderex` is valid PHP, LightnCandy will not check it.
 
-Customize Rendering Runtime Class
----------------------------------
-
-If you want to extend `LightnCandy\Runtime` class and replace the default runtime library, you may use `runtime` when `compile()` . For example, this sample will generate render function based on your extended `MyRunTime`:
-
-```php
-// Customized runtime library to debug {{{foo}}}
-class MyRunTime extends LightnCandy\Runtime {
-    public static function raw($cx, $v) {
-        return '[[DEBUG:raw()=>' . var_export($v, true) . ']]';
-    }
-}
-
-// Use MyRunTime as runtime library
-$php = LightnCandy::compile($template, array(
-    'runtime' => 'MyRunTime'
-));
-```
-
-Please make sure `MyRunTime` exists when compile().
-
 Unsupported Feature
 -------------------
 
 * `{{foo/bar}}` style variable name, it is deprecated in official handlebars.js document, please use this style: `{{foo.bar}}`.
-
-Suggested Handlebars Template Practices
----------------------------------------
-
-* Prevent to use `{{#with}}` . I think `{{path.to.val}}` is more readable then `{{#with path.to}}{{val}}{{/with}}`; when using `{{#with}}` you will confusing on scope changing. `{{#with}}` only save you very little time when you access many variables under same path, but cost you a lot time when you need to understand then maintain a template.
-* use `{{{val}}}` when you do not require HTML escaped output on the value. It is better performance, too.
-* Prevent to use custom helper if you want to reuse your template in different language. Or, you may need to implement different versions of helper in different languages.
-* For best performance, you should only use 'compile on demand' pattern when you are in development stage. Before you go to production, you can `LightnCandy::compile()` on all your templates, save all generated PHP codes, and deploy these generated files (You may need to maintain a build process for this) . **DO NOT COMPILE ON PRODUCTION** , it also a best practice for security. Adding cache for 'compile on demand' is not the best solution. If you want to build some library or framework based on LightnCandy, think about this scenario.
-* Recompile your templates when you upgrade LightnCandy every time.
-* Persistant ESCAPING practice of `{` or `}` for both handlebars and lightncandy:
-  * If you want to display atomic `}}` , you can just use it without any trick.  EX: `{{foo}}   }}`
-  * If you want to display `}` just after any handlebars token, you can use this: `{{#with "}"}}{{.}}{{/with}}` .  EX: `{{foo}}{{#with "}"}}{{.}}{{/with}}`
-  * If you want to display atomic `{` , you can just use it without any trick. EX: `{ and {{foo}}`.
-  * If you want to display `{{` , you can use `{{#with "{{"}}{{.}}{{/with}}`. EX: `{{#with "{{"}}{{.}}{{/with}}{{foo}}`
 
 Detail Feature list
 -------------------
@@ -450,22 +409,3 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#> @partial-block}}` : access partial block content inside a partial
 * `{{#*inline "partial_name"}}...{{/inline}}` : Inline partial, provide a partial and overwrite the original one.
 * `{{log foo}}` : output value to stderr for debug.
-
-Developer Notes
----------------
-
-Please read <a href=".github/CONTRIBUTING.md">CONTRIBUTING.md</a> for development environment setup.
-
-Framework Integration
----------------------
-
-- [Slim 3.0.x](https://github.com/endel/slim-lightncandy-view)
-- [Laravel 4](https://github.com/samwalshnz/lightncandy-l4)
-- [Laravel 5](https://github.com/ProAI/laravel-handlebars)
-- [yii2](https://github.com/kfreiman/yii2-lightncandy)
-- [Symfony3](https://packagist.org/packages/jays-de/handlebars-bundle)
-
-Tools
------
-
-- CLI: https://github.com/PXLbros/LightnCandy-CLI

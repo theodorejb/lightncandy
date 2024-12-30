@@ -55,8 +55,8 @@ class Runtime extends Encoder
      * @param string $f runtime function name
      * @param array<string,array|string|integer> $cx render time context for lightncandy
      *
-     * @expect '{{123}}' when input '123', 'miss', array('flags' => array('debug' => Runtime::DEBUG_TAGS), 'runtime' => 'LightnCandy\\Runtime'), ''
-     * @expect '<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->' when input '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML), 'runtime' => 'LightnCandy\\Runtime'), false, null, false, function () {return 'A';}
+     * @expect '{{123}}' when input '123', 'miss', array('flags' => array('debug' => Runtime::DEBUG_TAGS)), ''
+     * @expect '<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->' when input '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML)), false, null, false, function () {return 'A';}
      */
     public static function debug($v, $f, $cx)
     {
@@ -66,7 +66,8 @@ class Runtime extends Encoder
         for ($i=2;$i<count($P);$i++) {
             $params[] = &$P[$i];
         }
-        $r = call_user_func_array((isset($cx['funcs'][$f]) ? $cx['funcs'][$f] : "{$cx['runtime']}::$f"), $params);
+        $runtime = self::class;
+        $r = call_user_func_array(($cx['funcs'][$f] ?? "{$runtime}::$f"), $params);
 
         if ($cx['flags']['debug'] & static::DEBUG_TAGS) {
             $ansi = $cx['flags']['debug'] & (static::DEBUG_TAGS_ANSI - static::DEBUG_TAGS);

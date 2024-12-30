@@ -632,16 +632,6 @@ class regressionTest extends TestCase
             ),
 
             array(
-                'id' => 150,
-                'template' => '{{{.}}}',
-                'data' => array('hello' => 'world'),
-                'options' => array(
-                    'runtime' => 'MyLCRunClass',
-                ),
-                'expected' => "[[DEBUG:raw()=>array (\n  'hello' => 'world',\n)]]",
-            ),
-
-            array(
                 'id' => 153,
                 'template' => '{{echo "test[]"}}',
                 'options' => array(
