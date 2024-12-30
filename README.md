@@ -72,8 +72,7 @@ LightnCandy::compile($template, array(
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_SLASH.html">FLAG_SLASH</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ELSE.html">FLAG_ELSE</a>
 * `FLAG_HANDLEBARSLAMBDA` : support lambda logic as handlebars.js specification. And, the rendering performance will be worse.
-* `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
-* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_SPVARS` + `FLAG_SLASH` + `FLAG_ELSE`.
+* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_SLASH` + `FLAG_ELSE`.
 * `FLAG_HANDLEBARSJS` : support most handlebars.js + javascript behaviors and also keep performance good, same as `FLAG_HANDLEBARS`.
 * `FLAG_HANDLEBARSJS_FULL` : enable all supported handlebars.js behaviors but performance drop, same with `FLAG_HANDLEBARSJS` + `FLAG_RUNTIMEPARTIAL` + `FLAG_HANDLEBARSLAMBDA`.
 
@@ -461,14 +460,14 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{>file foo}}` : partial with new context (require `FLAG_RUNTIMEPARTIAL`)
 * `{{>file foo bar=another}}` : partial with new context which mixed with followed key value (require `FLAG_RUNTIMEPARTIAL`)
 * `{{>(helper) foo}}` : include dynamic partial by name provided from a helper (require `FLAG_RUNTIMEPARTIAL`)
-* `{{@index}}` : references to current index in a `{{#each}}` loop on an array. (require `FLAG_SPVARS`)
-* `{{@key}}` : references to current key in a `{{#each}}` loop on an object. (require `FLAG_SPVARS`)
-* `{{@root}}` : references to root context. (require `FLAG_SPVARS`)
-* `{{@first}}` : true when looping at first item. (require `FLAG_SPVARS`)
-* `{{@last}}` : true when looping at last item. (require `FLAG_SPVARS`)
-* `{{@root.path.to.value}}` : references to root context then follow the path. (require `FLAG_SPVARS`)
-* `{{@../index}}` : access to parent loop index. (require `FLAG_SPVARS`)
-* `{{@../key}}` : access to parent loop key. (require `FLAG_SPVARS`)
+* `{{@index}}` : references to current index in a `{{#each}}` loop on an array.
+* `{{@key}}` : references to current key in a `{{#each}}` loop on an object.
+* `{{@root}}` : references to root context.
+* `{{@first}}` : true when looping at first item.
+* `{{@last}}` : true when looping at last item.
+* `{{@root.path.to.value}}` : references to root context then follow the path.
+* `{{@../index}}` : access to parent loop index.
+* `{{@../key}}` : access to parent loop key.
 * `{{foo.[ba.r].[#spec].0.ok}}` : references to $CurrentConext['foo']['ba.r']['#spec'][0]['ok'] .
 * `{{~any_valid_tag}}` : Space control, remove all previous spacing (includes CR/LF, tab, space; stop on any none spacing character)
 * `{{any_valid_tag~}}` : Space control, remove all next spacing (includes CR/LF, tab, space; stop on any none spacing character)

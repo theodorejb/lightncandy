@@ -311,30 +311,30 @@ class Runtime extends Encoder
      *
      * @return string The rendered string of the section
      *
-     * @expect '' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), false, null, false, false, function () {return 'A';}
-     * @expect '' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), null, null, null, false, function () {return 'A';}
-     * @expect 'A' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), true, null, true, false, function () {return 'A';}
-     * @expect 'A' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), 0, null, 0, false, function () {return 'A';}
-     * @expect '-a=' when input array('scopes' => array(), 'flags' => array('spvar' => 0, 'lambda' => 0)), array('a'), null, array('a'), false, function ($c, $i) {return "-$i=";}
-     * @expect '-a=-b=' when input array('scopes' => array(), 'flags' => array('spvar' => 0, 'lambda' => 0)), array('a','b'), null, array('a','b'), false, function ($c, $i) {return "-$i=";}
-     * @expect '' when input array('scopes' => array(), 'flags' => array('spvar' => 0, 'lambda' => 0)), 'abc', null, 'abc', true, function ($c, $i) {return "-$i=";}
-     * @expect '-b=' when input array('scopes' => array(), 'flags' => array('spvar' => 0, 'lambda' => 0)), array('a' => 'b'), null, array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
-     * @expect 'b' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), 'b', null, 'b', false, function ($c, $i) {return print_r($i, true);}
-     * @expect '1' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), 1, null, 1, false, function ($c, $i) {return print_r($i, true);}
-     * @expect '0' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), 0, null, 0, false, function ($c, $i) {return print_r($i, true);}
-     * @expect '{"b":"c"}' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), array('b' => 'c'), null, array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), array(), null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), array(), null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), false, null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), false, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), '', null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'cb' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), '', null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), 0, null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'cb' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), 0, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), new stdClass, null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'cb' when input array('flags' => array('spvar' => 0, 'lambda' => 0)), new stdClass, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect '268' when input array('scopes' => array(), 'flags' => array('spvar' => 1, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,4), null, 0, false, function ($c, $i) {return $i * 2;}
-     * @expect '038' when input array('scopes' => array(), 'flags' => array('spvar' => 1, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), null, 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
+     * @expect '' when input array('flags' => array('lambda' => 0)), false, null, false, false, function () {return 'A';}
+     * @expect '' when input array('flags' => array('lambda' => 0)), null, null, null, false, function () {return 'A';}
+     * @expect 'A' when input array('flags' => array('lambda' => 0)), true, null, true, false, function () {return 'A';}
+     * @expect 'A' when input array('flags' => array('lambda' => 0)), 0, null, 0, false, function () {return 'A';}
+     * @expect '-a=' when input array('scopes' => array(), 'flags' => array('lambda' => 0)), array('a'), null, array('a'), false, function ($c, $i) {return "-$i=";}
+     * @expect '-a=-b=' when input array('scopes' => array(), 'flags' => array('lambda' => 0)), array('a','b'), null, array('a','b'), false, function ($c, $i) {return "-$i=";}
+     * @expect '' when input array('scopes' => array(), 'flags' => array('lambda' => 0)), 'abc', null, 'abc', true, function ($c, $i) {return "-$i=";}
+     * @expect '-b=' when input array('scopes' => array(), 'flags' => array('lambda' => 0)), array('a' => 'b'), null, array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
+     * @expect 'b' when input array('flags' => array('lambda' => 0)), 'b', null, 'b', false, function ($c, $i) {return print_r($i, true);}
+     * @expect '1' when input array('flags' => array('lambda' => 0)), 1, null, 1, false, function ($c, $i) {return print_r($i, true);}
+     * @expect '0' when input array('flags' => array('lambda' => 0)), 0, null, 0, false, function ($c, $i) {return print_r($i, true);}
+     * @expect '{"b":"c"}' when input array('flags' => array('lambda' => 0)), array('b' => 'c'), null, array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
+     * @expect 'inv' when input array('flags' => array('lambda' => 0)), array(), null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('lambda' => 0)), array(), null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('lambda' => 0)), false, null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('lambda' => 0)), false, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('lambda' => 0)), '', null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'cb' when input array('flags' => array('lambda' => 0)), '', null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('lambda' => 0)), 0, null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'cb' when input array('flags' => array('lambda' => 0)), 0, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('lambda' => 0)), new stdClass, null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'cb' when input array('flags' => array('lambda' => 0)), new stdClass, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect '268' when input array('scopes' => array(), 'flags' => array('lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,4), null, 0, false, function ($c, $i) {return $i * 2;}
+     * @expect '038' when input array('scopes' => array(), 'flags' => array('lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), null, 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
      */
     public static function sec($cx, $v, $bp, $in, $each, $cb, $else = null)
     {
@@ -371,23 +371,19 @@ class Runtime extends Encoder
                 $cx['scopes'][] = $in;
             }
             $i = 0;
-            if ($cx['flags']['spvar']) {
-                $old_spvar = $cx['sp_vars'];
-                $cx['sp_vars'] = array_merge(array('root' => $old_spvar['root']), $old_spvar, array('_parent' => $old_spvar));
-                if (!$isTrav) {
-                    $last = count($keys) - 1;
-                }
+            $old_spvar = $cx['sp_vars'] ?? [];
+            $cx['sp_vars'] = array_merge(array('root' => $old_spvar['root']), $old_spvar, array('_parent' => $old_spvar));
+            if (!$isTrav) {
+                $last = count($keys) - 1;
             }
 
             $isSparceArray = $isObj && (count(array_filter(array_keys($v), 'is_string')) == 0);
             foreach ($v as $index => $raw) {
-                if ($cx['flags']['spvar']) {
-                    $cx['sp_vars']['first'] = ($i === 0);
-                    $cx['sp_vars']['last'] = ($i == $last);
-                    $cx['sp_vars']['key'] = $index;
-                    $cx['sp_vars']['index'] = $isSparceArray ? $index : $i;
-                    $i++;
-                }
+                $cx['sp_vars']['first'] = ($i === 0);
+                $cx['sp_vars']['last'] = ($i == $last);
+                $cx['sp_vars']['key'] = $index;
+                $cx['sp_vars']['index'] = $isSparceArray ? $index : $i;
+                $i++;
                 if (isset($bp[0])) {
                     $raw = static::m($cx, $raw, array($bp[0] => $raw));
                 }
@@ -396,16 +392,14 @@ class Runtime extends Encoder
                 }
                 $ret[] = $cb($cx, $raw);
             }
-            if ($cx['flags']['spvar']) {
-                if ($isObj) {
-                    unset($cx['sp_vars']['key']);
-                } else {
-                    unset($cx['sp_vars']['last']);
-                }
-                unset($cx['sp_vars']['index']);
-                unset($cx['sp_vars']['first']);
-                $cx['sp_vars'] = $old_spvar;
+            if ($isObj) {
+                unset($cx['sp_vars']['key']);
+            } else {
+                unset($cx['sp_vars']['last']);
             }
+            unset($cx['sp_vars']['index']);
+            unset($cx['sp_vars']['first']);
+            $cx['sp_vars'] = $old_spvar;
             if ($push) {
                 array_pop($cx['scopes']);
             }
@@ -570,9 +564,7 @@ class Runtime extends Encoder
             '_this' => &$_this
         );
 
-        if ($cx['flags']['spvar']) {
-            $options['data'] = &$cx['sp_vars'];
-        }
+        $options['data'] = &$cx['sp_vars'];
 
         return static::exch($cx, $ch, $vars, $options);
     }
@@ -600,9 +592,7 @@ class Runtime extends Encoder
             '_this' => &$_this,
         );
 
-        if ($cx['flags']['spvar']) {
-            $options['data'] = &$cx['sp_vars'];
-        }
+        $options['data'] = &$cx['sp_vars'];
 
         if (isset($vars[2])) {
             $options['fn.blockParams'] = count($vars[2]);

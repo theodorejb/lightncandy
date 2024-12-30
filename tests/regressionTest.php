@@ -973,7 +973,7 @@ VAREND
                 'template' => '{{#> foo bar}}a,b,{{.}},{{!-- comment --}},d{{/foo}}',
                 'data' => array('bar' => 'BA!'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION,
                     'partials' => array('foo' => 'hello, {{> @partial-block}}')
                 ),
                 'expected' => 'hello, a,b,BA!,,d',
@@ -984,7 +984,7 @@ VAREND
                 'template' => '{{#> foo bar}}{{#if .}}OK! {{.}}{{else}}no bar{{/if}}{{/foo}}',
                 'data' => array('bar' => 'BA!'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION,
                     'partials' => array('foo' => 'hello, {{> @partial-block}}')
                 ),
                 'expected' => 'hello, OK! BA!no bar',
@@ -995,7 +995,7 @@ VAREND
                 'template' => '{{#> foo bar}}{{#if .}}OK! {{.}}{{else}}no bar{{/if}}{{/foo}}',
                 'data' => array('bar' => 'BA!'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_ELSE,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_ELSE,
                     'partials' => array('foo' => 'hello, {{> @partial-block}}')
                 ),
                 'expected' => 'hello, OK! BA!',
@@ -1610,7 +1610,6 @@ VAREND
             array(
                 'template' => '-{{getroot}}=',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_SPVARS,
                     'helpers' => array('getroot'),
                 ),
                 'data' => 'ROOT!',
@@ -1620,9 +1619,6 @@ VAREND
             array(
                 'template' => 'A{{#each .}}-{{#each .}}={{.}},{{@key}},{{@index}},{{@../index}}~{{/each}}%{{/each}}B',
                 'data' => array(array('a' => 'b'), array('c' => 'd'), array('e' => 'f')),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_SPVARS,
-                ),
                 'expected' => 'A-=b,a,0,0~%-=d,c,0,1~%-=f,e,0,2~%B',
             ),
 
@@ -1922,20 +1918,12 @@ VAREND
             array(
                 'template' => '{{#each foo}}{{@key}}: {{.}},{{/each}}',
                 'data' => array('foo' => array(1,'a'=>'b',5)),
-                'expected' => ': 1,: b,: 5,',
-            ),
-
-            array(
-                'template' => '{{#each foo}}{{@key}}: {{.}},{{/each}}',
-                'data' => array('foo' => array(1,'a'=>'b',5)),
-                'options' => array('flags' => LightnCandy::FLAG_SPVARS),
                 'expected' => '0: 1,a: b,1: 5,',
             ),
 
             array(
                 'template' => '{{#each foo}}{{@key}}: {{.}},{{/each}}',
                 'data' => array('foo' => new twoDimensionIterator(2, 3)),
-                'options' => array('flags' => LightnCandy::FLAG_SPVARS),
                 'expected' => '0x0: 0,1x0: 0,0x1: 0,1x1: 1,0x2: 0,1x2: 2,',
             ),
 

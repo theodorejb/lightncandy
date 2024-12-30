@@ -53,10 +53,10 @@ class ExpressionTest extends TestCase
     public function testOn_analyze() {
         $method = new \ReflectionMethod('LightnCandy\Expression', 'analyze');
         $this->assertEquals(array(0, false, array('foo')), $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('spvar' => 0)), array(0, 'foo')
+            array('flags' => array()), array(0, 'foo')
         ))));
         $this->assertEquals(array(1, false, array('foo')), $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('spvar' => 0)), array(1, 'foo')
+            array('flags' => array()), array(1, 'foo')
         ))));
     }
     public function testOn_toString() {

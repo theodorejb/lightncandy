@@ -85,8 +85,8 @@ class Expression
      *
      * @return array<integer|boolean|array> analyzed result
      *
-     * @expect array(0, false, array('foo')) when input array('flags' => array('spvar' => 0)), array(0, 'foo')
-     * @expect array(1, false, array('foo')) when input array('flags' => array('spvar' => 0)), array(1, 'foo')
+     * @expect array(0, false, array('foo')) when input array('flags' => array()), array(0, 'foo')
+     * @expect array(1, false, array('foo')) when input array('flags' => array()), array(1, 'foo')
      */
     public static function analyze($context, $var)
     {
@@ -102,11 +102,9 @@ class Expression
 
         if (isset($var[0])) {
             // handle @root, @index, @key, @last, etc
-            if ($context['flags']['spvar']) {
-                if (substr($var[0], 0, 1) === '@') {
-                    $spvar = true;
-                    $var[0] = substr($var[0], 1);
-                }
+            if (str_starts_with($var[0], '@')) {
+                $spvar = true;
+                $var[0] = substr($var[0], 1);
             }
         }
 
