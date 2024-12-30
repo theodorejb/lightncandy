@@ -419,10 +419,6 @@ class errorTest extends TestCase
                 'expected' => "You provide a custom helper named as 'abc' in options['helpers'], but the function abc() is not defined!",
             ),
             array(
-                'template' => '{{=~= =~=}}',
-                'expected' => "Can not set delimiter contains '=' , you try to set delimiter as '~=' and '=~'.",
-            ),
-            array(
                 'template' => '{{>recursive}}',
                 'options' => array('partials' => array('recursive' => '{{>recursive}}')),
                 'expected' => array(

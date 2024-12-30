@@ -238,19 +238,6 @@ Handlebars.registerHelper('list', function(context, options) {
 });
 ```
 
-Change Delimiters
------------------
-
-You may change delimiters from `{{` and `}}` to other strings. In the template, you can use `{{=<% %>=}}` to change delimiters to `<%` and `%>` , but the change will not affect included partials.
-
-If you want to change default delimiters for a template and all included partials, you may `compile()` it with `delimiters` option:
-
-```php
-LightnCandy::compile('I wanna use <% foo %> as delimiters!', array(
-    'delimiters' => array('<%', '%>')
-));
-```
-
 Template Debugging
 ------------------
 
@@ -418,7 +405,6 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
    * All others will skip the section (includes 0, 1, -1, '', '1', '0', '-1', 'false', Array, ...)
 * `{{! comment}}` : comment
 * `{{!-- comment or {{ or }} --}}` : extended comment that can contain }} or {{ .
-* `{{=<% %>=}}` : set delimiter to custom string , the custom string can not contain `=` . Check http://mustache.github.io/mustache.5.html for more example.
 * `{{#each var}}` : each loop
 * `{{#each}}` : each loop on {{.}}
 * `{{/each}}` : end loop

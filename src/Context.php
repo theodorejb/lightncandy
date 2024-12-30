@@ -51,10 +51,6 @@ class Context extends Flags
                 'partnc' => $flags & static::FLAG_PARTIALNEWCONTEXT,
                 'nostd' => $flags & static::FLAG_IGNORESTANDALONE,
             ),
-            'delimiters' => array(
-                isset($options['delimiters'][0]) ? $options['delimiters'][0] : '{{',
-                isset($options['delimiters'][1]) ? $options['delimiters'][1] : '}}',
-            ),
             'level' => 0,
             'stack' => array(),
             'currentToken' => null,
@@ -89,7 +85,6 @@ class Context extends Flags
                 'dynpartial' => 0,
                 'inlpartial' => 0,
                 'helper' => 0,
-                'delimiter' => 0,
                 'subexp' => 0,
                 'rawblock' => 0,
                 'pblock' => 0,

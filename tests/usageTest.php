@@ -35,7 +35,6 @@ class usageTest extends TestCase
             'dynpartial' => 0,
             'inlpartial' => 0,
             'helper' => 0,
-            'delimiter' => 0,
             'subexp' => 0,
             'rawblock' => 0,
             'pblock' => 0,

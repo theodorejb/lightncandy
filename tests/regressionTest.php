@@ -785,19 +785,6 @@ VAREND
             ),
 
             array(
-                'id' => 191,
-                'template' => '<% foo %> is good <%> bar %>',
-                'data' => array('foo' => 'world'),
-                'options' => array(
-                    'delimiters' => array('<%', '%>'),
-                    'partials' => array(
-                        'bar' => '<% @root.foo %>{{:D}}!',
-                    )
-                ),
-                'expected' => 'world is good world{{:D}}!',
-            ),
-
-            array(
                 'id' => 199,
                 'template' => '{{#if foo}}1{{else if bar}}2{{else}}3{{/if}}',
                 'expected' => '3',

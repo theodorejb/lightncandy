@@ -46,22 +46,11 @@ class Token
      * Setup delimiter by default or provided string
      *
      * @param array<string,array|string|integer> $context Current context
-     * @param string|null $left left string of a token
-     * @param string|null $right right string of a token
      */
-    public static function setDelimiter(&$context, $left = null, $right = null)
+    public static function setDelimiter(&$context)
     {
-        if ($left === null) {
-            $left = $context['delimiters'][0];
-        }
-        if ($right === null) {
-            $right = $context['delimiters'][1];
-        }
-        if (preg_match('/=/', "$left$right")) {
-            $context['error'][] = "Can not set delimiter contains '=' , you try to set delimiter as '$left' and '$right'.";
-            return;
-        }
-
+        $left = '{{';
+        $right = '}}';
         $context['tokens']['startchar'] = substr($left, 0, 1);
         $context['tokens']['left'] = $left;
         $context['tokens']['right'] = $right;

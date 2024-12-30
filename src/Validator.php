@@ -511,22 +511,6 @@ class Validator
     }
 
     /**
-     * handle delimiter change
-     *
-     * @param array<string,array|string|integer> $context current compile context
-     *
-     * @return boolean|null Return true when delimiter changed
-     */
-    protected static function isDelimiter(&$context)
-    {
-        if (preg_match('/^=\s*([^ ]+)\s+([^ ]+)\s*=$/', $context['currentToken'][Token::POS_INNERTAG], $matched)) {
-            $context['usedFeature']['delimiter']++;
-            Parser::setDelimiter($context, $matched[1], $matched[2]);
-            return true;
-        }
-    }
-
-    /**
      * handle raw block
      *
      * @param string[] $token detected handlebars {{ }} token
@@ -599,11 +583,6 @@ class Validator
         }
 
         if (static::delimiter($token, $context)) {
-            return;
-        }
-
-        if (static::isDelimiter($context)) {
-            static::spacing($token, $context);
             return;
         }
 
