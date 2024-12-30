@@ -38,7 +38,7 @@ class Validator
 
         while (preg_match($context['tokens']['search'], $template, $matches)) {
             // Skip a token when it is slash escaped
-            if ($context['flags']['slash'] && ($matches[Token::POS_LSPACE] === '') && preg_match('/^(.*?)(\\\\+)$/s', $matches[Token::POS_LOTHER], $escmatch)) {
+            if (($matches[Token::POS_LSPACE] === '') && preg_match('/^(.*?)(\\\\+)$/s', $matches[Token::POS_LOTHER], $escmatch)) {
                 if (strlen($escmatch[2]) % 4) {
                     static::pushToken($context, substr($matches[Token::POS_LOTHER], 0, -2) . $context['tokens']['startchar']);
                     $matches[Token::POS_BEGINTAG] = substr($matches[Token::POS_BEGINTAG], 1);
