@@ -103,7 +103,6 @@ class Context extends Flags
             'inlinepartial' => array(),
             'helpers' => array(),
             'renderex' => isset($options['renderex']) ? $options['renderex'] : '',
-            'prepartial' => (isset($options['prepartial']) && is_callable($options['prepartial'])) ? $options['prepartial'] : false,
             'safestring' => '\\LightnCandy\\SafeString',
             'safestringalias' => isset($options['safestring']) ? $options['safestring'] : 'LS',
             'rawblock' => false,

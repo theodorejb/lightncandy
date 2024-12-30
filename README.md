@@ -1,7 +1,7 @@
 LightnCandy
 ===========
 
-⚡🍭 An extremely fast PHP implementation of handlebars ( http://handlebarsjs.com/ ) and mustache ( http://mustache.github.io/ ).
+An extremely fast PHP implementation of [Handlebars](https://handlebarsjs.com/).
 
 Features
 --------
@@ -9,12 +9,6 @@ Features
 * Compile template to **pure PHP** code. Examples:
    * <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.tmpl">Template A</a> generated <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.php">PHP A</a>
    * <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.tmpl">Template B</a> generated <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.php">PHP B</a>
-* **FAST!**
-   * Runs 2~7 times faster than <a href="https://github.com/bobthecow/mustache.php">mustache.php</a> (Justin Hileman/bobthecow implementation).
-   * Runs 2~7 times faster than <a href="https://github.com/dingram/mustache-php">mustache-php</a> (Dave Ingram implementation).
-   * Runs 10~50 times faster than <a href="https://github.com/XaminProject/handlebars.php">handlebars.php</a>.
-   * Detail performance test reports can be found <a href="https://github.com/zordius/HandlebarsTest">here</a>, go http://zordius.github.io/HandlebarsTest/ to see charts.
-* **SMALL!** all PHP files in 189K
 * **ROBUST!**
    * Supports almost all <a href="https://github.com/jbboehr/handlebars-spec">handlebars.js spec</a>
    * Output <a href="https://github.com/zordius/HandlebarsTest/blob/master/FEATURES.md">SAME</a> with <a href="https://github.com/wycats/handlebars.js">handlebars.js</a>
@@ -66,7 +60,7 @@ LightnCandy::compile($template, array(
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NOESCAPE.html">FLAG_NOESCAPE</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_PARTIALNEWCONTEXT.html">FLAG_PARTIALNEWCONTEXT</a>
 * `FLAG_IGNORESTANDALONE` : prevent standalone detection on `{{#foo}}`, `{{/foo}}` or `{{^}}`, the behavior is same with handlebars.js ignoreStandalone compile time option.
-* `FLAG_PREVENTINDENT` : align partial indent behavior with mustache specification. This is same with handlebars.js preventIndent copmile time option.
+* `FLAG_PREVENTINDENT` : Prevent indented partial-call from indenting the entire partial output by the same amount. Same as the Handlebars.js `preventIndent` compile option.
 
 **PHP**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RUNTIMEPARTIAL.html">FLAG_RUNTIMEPARTIAL</a>
@@ -288,21 +282,6 @@ Here are the list of LightnCandy\Runtime debug options for render function:
 * `DEBUG_TAGS_ANSI` : turn the return value of render function into normalized mustache tags with ANSI color
 * `DEBUG_TAGS_HTML` : turn the return value of render function into normalized mustache tags with HTML comments
 
-Preprocess Partials
--------------------
-
-If you want to do extra process before the partial be compiled, you may use `prepartial` when `compile()`. For example, this sample adds HTML comments to identify the partial by the name:
-
-```php
-$php = LightnCandy::compile($template, array(
-    'prepartial' => function ($context, $template, $name) {
-        return "<!-- partial start: $name -->$template<!-- partial end: $name -->";
-    }
-));
-```
-
-You may also extend <a href="https://zordius.github.io/lightncandy/class-LightnCandy.Partial.html">LightnCandy\Partial</a> by override the <a href="https://zordius.github.io/lightncandy/class-LightnCandy.Partial.html#_prePartial">prePartial()</a> static method to turn your preprocess into a built-in feature.
-
 Customize Render Function
 -------------------------
 
@@ -337,11 +316,9 @@ Detail Feature list
 Go http://handlebarsjs.com/ to see more feature description about handlebars.js. All features align with it.
 
 * Exact same CR/LF behavior with handlebars.js
-* Exact same CR/LF bahavior with mustache spec
 * Exact same 'true' or 'false' output with handlebars.js
 * Exact same '[object Object]' output or join(',' array) output with handlebars.js
 * Can place heading/tailing space, tab, CR/LF inside `{{ var }}` or `{{{ var }}}`
-* Indent behavior of the partial same with mustache spec
 * `{{{value}}}` or `{{&value}}` : raw variable
    * true as 'true'
    * false as 'false' (require `FLAG_TRUE`)

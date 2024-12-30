@@ -69,23 +69,6 @@ class Partial
     }
 
     /**
-     * preprocess partial template before it be stored into context
-     *
-     * @param array<string,array|string|integer> $context Current context of compiler progress.
-     * @param string $tmpl partial template
-     * @param string $name partial name
-     *
-     * @return string|null $content processed partial template
-     *
-     * @expect 'hey' when input array('prepartial' => false), 'hey', 'haha'
-     * @expect 'haha-hoho' when input array('prepartial' => function ($cx, $tmpl, $name) {return "$name-$tmpl";}), 'hoho', 'haha'
-     */
-    protected static function prePartial(&$context, $tmpl, &$name)
-    {
-        return $context['prepartial'] ? $context['prepartial']($context, $tmpl, $name) : $tmpl;
-    }
-
-    /**
      * resolve partial, return the partial content
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
@@ -99,7 +82,7 @@ class Partial
             $name = "@partial-block{$context['usedFeature']['pblock']}";
         }
         if (isset($context['partials'][$name])) {
-            return static::prePartial($context, $context['partials'][$name], $name);
+            return $context['partials'][$name];
         }
     }
 
