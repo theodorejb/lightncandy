@@ -69,13 +69,12 @@ LightnCandy::compile($template, array(
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RENDER_DEBUG.html">FLAG_RENDER_DEBUG</a>
 
 **Handlebars Compatibility**
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ADVARNAME.html">FLAG_ADVARNAME</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NAMEDARG.html">FLAG_NAMEDARG</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_SLASH.html">FLAG_SLASH</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ELSE.html">FLAG_ELSE</a>
 * `FLAG_HANDLEBARSLAMBDA` : support lambda logic as handlebars.js specification. And, the rendering performance will be worse.
 * `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
-* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_ADVARNAME` + `FLAG_NAMEDARG` + `FLAG_SPVARS` + `FLAG_SLASH` + `FLAG_ELSE`.
+* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_NAMEDARG` + `FLAG_SPVARS` + `FLAG_SLASH` + `FLAG_ELSE`.
 * `FLAG_HANDLEBARSJS` : support most handlebars.js + javascript behaviors and also keep performance good, same as `FLAG_HANDLEBARS`.
 * `FLAG_HANDLEBARSJS_FULL` : enable all supported handlebars.js behaviors but performance drop, same with `FLAG_HANDLEBARSJS` + `FLAG_RUNTIMEPARTIAL` + `FLAG_HANDLEBARSLAMBDA`.
 
@@ -444,8 +443,8 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#each var}}` : each loop
 * `{{#each}}` : each loop on {{.}}
 * `{{/each}}` : end loop
-* `{{#each bar as |foo|}}` : echo loop on bar and set the value as foo. (require `FLAG_ADVARNAME`)
-* `{{#each bar as |foo moo|}}` : echo loop on bar, set the value as foo, set the index as moo. (require `FLAG_ADVARNAME`)
+* `{{#each bar as |foo|}}` : echo loop on bar and set the value as foo.
+* `{{#each bar as |foo moo|}}` : echo loop on bar, set the value as foo, set the index as moo.
 * `{{#if var}}` : run if logic with original scope (null, false, empty Array and '' will skip this block)
 * `{{#if foo includeZero=true}}` : result as true when foo === 0 (require `FLAG_NAMEDARG`)
 * `{{/if}}` : end if
@@ -456,7 +455,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#unless foo}} ... {{else unless bar}} ... {{/unless}}` : chained unless else blocks
 * `{{#foo}} ... {{else bar}} ... {{/foo}}` : custom helper chained else blocks
 * `{{#with var}}` : change context scope. If the var is false or an empty array, skip included section.
-* `{{#with bar as |foo|}}` : change context to bar and set the value as foo. (require `FLAG_ADVARNAME`)
+* `{{#with bar as |foo|}}` : change context to bar and set the value as foo.
 * `{{lookup foo bar}}` : lookup foo by value of bar as key.
 * `{{../var}}` : parent template scope.
 * `{{>file}}` : partial; include another template inside a template.
@@ -471,16 +470,16 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{@root.path.to.value}}` : references to root context then follow the path. (require `FLAG_SPVARS`)
 * `{{@../index}}` : access to parent loop index. (require `FLAG_SPVARS`)
 * `{{@../key}}` : access to parent loop key. (require `FLAG_SPVARS`)
-* `{{foo.[ba.r].[#spec].0.ok}}` : references to $CurrentConext['foo']['ba.r']['#spec'][0]['ok'] . (require `FLAG_ADVARNAME`)
+* `{{foo.[ba.r].[#spec].0.ok}}` : references to $CurrentConext['foo']['ba.r']['#spec'][0]['ok'] .
 * `{{~any_valid_tag}}` : Space control, remove all previous spacing (includes CR/LF, tab, space; stop on any none spacing character)
 * `{{any_valid_tag~}}` : Space control, remove all next spacing (includes CR/LF, tab, space; stop on any none spacing character)
 * `{{{helper var}}}` : Execute custom helper then render the result
 * `{{helper var}}` : Execute custom helper then render the HTML escaped result
-* `{{helper "str"}}` or `{{helper 'str'}}` : Execute custom helper with string arguments (require `FLAG_ADVARNAME`)
+* `{{helper "str"}}` or `{{helper 'str'}}` : Execute custom helper with string arguments
 * `{{helper 123 null true false undefined}}` : Pass number, true, false, null or undefined into helper
 * `{{helper name1=var name2=var2}}` : Execute custom helper with named arguments (require `FLAG_NAMEDARG`)
 * `{{#helper ...}}...{{/helper}}` : Execute block custom helper
-* `{{helper (helper2 foo) bar}}` : Execute custom helpers as subexpression (require `FLAG_ADVARNAME`)
+* `{{helper (helper2 foo) bar}}` : Execute custom helpers as subexpression
 * `{{{{raw_block}}}} {{will_not_parsed}} {{{{/raw_block}}}}` : Raw block
 * `{{#> foo}}block{{/foo}}` : Partial block, provide `foo` partial default content (require `FLAG_RUNTIMEPARTIAL`)
 * `{{#> @partial-block}}` : access partial block content inside a partial

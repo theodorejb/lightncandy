@@ -1825,7 +1825,6 @@ VAREND
                 'template' => '{{mydash \'a b c\' "d e f"}}',
                 'data' => array('a' => 'a', 'b' => 'b', 'c' => array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_ADVARNAME,
                     'helpers' => array('mydash'),
                 ),
                 'expected' => 'a b c-d e f',
@@ -1835,7 +1834,6 @@ VAREND
                 'template' => '{{mydash "abc" (test_array 1)}}',
                 'data' => array('a' => 'a', 'b' => 'b', 'c' => array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_ADVARNAME,
                     'helpers' => array('mydash', 'test_array'),
                 ),
                 'expected' => 'abc-NOT_ARRAY',
@@ -1845,7 +1843,6 @@ VAREND
                 'template' => '{{mydash "abc" (myjoin a b)}}',
                 'data' => array('a' => 'a', 'b' => 'b', 'c' => array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_ADVARNAME,
                     'helpers' => array('mydash', 'myjoin'),
                 ),
                 'expected' => 'abc-ab',

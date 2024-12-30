@@ -44,7 +44,6 @@ class Context extends Flags
                 'errorlog' => $flags & static::FLAG_ERROR_LOG,
                 'exception' => $flags & static::FLAG_ERROR_EXCEPTION,
                 'noesc' => $flags & static::FLAG_NOESCAPE,
-                'advar' => $flags & static::FLAG_ADVARNAME,
                 'namev' => $flags & static::FLAG_NAMEDARG,
                 'spvar' => $flags & static::FLAG_SPVARS,
                 'slash' => $flags & static::FLAG_SLASH,

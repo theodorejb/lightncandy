@@ -196,7 +196,6 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{win[ner.test1}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => array(
                     "Error in 'win[ner.test1': expect ']' but the token ended!!",
                     'Wrong variable naming in {{win[ner.test1}}',
@@ -204,12 +203,10 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{win]ner.test2}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => 'Wrong variable naming as \'win]ner.test2\' in {{win]ner.test2}} !',
             ),
             array(
                 'template' => '{{wi[n]ner.test3}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => array(
                     'Wrong variable naming as \'wi[n]ner.test3\' in {{wi[n]ner.test3}} !',
                     "Unexpected charactor in 'wi[n]ner.test3' ! (should it be 'wi.[n].ner.test3' ?)",
@@ -217,7 +214,6 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{winner].[test4]}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => array(
                     'Wrong variable naming as \'winner].[test4]\' in {{winner].[test4]}} !',
                     "Unexpected charactor in 'winner].[test4]' ! (should it be 'winner.[test4]' ?)",
@@ -225,7 +221,6 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{winner[.test5]}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => array(
                     'Wrong variable naming as \'winner[.test5]\' in {{winner[.test5]}} !',
                     "Unexpected charactor in 'winner[.test5]' ! (should it be 'winner.[.test5]' ?)",
@@ -233,19 +228,15 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{winner.[.test6]}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
             ),
             array(
                 'template' => '{{winner.[#te.st7]}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
             ),
             array(
                 'template' => '{{test8}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
             ),
             array(
                 'template' => '{{test9]}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => array(
                     'Wrong variable naming as \'test9]\' in {{test9]}} !',
                     "Unexpected charactor in 'test9]' ! (should it be 'test9' ?)",
@@ -253,7 +244,6 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{testA[}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => array(
                     "Error in 'testA[': expect ']' but the token ended!!",
                     'Wrong variable naming in {{testA[}}',
@@ -261,7 +251,6 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{[testB}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => array(
                     "Error in '[testB': expect ']' but the token ended!!",
                     'Wrong variable naming in {{[testB}}',
@@ -269,7 +258,6 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{]testC}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => array(
                     'Wrong variable naming as \']testC\' in {{]testC}} !',
                     "Unexpected charactor in ']testC' ! (should it be 'testC' ?)",
@@ -277,16 +265,13 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{[testD]}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
             ),
             array(
                 'template' => '{{te]stE}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => 'Wrong variable naming as \'te]stE\' in {{te]stE}} !',
             ),
             array(
                 'template' => '{{tee[stF}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => array(
                     "Error in 'tee[stF': expect ']' but the token ended!!",
                     'Wrong variable naming in {{tee[stF}}',
@@ -294,7 +279,6 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{te.e[stG}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => array(
                     "Error in 'te.e[stG': expect ']' but the token ended!!",
                     'Wrong variable naming in {{te.e[stG}}',
@@ -302,12 +286,10 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{te.e]stH}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => 'Wrong variable naming as \'te.e]stH\' in {{te.e]stH}} !',
             ),
             array(
                 'template' => '{{te.e[st.endI}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => array(
                     "Error in 'te.e[st.endI': expect ']' but the token ended!!",
                     'Wrong variable naming in {{te.e[st.endI}}',
@@ -315,16 +297,13 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{te.e]st.endJ}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => 'Wrong variable naming as \'te.e]st.endJ\' in {{te.e]st.endJ}} !',
             ),
             array(
                 'template' => '{{te.[est].endK}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
             ),
             array(
                 'template' => '{{te.t[est].endL}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => array(
                     'Wrong variable naming as \'te.t[est].endL\' in {{te.t[est].endL}} !',
                     "Unexpected charactor in 'te.t[est].endL' ! (should it be 'te.t.[est].endL' ?)",
@@ -332,7 +311,6 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{te.t[est]o.endM}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => array(
                     'Wrong variable naming as \'te.t[est]o.endM\' in {{te.t[est]o.endM}} !',
                     "Unexpected charactor in 'te.t[est]o.endM' ! (should it be 'te.t.[est].o.endM' ?)"
@@ -340,7 +318,6 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{te.[est]o.endN}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
                 'expected' => array(
                     'Wrong variable naming as \'te.[est]o.endN\' in {{te.[est]o.endN}} !',
                     "Unexpected charactor in 'te.[est]o.endN' ! (should it be 'te.[est].o.endN' ?)",
@@ -348,15 +325,12 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{te.[e.st].endO}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
             ),
             array(
                 'template' => '{{te.[e.s[t].endP}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
             ),
             array(
                 'template' => '{{te.[e[s.t].endQ}}',
-                'options' => array('flags' => LightnCandy::FLAG_ADVARNAME),
             ),
             array(
                 'template' => '{{helper}}',
@@ -382,14 +356,6 @@ class errorTest extends TestCase
                 'expected' => 'Unexpect token {{/bar}} ! Previous token {{#[foo]}} is not closed',
             ),
             array(
-                'template' => '{{test_join [a]=b}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_NAMEDARG,
-                    'helpers' => array('test_join')
-                ),
-                'expected' => "Wrong argument name as '[a]' in {{test_join [a]=b}} ! You should fix your template or compile with LightnCandy::FLAG_ADVARNAME flag.",
-            ),
-            array(
                 'template' => '{{a=b}}',
                 'options' => array('flags' => LightnCandy::FLAG_NAMEDARG),
                 'expected' => 'Do not support name=value in {{a=b}}, you should use it after a custom helper.',
@@ -400,11 +366,17 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{#with a}OK!{{/with}}',
-                'expected' => 'Unclosed token {{#with a}OK!{{/with}} !!',
+                'expected' => array(
+                    'Wrong variable naming as \'a}OK!{{/with\' in {{#with a}OK!{{/with}} ! You should wrap ! " # % & \' * + , ; < = > { | } ~ into [ ]',
+                    'Unclosed token {{#with a}OK!{{/with}} !!',
+                ),
             ),
             array(
                 'template' => '{{#each a}OK!{{/each}}',
-                'expected' => 'Unclosed token {{#each a}OK!{{/each}} !!',
+                'expected' => array(
+                    'Wrong variable naming as \'a}OK!{{/each\' in {{#each a}OK!{{/each}} ! You should wrap ! " # % & \' * + , ; < = > { | } ~ into [ ]',
+                    'Unclosed token {{#each a}OK!{{/each}} !!',
+                ),
             ),
             array(
                 'template' => '{{#with items}}OK!{{/with}}',
@@ -465,7 +437,6 @@ class errorTest extends TestCase
             array(
                 'template' => '{{test_join (foo bar)}}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_ADVARNAME,
                     'helpers' => array('test_join'),
                 ),
                 'expected' => "Can not find custom helper function defination foo() !",
@@ -590,9 +561,6 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{foo a=b}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_ADVARNAME,
-                ),
                 'expected' => array(
                     "Wrong variable naming as 'a=b' in {{foo a=b}} ! If you try to use foo=bar param, you should enable LightnCandy::FLAG_NAMEDARG !",
                 )
