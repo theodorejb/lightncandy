@@ -14,6 +14,7 @@
         "php": ">=8.2"
     },
     "require-dev": {
+        "jbboehr/handlebars-spec": "dev-master",
         "phpunit/phpunit": "^11.5"
     },
     "autoload": {

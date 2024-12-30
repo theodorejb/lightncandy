@@ -229,7 +229,7 @@ class HandlebarsSpecTest extends TestCase
             try {
                 $partials = isset($spec['globalPartials']) ? $spec['globalPartials'] : array();
 
-                // Do not use array_merge() here because it destories numeric key
+                // Do not use array_merge() here because it destroys numeric key
                 if (isset($spec['partials'])) {
                     foreach ($spec['partials'] as $k => $v) {
                         $partials[$k] = $v;
@@ -310,11 +310,10 @@ class HandlebarsSpecTest extends TestCase
     {
         $ret = array();
 
-        foreach (glob('specs/handlebars/spec/*.json') as $file) {
-           if ($file === 'specs/handlebars/spec/tokenizer.json') {
+        foreach (glob('vendor/jbboehr/handlebars-spec/spec/*.json') as $file) {
+           if (str_ends_with($file, '/tokenizer.json')) {
                continue;
-           }
-           if ($file === 'specs/handlebars/spec/parser.json') {
+           } elseif (str_ends_with($file, '/parser.json')) {
                continue;
            }
            $i=0;
