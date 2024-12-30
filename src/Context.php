@@ -50,7 +50,6 @@ class Context extends Flags
                 'runpart' => $flags & static::FLAG_RUNTIMEPARTIAL,
                 'partnc' => $flags & static::FLAG_PARTIALNEWCONTEXT,
                 'nostd' => $flags & static::FLAG_IGNORESTANDALONE,
-                'strpar' => $flags & static::FLAG_STRINGPARAMS,
                 'knohlp' => $flags & static::FLAG_KNOWNHELPERSONLY,
             ),
             'delimiters' => array(

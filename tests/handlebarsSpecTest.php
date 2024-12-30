@@ -254,12 +254,6 @@ class HandlebarsSpecTest extends TestCase
                     }
                 }
 
-                if (isset($spec['compileOptions']['stringParams'])) {
-                    if ($spec['compileOptions']['stringParams']) {
-                        $f = $f | LightnCandy::FLAG_STRINGPARAMS;
-                    }
-                }
-
                 if (isset($spec['compileOptions']['knownHelpersOnly'])) {
                     if ($spec['compileOptions']['knownHelpersOnly']) {
                         $f = $f | LightnCandy::FLAG_KNOWNHELPERSONLY;
