@@ -1,27 +1,7 @@
 <?php
-/*
-
-MIT License
-Copyright 2013-2021 Zordius Chen. All Rights Reserved.
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-Origin: https://github.com/zordius/lightncandy
-*/
-
-/**
- * the major file of LightnCandy compiler
- *
- * @package    LightnCandy
- * @author     Zordius <zordius@gmail.com>
- */
 
 namespace LightnCandy;
 
-/**
- * LightnCandy major static class
- */
 class LightnCandy extends Flags
 {
     protected static $lastContext;
@@ -33,7 +13,7 @@ class LightnCandy extends Flags
      * @param string $template handlebars template string
      * @param array<string,array|string|integer> $options LightnCandy compile time and run time options
      *
-     * @return string|false Compiled PHP code when successed. If error happened and compile failed, return false.
+     * @return string|false Compiled PHP code when successful. If error happened and compile failed, return false.
      */
     public static function compile($template, $options = array('flags' => 0))
     {
@@ -93,13 +73,13 @@ class LightnCandy extends Flags
     }
 
     /**
-     * Get a working render function by a string of PHP code. This method may requires php setting allow_url_include=1 and allow_url_fopen=1 , or access right to tmp file system.
+     * Get a working render function by a string of PHP code. This method may require php setting allow_url_include=1 and allow_url_fopen=1 , or access right to tmp file system.
      *
      * @param string      $php PHP code
      * @param string|null $tmpDir Optional, change temp directory for php include file saved by prepare() when cannot include PHP code with data:// format.
      * @param boolean     $delete Optional, delete temp php file when set to tru. Default is true, set it to false for debug propose
      *
-     * @return Closure|false result of include()
+     * @return \Closure|false result of include()
      *
      * @deprecated
      */
