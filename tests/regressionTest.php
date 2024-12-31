@@ -1,7 +1,6 @@
 <?php
 
 use LightnCandy\LightnCandy;
-use LightnCandy\Runtime;
 use PHPUnit\Framework\TestCase;
 
 require_once('tests/helpers_for_test.php');
@@ -29,7 +28,7 @@ class regressionTest extends TestCase
             }
         }
 
-        $this->assertEquals($issue['expected'], $renderer($issue['data'] ?? null), "PHP CODE:\n$php\n$parsed");
+        $this->assertEquals($issue['expected'], $renderer($issue['data'] ?? null), "PHP CODE:\n$php");
     }
 
     public static function issueProvider()
@@ -1106,7 +1105,7 @@ VAREND
 
             array(
                 'id' => 261,
-                'template' => '{{#each foo as |bar|}}?{{bar.0}}{{/each}}',
+                'template' => '{{#each foo as |bar|}}?{{bar.[0]}}{{/each}}',
                 'data' => array('foo' => array(array('a'), array('b'))),
                 'expected' => '?a?b'
             ),
@@ -1115,9 +1114,6 @@ VAREND
                 'id' => 267,
                 'template' => '{{#each . as |v k|}}#{{k}}>{{v}}|{{.}}{{/each}}',
                 'data' => array('a' => 'b', 'c' => 'd'),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_PROPERTY,
-                ),
                 'expected' => '#a>b|b#c>d|d'
             ),
 

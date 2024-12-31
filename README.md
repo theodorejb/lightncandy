@@ -61,7 +61,6 @@ LightnCandy::compile($template, array(
 
 **PHP**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RUNTIMEPARTIAL.html">FLAG_RUNTIMEPARTIAL</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_PROPERTY.html">FLAG_PROPERTY</a>
 
 Partial Support
 ---------------

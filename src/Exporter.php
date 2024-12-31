@@ -156,18 +156,6 @@ class Exporter
     }
 
     /**
-     * Export StringObject class as string
-     *
-     * @param array<string,array|string|integer> $context current compile context
-     *
-     * @return string
-     */
-    public static function stringobject($context)
-    {
-        return 'use \\LightnCandy\\StringObject as StringObject;';
-    }
-
-    /**
      * Export required standalone Runtime methods
      *
      * @param array<string,array|string|integer> $context current compile context

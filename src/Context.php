@@ -20,7 +20,6 @@ class Context extends Flags
                 'noesc' => $flags & static::FLAG_NOESCAPE,
                 'noind' => $flags & static::FLAG_PREVENTINDENT,
                 'debug' => $flags & static::FLAG_STRICT,
-                'prop' => $flags & static::FLAG_PROPERTY,
                 'runpart' => $flags & static::FLAG_RUNTIMEPARTIAL,
                 'partnc' => $flags & static::FLAG_PARTIALNEWCONTEXT,
                 'nostd' => $flags & static::FLAG_IGNORESTANDALONE,
@@ -97,7 +96,7 @@ class Context extends Flags
         );
 
         $context['ops']['enc'] = 'encq';
-        $context['ops']['array_check'] = '$inary=is_array($in);';
+        $context['ops']['array_check'] = '$inary=is_array($in) || $in instanceof \ArrayAccess;';
         static::updateHelperTable($context, $options);
 
         if ($context['flags']['partnc'] && ($context['flags']['runpart'] == 0)) {

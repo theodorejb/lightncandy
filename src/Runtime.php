@@ -5,18 +5,39 @@ namespace LightnCandy;
 /**
  * Class for Object property access on a string.
  */
-class StringObject
+#[\AllowDynamicProperties]
+class StringObject implements \ArrayAccess, \Stringable
 {
-    protected $string;
+    protected string $string;
 
-    public function __construct($string)
+    public function __construct(string $string)
     {
         $this->string = $string;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return strval($this->string);
+        return $this->string;
+    }
+
+    public function offsetExists(mixed $offset): bool
+    {
+        return isset($this->$offset);
+    }
+
+    public function offsetGet(mixed $offset): mixed
+    {
+        return $this->$offset;
+    }
+
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        $this->$offset = $value;
+    }
+
+    public function offsetUnset(mixed $offset): void
+    {
+        unset($this->$offset);
     }
 }
 
@@ -82,65 +103,6 @@ class Runtime extends Encoder
     {
         error_log(var_export($v[0], true));
         return '';
-    }
-
-    /**
-     * Resursive lookup variable and helpers. This is slow and will only be used for instance property or method detection or lambdas.
-     *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
-     * @param array|string|boolean|integer|double|null $in current context
-     * @param array<array|string|integer> $base current variable context
-     * @param array<string|integer> $path array of names for path
-     * @param array|null $args extra arguments for lambda
-     *
-     * @return null|string Return the value or null when not found
-     *
-     * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0)), null, 0, array('a', 'b')
-     * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 0)), null, array('a' => array('b' => 3)), array('a', 'b')
-     * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
-     * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 1)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
-     */
-    public static function v($cx, $in, $base, $path, $args = null)
-    {
-        $count = count($cx['scopes']);
-        $plen = count($path);
-        while ($base) {
-            $v = $base;
-            foreach ($path as $i => $name) {
-                if (is_array($v)) {
-                    if (isset($v[$name])) {
-                        $v = $v[$name];
-                        continue;
-                    }
-                    if (($i === $plen - 1) && ($name === 'length')) {
-                        return count($v);
-                    }
-                }
-                if (is_object($v)) {
-                    if ($cx['flags']['prop'] && !($v instanceof \Closure) && isset($v->$name)) {
-                        $v = $v->$name;
-                        continue;
-                    }
-                }
-                return null;
-            }
-            if (isset($v)) {
-                return $v;
-            }
-            $count--;
-            switch ($count) {
-                case -1:
-                    $base = $cx['sp_vars']['root'];
-                    break;
-                case -2:
-                    return null;
-                default:
-                    $base = $cx['scopes'][$count];
-            }
-        }
-        if ($args) {
-            static::err($cx, 'Can not find helper or lambda: "' . implode('.', $path) . '" !');
-        }
     }
 
     /**
@@ -343,8 +305,7 @@ class Runtime extends Encoder
         }
         if ($each) {
             if ($else !== null) {
-                $ret = $else($cx, $in);
-                return $ret;
+                return $else($cx, $in);
             }
             return '';
         }
@@ -368,8 +329,7 @@ class Runtime extends Encoder
         }
 
         if ($else !== null) {
-            $ret = $else($cx, $in);
-            return $ret;
+            return $else($cx, $in);
         }
 
         return '';
@@ -427,7 +387,7 @@ class Runtime extends Encoder
                 return $b;
             } elseif (is_array($a)) {
                 return array_merge($a, $b);
-            } elseif ($cx['flags']['prop']) {
+            } else {
                 if (!is_object($a)) {
                     $a = new StringObject($a);
                 }

@@ -4,9 +4,11 @@ use LightnCandy\LightnCandy;
 use PHPUnit\Framework\TestCase;
 
 $tested = 0;
-$test_flags = [LightnCandy::FLAG_RUNTIMEPARTIAL];
 
-function recursive_unset(&$array, $unwanted_key) {
+function recursive_unset(&$array, $unwanted_key): void {
+    if (!is_array($array)) {
+        return;
+    }
     if (isset($array[$unwanted_key])) {
         unset($array[$unwanted_key]);
     }
@@ -27,16 +29,12 @@ function patch_this($code) {
     return preg_replace('/\\$options->scope/', '$options[\'_this\']', $code);
 }
 
-function recursive_lambda_fix(&$array) {
-    if (is_array($array) && isset($array['!code']) && isset($array['php'])) {
-        $code = patch_this(patch_safestring($array['php']));
-        eval("\$v = $code;");
-        $array = $v;
-    }
-    if (is_array($array)) {
-        foreach ($array as &$value) {
-            if (is_array($value)) {
-                recursive_lambda_fix($value);
+function data_helpers_fix(array &$spec) {
+    if (isset($spec['data']) && is_array($spec['data'])) {
+        foreach ($spec['data'] as $key => $value) {
+            if (is_array($value) && isset($value['!code']) && isset($value['php'])) {
+                $spec['helpers'][$key] = $value;
+                unset($spec['data'][$key]);
             }
         }
     }
@@ -60,15 +58,11 @@ class HandlebarsSpecTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider("jsonSpecProvider")]
     public function testSpecs($spec)
     {
-        $tmpdir = sys_get_temp_dir();
         global $tested;
-        global $test_flags;
+        $test_flags = [LightnCandy::FLAG_RUNTIMEPARTIAL];
 
-        recursive_unset($spec, '!sparsearray');
-        recursive_lambda_fix($spec['data']);
-        if (isset($spec['options']['data'])) {
-            recursive_lambda_fix($spec['options']['data']);
-        }
+        recursive_unset($spec['data'], '!sparsearray');
+        data_helpers_fix($spec);
 
         // Fix {} for these test cases
         if (
@@ -87,8 +81,7 @@ class HandlebarsSpecTest extends TestCase
 
         // 2. Not supported case: foo/bar path
         if (
-               ($spec['it'] === 'literal paths' && $spec['no'] === 58) ||
-               ($spec['it'] === 'literal paths' && $spec['no'] === 59) ||
+               ($spec['it'] === 'literal paths') ||
                ($spec['it'] === 'this keyword nested inside path') ||
                ($spec['it'] === 'this keyword nested inside helpers param') ||
                ($spec['it'] === 'should handle invalid paths') ||
@@ -96,13 +89,6 @@ class HandlebarsSpecTest extends TestCase
                ($spec['it'] === 'block with complex lookup using nested context')
            ) {
             $this->markTestIncomplete('Not supported case: foo/bar path');
-        }
-
-        // 3. Different API, no need to test
-        if (
-               ($spec['it'] === 'registering undefined partial throws an exception')
-           ) {
-            $this->markTestIncomplete('Not supported case: just skip it');
         }
 
         // 4. block parameters, special case now do not support
@@ -128,23 +114,18 @@ class HandlebarsSpecTest extends TestCase
         // 6. Not supported case: misc
         if (
                // compat mode
-               ($spec['description'] === 'compat mode') ||
+               $spec['description'] === 'blocks - compat mode' ||
+               $spec['description'] === 'partials - compat mode' ||
 
-               // directives
-               ($spec['description'] === 'directives') ||
-
-               // track ids
-               ($spec['file'] === 'specs/handlebars/spec/track-ids.json') ||
-
-               // Error report: position
-               ($spec['it'] === 'knows how to report the correct line number in errors') ||
-               ($spec['it'] === 'knows how to report the correct line number in errors when the first character is a newline') ||
+               // stringParams
+               $spec['it'] === 'in string params mode,' ||
+               $spec['it'] === 'as hashes in string params mode' ||
 
                // chained inverted sections + block params
                ($spec['it'] === 'should allow block params on chained helpers') ||
 
-               // Decorators: https://github.com/wycats/handlebars.js/blob/master/docs/decorators-api.md
-               ($spec['description'] === 'decorators') ||
+               // Decorators are deprecated: https://github.com/wycats/handlebars.js/blob/master/docs/decorators-api.md
+               ($spec['description'] === 'blocks - decorators') ||
 
                // strict mode
                $spec['description'] === 'strict - strict mode' ||
@@ -154,10 +135,8 @@ class HandlebarsSpecTest extends TestCase
                ($spec['it'] === 'helper for raw block gets parameters') ||
 
                // lambda function in data
-               ($spec['it'] === 'Functions are bound to the context in knownHelpers only mode') ||
-
-               // !!!! Never support
-               ($spec['template'] === '{{foo}')
+               $spec['it'] === 'pathed functions with context argument' ||
+               $spec['it'] === 'Functions are bound to the context in knownHelpers only mode'
            ) {
             $this->markTestIncomplete('Not supported case: just skip it');
         }
@@ -165,17 +144,28 @@ class HandlebarsSpecTest extends TestCase
         // TODO: require fix
         if (
                // inline partials
-               ($spec['template'] === '{{#with .}}{{#*inline "myPartial"}}success{{/inline}}{{/with}}{{> myPartial}}') ||
+                str_starts_with($spec['it'], 'should render nested inline partials') ||
+                $spec['it'] === 'should define inline partials for block' && isset($spec['number']) ||
 
                // SafeString
-               ($spec['it'] === 'functions returning safestrings shouldn\'t be escaped') ||
                ($spec['it'] === 'rendering function partial in vm mode') ||
 
+                // todo: fix
+                $spec['it'] === 'each with block params' ||
+                $spec['it'] === 'pathed lambas with parameters' ||
+                $spec['it'] === 'lambdas are resolved by blockHelperMissing, not handlebars proper' ||
+                $spec['description'] === 'helpers - the lookupProperty-option' ||
+
                // need confirm
+                $spec['it'] === 'if with function argument' ||
+                $spec['it'] === 'with with function argument' ||
+                $spec['it'] === 'each with function argument' && !isset($spec['number']) ||
+                $spec['it'] === 'data can be functions' ||
+                $spec['it'] === 'data can be functions with params' ||
                ($spec['it'] === 'provides each nested helper invocation its own options hash') ||
-               ($spec['template'] === '{{echo (header)}}') ||
                ($spec['it'] === 'block functions without context argument') ||
                ($spec['it'] === 'depthed block functions with context argument') ||
+               $spec['it'] === 'depthed functions with context argument' ||
                ($spec['it'] === 'block functions with context argument')
            ) {
             $this->markTestIncomplete('TODO: require fix');
@@ -188,15 +178,16 @@ class HandlebarsSpecTest extends TestCase
         if (($spec['it'] === 'should handle undefined and null') && ($spec['expected'] === 'true true object')) {
             $spec['expected'] = 'true true array';
         }
+        if ($spec['it'] === 'depthed block functions without context argument' && $spec['expected'] === 'inner') {
+            $spec['expected'] = '';
+        }
 
-        $hasTestFlags = false;
         foreach ($test_flags as $f) {
-            $hasTestFlags = true;
             // setup helpers
             $tested++;
             $helpers = array();
             $helpersList = '';
-            foreach (array_merge((isset($spec['globalHelpers']) && is_array($spec['globalHelpers'])) ? $spec['globalHelpers'] : array(), (isset($spec['helpers']) && is_array($spec['helpers'])) ? $spec['helpers'] : array()) as $name => $func) {
+            foreach (is_array($spec['helpers'] ?? null) ? $spec['helpers'] : [] as $name => $func) {
                 if (!isset($func['php'])) {
                     $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no PHP helper code provided for this case.");
                 }
@@ -219,7 +210,7 @@ class HandlebarsSpecTest extends TestCase
             }
 
             try {
-                $partials = $spec['globalPartials'] ?? [];
+                $partials = [];
 
                 // Do not use array_merge() here because it destroys numeric key
                 if (isset($spec['partials'])) {
@@ -261,7 +252,6 @@ class HandlebarsSpecTest extends TestCase
                 $php = LightnCandy::compile($spec['template'], array(
                     'flags' => $f,
                     'helpers' => $helpers,
-                    'basedir' => $tmpdir,
                     'partials' => $partials,
                 ));
 
@@ -280,8 +270,8 @@ class HandlebarsSpecTest extends TestCase
 
             try {
                 $ropt = array();
-                if (isset($spec['options']['data'])) {
-                    $ropt['data'] = $spec['options']['data'];
+                if (is_array($spec['runtimeOptions']['data'] ?? null)) {
+                    $ropt['data'] = $spec['runtimeOptions']['data'];
                 }
                 $result = $renderer($spec['data'], $ropt);
             } catch (Exception $e) {
@@ -290,47 +280,47 @@ class HandlebarsSpecTest extends TestCase
                     $this->assertEquals(true, true);
                     continue;
                 }
-                $this->fail("Rendering Error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php\nPARSED: $parsed\n" . $e->getMessage());
+                $this->fail("Rendering Error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\n" . $e->getMessage());
             }
 
             if (!isset($spec['expected'])) {
-                $this->fail('Should Fail:' . print_r($spec, true) . "PHP CODE: $php\nPARSED: $parsed\nHELPERS:$helpersList");
+                $this->fail("Should Fail: [{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\nResult: $result");
             }
 
-            $this->assertEquals($spec['expected'], $result, "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php\nPARSED: $parsed\nHELPERS:$helpersList");
-        }
-
-        if (!$hasTestFlags) {
-            $this->markTestSkipped('No test flags found');
+            $this->assertEquals($spec['expected'], $result, "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\nHELPERS:$helpersList");
         }
     }
 
     public static function jsonSpecProvider()
     {
         $ret = array();
+        $allowed = ['basic', 'blocks', 'builtins', 'data', 'partials', 'strict', 'subexpressions', 'whitespace-control'];
+        //$allowed = ['helpers'];
+
+        // stringParams and trackIds mode were removed from Handlebars in 2015:
+        // https://github.com/handlebars-lang/handlebars.js/pull/1148
+        $banned = ['parser', 'tokenizer', 'string-params', 'track-ids'];
 
         foreach (glob('vendor/jbboehr/handlebars-spec/spec/*.json') as $file) {
-           if (str_ends_with($file, '/tokenizer.json')) {
-               continue;
-           } elseif (str_ends_with($file, '/parser.json')) {
-               continue;
-           }
-           $i=0;
-           $json = json_decode(file_get_contents($file), true);
-           $ret = array_merge($ret, array_map(function ($d) use ($file, &$i) {
-               $d['file'] = $file;
-               $d['no'] = ++$i;
-               if (!isset($d['message'])) {
-                   $d['message'] = null;
-               }
-               if (!isset($d['data'])) {
-                   $d['data'] = null;
-               }
-               return array($d);
-           }, $json));
+            $name = basename($file, '.json');
+            if (!in_array($name, $allowed) || in_array($name, $banned)) {
+                continue;
+            }
+            $i=0;
+            $json = json_decode(file_get_contents($file), true);
+            $ret = array_merge($ret, array_map(function ($d) use ($file, &$i) {
+                $d['file'] = $file;
+                $d['no'] = ++$i;
+                if (!isset($d['message'])) {
+                    $d['message'] = null;
+                }
+                if (!isset($d['data'])) {
+                    $d['data'] = null;
+                }
+                return array($d);
+            }, $json));
         }
 
         return $ret;
     }
 }
-

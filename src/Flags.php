@@ -12,7 +12,6 @@ class Flags
     const FLAG_KNOWNHELPERSONLY = 4294967296;
 
     // PHP behavior flags
-    const FLAG_PROPERTY = 32768;
     const FLAG_RUNTIMEPARTIAL = 1048576;
     const FLAG_NOESCAPE = 67108864;
 }

@@ -11,21 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 
 class RuntimeTest extends TestCase
 {
-    public function testOn_v() {
-        $method = new \ReflectionMethod('LightnCandy\Runtime', 'v');
-        $this->assertEquals(null, $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array(), 'flags' => array('prop' => 0)), null, 0, array('a', 'b')
-        ))));
-        $this->assertEquals(3, $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array(), 'flags' => array('prop' => 0)), null, array('a' => array('b' => 3)), array('a', 'b')
-        ))));
-        $this->assertEquals(null, $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array(), 'flags' => array('prop' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
-        ))));
-        $this->assertEquals(3, $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array(), 'flags' => array('prop' => 1)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
-        ))));
-    }
     public function testOn_ifvar() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'ifvar');
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
