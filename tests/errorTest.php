@@ -11,7 +11,7 @@ class errorTest extends TestCase
     public function testException()
     {
         try {
-          $php = LightnCandy::compile('{{{foo}}', array('flags' => LightnCandy::FLAG_ERROR_EXCEPTION));
+          $php = LightnCandy::compile('{{{foo}}');
         } catch (\Exception $E) {
             $this->assertEquals('Bad token {{{foo}} ! Do you mean {{foo}} or {{{foo}}}?', $E->getMessage());
         }
@@ -106,16 +106,16 @@ class errorTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider("errorProvider")]
     public function testErrors($test)
     {
-        $php = LightnCandy::compile($test['template'], $test['options']);
-        $context = LightnCandy::getContext();
+        try {
+            $php = LightnCandy::compile($test['template'], $test['options']);
+        } catch (\Exception $e) {
+            $this->assertEquals($test['expected'], explode("\n", $e->getMessage()));
+        }
 
         // This case should be compiled without error
         if (!isset($test['expected'])) {
             $this->assertEquals(true, true);
-            return;
         }
-
-        $this->assertEquals($test['expected'], $context['error'], "Code: $php");
     }
 
     public static function errorProvider()

@@ -7,7 +7,6 @@ genTestForClass('Context');
 genTestForClass('Exporter');
 genTestForClass('Encoder');
 genTestForClass('Expression');
-genTestForClass('LightnCandy');
 genTestForClass('Parser');
 genTestForClass('Runtime');
 genTestForClass('SafeString');

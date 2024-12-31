@@ -12,26 +12,17 @@ class LightnCandy extends Flags
      *
      * @param string $template handlebars template string
      * @param array<string,array|string|integer> $options LightnCandy compile time and run time options
-     *
-     * @return string|false Compiled PHP code when successful. If error happened and compile failed, return false.
      */
-    public static function compile($template, $options = array('flags' => 0))
+    public static function compile(string $template, array $options = []): string
     {
         $context = Context::create($options);
-
-        if (static::handleError($context)) {
-            return false;
-        }
+        static::handleError($context);
 
         $code = Compiler::compileTemplate($context, SafeString::escapeTemplate($template));
         static::$lastParsed = Compiler::$lastParsed;
+        static::handleError($context);
 
-        // return false when fatal error
-        if (static::handleError($context)) {
-            return false;
-        }
-
-        // Or, return full PHP render codes as string
+        // return full PHP render code as string
         return Compiler::composePHPRender($context, $code);
     }
 
@@ -41,22 +32,14 @@ class LightnCandy extends Flags
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      *
      * @throws \Exception
-     * @return boolean True when error detected
-     *
-     * @expect false when input array('error' => array())
-     * @expect true when input array('error' => array('some error'), 'flags' => array('exception' => 0))
      */
-    protected static function handleError(&$context)
+    protected static function handleError(&$context): void
     {
         static::$lastContext = $context;
 
         if (count($context['error'])) {
-            if ($context['flags']['exception']) {
-                throw new \Exception(implode("\n", $context['error']));
-            }
-            return true;
+            throw new \Exception(implode("\n", $context['error']));
         }
-        return false;
     }
 
     /**
@@ -72,41 +55,24 @@ class LightnCandy extends Flags
     /**
      * Get a working render function by a string of PHP code. This method may require php setting allow_url_include=1 and allow_url_fopen=1 , or access right to tmp file system.
      *
-     * @param string      $php PHP code
-     * @param string|null $tmpDir Optional, change temp directory for php include file saved by prepare() when cannot include PHP code with data:// format.
-     * @param boolean     $delete Optional, delete temp php file when set to tru. Default is true, set it to false for debug propose
-     *
-     * @return \Closure|false result of include()
-     *
      * @deprecated
      */
-    public static function prepare($php, $tmpDir = null, $delete = true)
+    public static function prepare(string $php): \Closure
     {
         $php = "<?php $php ?>";
 
         if (!ini_get('allow_url_include') || !ini_get('allow_url_fopen')) {
-            if (!is_string($tmpDir) || !is_dir($tmpDir)) {
-                $tmpDir = sys_get_temp_dir();
-            }
-        }
-
-        if (is_dir($tmpDir)) {
+            $tmpDir = sys_get_temp_dir();
             $fn = tempnam($tmpDir, 'lci_');
             if (!$fn) {
-                error_log("Can not generate tmp file under $tmpDir!!\n");
-                return false;
+                throw new \Exception("Can not generate tmp file under $tmpDir");
             }
             if (!file_put_contents($fn, $php)) {
-                error_log("Can not include saved temp php code from $fn, you should add $tmpDir into open_basedir!!\n");
-                return false;
+                throw new \Exception("Can not include saved temp php code from $fn, you should add $tmpDir into open_basedir");
             }
 
             $phpfunc = include($fn);
-
-            if ($delete) {
-                unlink($fn);
-            }
-
+            unlink($fn);
             return $phpfunc;
         }
 

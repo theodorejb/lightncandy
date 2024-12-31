@@ -11,17 +11,12 @@ class Context extends Flags
      *
      * @return array<string,array|string|integer> Context from options
      */
-    public static function create($options)
+    public static function create(array $options)
     {
-        if (!is_array($options)) {
-            $options = array();
-        }
-
         $flags = $options['flags'] ?? 0;
 
         $context = array(
             'flags' => array(
-                'exception' => $flags & static::FLAG_ERROR_EXCEPTION,
                 'noesc' => $flags & static::FLAG_NOESCAPE,
                 'noind' => $flags & static::FLAG_PREVENTINDENT,
                 'debug' => $flags & static::FLAG_RENDER_DEBUG,

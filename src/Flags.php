@@ -4,9 +4,6 @@ namespace LightnCandy;
 
 class Flags
 {
-    // Compile time error handling flags
-    const FLAG_ERROR_EXCEPTION = 2;
-
     // Handlebars.js compatibility
     const FLAG_PREVENTINDENT = 131072;
     const FLAG_PARTIALNEWCONTEXT = 536870912;

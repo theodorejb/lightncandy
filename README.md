@@ -52,7 +52,6 @@ LightnCandy::compile($template, array(
 ```
 
 **Error Handling**
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_EXCEPTION.html">FLAG_ERROR_EXCEPTION</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RENDER_DEBUG.html">FLAG_RENDER_DEBUG</a>
 
 **Handlebars Options**
@@ -228,9 +227,9 @@ Handlebars.registerHelper('list', function(context, options) {
 Template Debugging
 ------------------
 
-When template error happened, LightnCandy::compile() will return false. You may compile with `FLAG_ERROR_EXCEPTION` to catch the exception.
+`LightnCandy::compile()` will throw an exception if there is a template error which prevents compilation.
 
-You may generate debug version of templates with `FLAG_RENDER_DEBUG` when compile() . The debug template contained more debug information and slower (TBD: performance result) , you may pass extra LightnCandy\Runtime options into render function to know more rendering error (missing data). For example:
+You may generate debug version of templates with `FLAG_RENDER_DEBUG` when compile() . The debug template contained more debug information and slower, you may pass extra LightnCandy\Runtime options into render function to know more rendering error (missing data). For example:
 
 ```php
 $template = "Hello! {{name}} is {{gender}}.

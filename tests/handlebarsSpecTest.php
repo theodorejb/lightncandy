@@ -4,13 +4,8 @@ use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
 use PHPUnit\Framework\TestCase;
 
-$tmpdir = sys_get_temp_dir();
-$hb_test_flag = LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_EXCEPTION;
 $tested = 0;
-$test_flags = array($hb_test_flag);
-if (!version_compare(phpversion(), '5.4.0', '<')) {
-    $test_flags[] = $hb_test_flag;
-}
+$test_flags = [LightnCandy::FLAG_RUNTIMEPARTIAL];
 
 function recursive_unset(&$array, $unwanted_key) {
     if (isset($array[$unwanted_key])) {

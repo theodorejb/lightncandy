@@ -11,7 +11,7 @@ class regressionTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider("issueProvider")]
     public function testIssues($issue)
     {
-        $php = LightnCandy::compile($issue['template'], $issue['options'] ?? null);
+        $php = LightnCandy::compile($issue['template'], $issue['options'] ?? []);
         $context = LightnCandy::getContext();
         $parsed = print_r(LightnCandy::$lastParsed, true);
         if (count($context['error'])) {
@@ -867,7 +867,7 @@ VAREND
                 'template' => '{{#> foo bar}}a,b,{{.}},{{!-- comment --}},d{{/foo}}',
                 'data' => array('bar' => 'BA!'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_EXCEPTION,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array('foo' => 'hello, {{> @partial-block}}')
                 ),
                 'expected' => 'hello, a,b,BA!,,d',
@@ -878,7 +878,7 @@ VAREND
                 'template' => '{{#> foo bar}}{{#if .}}OK! {{.}}{{else}}no bar{{/if}}{{/foo}}',
                 'data' => array('bar' => 'BA!'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_EXCEPTION,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array('foo' => 'hello, {{> @partial-block}}')
                 ),
                 'expected' => 'hello, OK! BA!',
