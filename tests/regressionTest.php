@@ -19,7 +19,17 @@ class regressionTest extends TestCase
         }
         $renderer = LightnCandy::prepare($php);
 
-        $this->assertEquals($issue['expected'], $renderer($issue['data'] ?? null, array('debug' => $issue['debug'])), "PHP CODE:\n$php\n$parsed");
+        if (isset($issue['exception'])) {
+            try {
+                $renderer($issue['data'] ?? null);
+                $this->fail("Failed to throw expected exception: {$issue['exception']}");
+            } catch (Exception $e) {
+                $this->assertSame($issue['exception'], $e->getMessage());
+                return;
+            }
+        }
+
+        $this->assertEquals($issue['expected'], $renderer($issue['data'] ?? null), "PHP CODE:\n$php\n$parsed");
     }
 
     public static function issueProvider()
@@ -1541,38 +1551,25 @@ VAREND
 
             array(
                 'template' => '{{foo}}',
-                'options' => array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
                 'data' => array('foo' => 'OK'),
                 'expected' => 'OK',
             ),
 
             array(
                 'template' => '{{foo}}',
-                'options' => array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
-                'debug' => Runtime::DEBUG_TAGS_ANSI,
-                'data' => array('foo' => 'OK'),
-                'expected' => pack('H*', '1b5b303b33326d7b7b5b666f6f5d7d7d1b5b306d'),
+                'expected' => '',
             ),
 
             array(
                 'template' => '{{foo}}',
-                'options' => array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
-                'debug' => Runtime::DEBUG_TAGS_HTML,
-                'expected' => '<!--MISSED((-->{{[foo]}}<!--))-->',
+                'options' => array('flags' => LightnCandy::FLAG_STRICT),
+                'exception' => 'Runtime: [foo] does not exist',
             ),
 
             array(
                 'template' => '{{#foo}}OK{{/foo}}',
-                'options' => array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
-                'debug' => Runtime::DEBUG_TAGS_HTML,
-                'expected' => '<!--MISSED((-->{{#[foo]}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/[foo]}}<!--))-->',
-            ),
-
-            array(
-                'template' => '{{#foo}}OK{{/foo}}',
-                'options' => array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
-                'debug' => Runtime::DEBUG_TAGS_ANSI,
-                'expected' => pack('H*', '1b5b303b33316d7b7b235b666f6f5d7d7d1b5b306d1b5b303b33336d534b49505045441b5b306d1b5b303b33316d7b7b2f5b666f6f5d7d7d1b5b306d'),
+                'options' => array('flags' => LightnCandy::FLAG_STRICT),
+                'exception' => 'Runtime: [foo] does not exist',
             ),
 
             array(
@@ -1859,9 +1856,6 @@ VAREND
         );
 
         return array_map(function($i) {
-            if (!isset($i['debug'])) {
-                $i['debug'] = 0;
-            }
             return array($i);
         }, $issues);
     }

@@ -51,14 +51,12 @@ LightnCandy::compile($template, array(
 ));
 ```
 
-**Error Handling**
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RENDER_DEBUG.html">FLAG_RENDER_DEBUG</a>
-
 **Handlebars Options**
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NOESCAPE.html">FLAG_NOESCAPE</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_PARTIALNEWCONTEXT.html">FLAG_PARTIALNEWCONTEXT</a>
-* `FLAG_IGNORESTANDALONE` : prevent standalone detection on `{{#foo}}`, `{{/foo}}` or `{{^}}`, the behavior is same with handlebars.js ignoreStandalone compile time option.
+* `FLAG_NOESCAPE` : Set to not HTML escape any content.
+* `FLAG_STRICT` : Run in strict mode. In this mode, templates will throw rather than silently ignore missing fields.
 * `FLAG_PREVENTINDENT` : Prevent indented partial-call from indenting the entire partial output by the same amount. Same as the Handlebars.js `preventIndent` compile option.
+* `FLAG_IGNORESTANDALONE` : prevent standalone detection on `{{#foo}}`, `{{/foo}}` or `{{^}}`, the behavior is same with handlebars.js `ignoreStandalone` compile time option.
+* `FLAG_PARTIALNEWCONTEXT` : Disables implicit context for partials. When enabled, partials that are not passed a context value will execute against an empty object.
 
 **PHP**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RUNTIMEPARTIAL.html">FLAG_RUNTIMEPARTIAL</a>
@@ -229,7 +227,8 @@ Template Debugging
 
 `LightnCandy::compile()` will throw an exception if there is a template error which prevents compilation.
 
-You may generate debug version of templates with `FLAG_RENDER_DEBUG` when compile() . The debug template contained more debug information and slower, you may pass extra LightnCandy\Runtime options into render function to know more rendering error (missing data). For example:
+You may generate debug version of templates with `FLAG_STRICT` when compiling.
+The debug template contains additional debug info and will throw an exception for missing data. For example:
 
 ```php
 $template = "Hello! {{name}} is {{gender}}.
@@ -251,7 +250,7 @@ section Value: {{.}}
 
 // compile to debug version
 $phpStr = LightnCandy::compile($template, array(
-    'flags' => LightnCandy::FLAG_RENDER_DEBUG
+    'flags' => LightnCandy::STRICT
 ));
 
 // Save the compiled PHP code into a php file
@@ -260,25 +259,9 @@ file_put_contents('render.php', '<?php ' . $phpStr . '?>');
 // Get the render function from the php file
 $renderer = include('render.php');
 
-// error_log() when missing data:
 //   LightnCandy\Runtime: [gender] is not exist
-//   LightnCandy\Runtime: ../[test] is not exist
-$renderer(array('name' => 'John'), array('debug' => LightnCandy\Runtime::DEBUG_ERROR_LOG));
-
-// Output visual debug template with ANSI color:
-echo $renderer(array('name' => 'John'), array('debug' => LightnCandy\Runtime::DEBUG_TAGS_ANSI));
-
-// Output debug template with HTML comments:
-echo $renderer(array('name' => 'John'), array('debug' => LightnCandy\Runtime::DEBUG_TAGS_HTML));
+echo $renderer(array('name' => 'John'));
 ```
-
-Here are the list of LightnCandy\Runtime debug options for render function:
-
-* `DEBUG_ERROR_LOG` : error_log() when missing required data
-* `DEBUG_ERROR_EXCEPTION` : throw exception when missing required data
-* `DEBUG_TAGS` : turn the return value of render function into normalized mustache tags
-* `DEBUG_TAGS_ANSI` : turn the return value of render function into normalized mustache tags with ANSI color
-* `DEBUG_TAGS_HTML` : turn the return value of render function into normalized mustache tags with HTML comments
 
 Unsupported Feature
 -------------------

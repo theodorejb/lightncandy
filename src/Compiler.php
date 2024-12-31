@@ -64,7 +64,6 @@ class Compiler extends Validator
         $constants = Exporter::constants($context);
         $helpers = Exporter::helpers($context);
         $partials = implode(",\n", $context['partialCode']);
-        $debug = Runtime::DEBUG_ERROR_LOG;
         $use = "use {$runtime} as LR;";
         $stringObject = $context['flags']['prop'] ? Exporter::stringobject($context) : '';
         $safeString = ($context['usedFeature']['enc'] > 0) ? "use {$context['safestring']} as SafeString;" : '';
@@ -77,7 +76,7 @@ $stringObject{$safeString}{$use}return function (\$in = null, \$options = null) 
         'flags' => array(
             'prop' => $flagProp,
             'partnc' => $flagPartNC,
-            'debug' => isset(\$options['debug']) ? \$options['debug'] : $debug,
+            'debug' => 1,
         ),
         'constants' => $constants,
         'helpers' => isset(\$options['helpers']) ? array_merge(\$helpers, \$options['helpers']) : \$helpers,

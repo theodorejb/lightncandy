@@ -25,21 +25,12 @@ class StringObject
  */
 class Runtime extends Encoder
 {
-    const DEBUG_ERROR_LOG = 1;
-    const DEBUG_ERROR_EXCEPTION = 2;
-    const DEBUG_TAGS = 4;
-    const DEBUG_TAGS_ANSI = 12;
-    const DEBUG_TAGS_HTML = 20;
-
     /**
      * Output debug info.
      *
      * @param string $v expression
      * @param string $f runtime function name
      * @param array<string,array|string|integer> $cx render time context for lightncandy
-     *
-     * @expect '{{123}}' when input '123', 'miss', array('flags' => array('debug' => Runtime::DEBUG_TAGS)), ''
-     * @expect '<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->' when input '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML)), false, null, false, function () {return 'A';}
      */
     public static function debug($v, $f, $cx)
     {
@@ -52,31 +43,7 @@ class Runtime extends Encoder
         $runtime = self::class;
         $r = call_user_func_array(($cx['funcs'][$f] ?? "{$runtime}::$f"), $params);
 
-        if ($cx['flags']['debug'] & static::DEBUG_TAGS) {
-            $ansi = $cx['flags']['debug'] & (static::DEBUG_TAGS_ANSI - static::DEBUG_TAGS);
-            $html = $cx['flags']['debug'] & (static::DEBUG_TAGS_HTML - static::DEBUG_TAGS);
-            $cs = ($html ? (($r !== '') ? '<!!--OK((-->' : '<!--MISSED((-->') : '')
-                  . ($ansi ? (($r !== '') ? "\033[0;32m" : "\033[0;31m") : '');
-            $ce = ($html ? '<!--))-->' : '')
-                  . ($ansi ? "\033[0m" : '');
-            switch ($f) {
-                case 'sec':
-                case 'wi':
-                    if ($r == '') {
-                        if ($ansi) {
-                            $r = "\033[0;33mSKIPPED\033[0m";
-                        }
-                        if ($html) {
-                            $r = '<!--SKIPPED-->';
-                        }
-                    }
-                    return "$cs{{#{$v}}}$ce{$r}$cs{{/{$v}}}$ce";
-                default:
-                    return "$cs{{{$v}}}$ce";
-            }
-        } else {
-            return $r;
-        }
+        return $r;
     }
 
     /**
@@ -89,11 +56,7 @@ class Runtime extends Encoder
      */
     public static function err($cx, $err)
     {
-        if ($cx['flags']['debug'] & static::DEBUG_ERROR_LOG) {
-            error_log($err);
-            return;
-        }
-        if ($cx['flags']['debug'] & static::DEBUG_ERROR_EXCEPTION) {
+        if ($cx['flags']['debug']) {
             throw new \Exception($err);
         }
     }
@@ -345,7 +308,7 @@ class Runtime extends Encoder
             }
             $i = 0;
             $old_spvar = $cx['sp_vars'] ?? [];
-            $cx['sp_vars'] = array_merge(array('root' => $old_spvar['root']), $old_spvar, array('_parent' => $old_spvar));
+            $cx['sp_vars'] = array_merge(array('root' => $old_spvar['root'] ?? null), $old_spvar, array('_parent' => $old_spvar));
             if (!$isTrav) {
                 $last = count($keys) - 1;
             }

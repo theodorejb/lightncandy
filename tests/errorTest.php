@@ -42,11 +42,10 @@ class errorTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider("renderErrorProvider")]
     public function testRenderingException($test)
     {
-        $php = LightnCandy::compile($test['template'], $test['options']);
+        $php = LightnCandy::compile($test['template'], $test['options'] ?? []);
         $renderer = LightnCandy::prepare($php);
         try {
-            $input = $test['data'] ?? null;
-            $renderer($input, array('debug' => Runtime::DEBUG_ERROR_EXCEPTION));
+            $renderer($test['data'] ?? null);
         } catch (\Exception $E) {
             $this->assertEquals($test['expected'], $E->getMessage());
             return;
@@ -77,6 +76,9 @@ class errorTest extends TestCase
              ),
              array(
                  'template' => '{{{foo}}}',
+                 'options' => [
+                     'flags' => LightnCandy::FLAG_STRICT,
+                 ],
                  'expected' => 'Runtime: [foo] does not exist',
              ),
              array(
@@ -93,12 +95,6 @@ class errorTest extends TestCase
         );
 
         return array_map(function($i) {
-            if (!isset($i['options'])) {
-                $i['options'] = array('flags' => LightnCandy::FLAG_RENDER_DEBUG);
-            }
-            if (!isset($i['options']['flags'])) {
-                $i['options']['flags'] = LightnCandy::FLAG_RENDER_DEBUG;
-            }
             return array($i);
         }, $errorCases);
     }

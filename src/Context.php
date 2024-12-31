@@ -19,7 +19,7 @@ class Context extends Flags
             'flags' => array(
                 'noesc' => $flags & static::FLAG_NOESCAPE,
                 'noind' => $flags & static::FLAG_PREVENTINDENT,
-                'debug' => $flags & static::FLAG_RENDER_DEBUG,
+                'debug' => $flags & static::FLAG_STRICT,
                 'prop' => $flags & static::FLAG_PROPERTY,
                 'runpart' => $flags & static::FLAG_RUNTIMEPARTIAL,
                 'partnc' => $flags & static::FLAG_PARTIALNEWCONTEXT,

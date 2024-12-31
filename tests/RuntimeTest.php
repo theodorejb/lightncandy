@@ -11,15 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 
 class RuntimeTest extends TestCase
 {
-    public function testOn_debug() {
-        $method = new \ReflectionMethod('LightnCandy\Runtime', 'debug');
-        $this->assertEquals('{{123}}', $method->invokeArgs(null, array_by_ref(array(
-            '123', 'miss', array('flags' => array('debug' => Runtime::DEBUG_TAGS)), ''
-        ))));
-        $this->assertEquals('<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->', $method->invokeArgs(null, array_by_ref(array(
-            '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML)), false, null, false, function () {return 'A';}
-        ))));
-    }
     public function testOn_v() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'v');
         $this->assertEquals(null, $method->invokeArgs(null, array_by_ref(array(

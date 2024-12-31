@@ -1,7 +1,6 @@
 <?php
 
 use LightnCandy\LightnCandy;
-use LightnCandy\Runtime;
 use PHPUnit\Framework\TestCase;
 
 $tested = 0;
@@ -148,10 +147,8 @@ class HandlebarsSpecTest extends TestCase
                ($spec['description'] === 'decorators') ||
 
                // strict mode
-               ($spec['description'] === 'strict mode') ||
-
-               // assume objects
-               ($spec['description'] === 'assume objects') ||
+               $spec['description'] === 'strict - strict mode' ||
+               $spec['description'] === 'strict - assume objects' ||
 
                // helper for raw block
                ($spec['it'] === 'helper for raw block gets parameters') ||
@@ -222,7 +219,7 @@ class HandlebarsSpecTest extends TestCase
             }
 
             try {
-                $partials = isset($spec['globalPartials']) ? $spec['globalPartials'] : array();
+                $partials = $spec['globalPartials'] ?? [];
 
                 // Do not use array_merge() here because it destroys numeric key
                 if (isset($spec['partials'])) {
@@ -230,6 +227,12 @@ class HandlebarsSpecTest extends TestCase
                         $partials[$k] = $v;
                     }
                 };
+
+                if (isset($spec['compileOptions']['strict'])) {
+                    if ($spec['compileOptions']['strict']) {
+                        $f = $f | LightnCandy::FLAG_STRICT;
+                    }
+                }
 
                 if (isset($spec['compileOptions']['preventIndent'])) {
                     if ($spec['compileOptions']['preventIndent']) {
@@ -267,7 +270,7 @@ class HandlebarsSpecTest extends TestCase
                 // Failed this case
                 $this->fail('Exception:' . $e->getMessage());
             }
-            $renderer = LightnCandy::prepare($php, null, false);
+            $renderer = LightnCandy::prepare($php);
             if ($spec['description'] === 'Tokenizer') {
                 // no compile error means passed
                 $this->assertEquals(true, true);
@@ -275,14 +278,14 @@ class HandlebarsSpecTest extends TestCase
             }
 
             try {
-                $ropt = array('debug' => Runtime::DEBUG_ERROR_EXCEPTION);
+                $ropt = array();
                 if (isset($spec['options']['data'])) {
                     $ropt['data'] = $spec['options']['data'];
                 }
                 $result = $renderer($spec['data'], $ropt);
             } catch (Exception $e) {
                 if (!isset($spec['expected'])) {
-                    // expected error and catched here, so passed
+                    // expected error and caught here, so passed
                     $this->assertEquals(true, true);
                     continue;
                 }
