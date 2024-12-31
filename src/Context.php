@@ -21,7 +21,6 @@ class Context extends Flags
 
         $context = array(
             'flags' => array(
-                'errorlog' => $flags & static::FLAG_ERROR_LOG,
                 'exception' => $flags & static::FLAG_ERROR_EXCEPTION,
                 'noesc' => $flags & static::FLAG_NOESCAPE,
                 'noind' => $flags & static::FLAG_PREVENTINDENT,

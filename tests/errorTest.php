@@ -6,31 +6,6 @@ use PHPUnit\Framework\TestCase;
 
 require_once('tests/helpers_for_test.php');
 
-$tmpdir = sys_get_temp_dir();
-$errlog_fn = tempnam($tmpdir, 'terr_');
-
-function start_catch_error_log() {
-    global $errlog_fn;
-    date_default_timezone_set('GMT');
-    if ($errlog_fn !== null && file_exists($errlog_fn)) {
-        unlink($errlog_fn);
-    }
-    return ini_set('error_log', $errlog_fn);
-}
-
-function stop_catch_error_log() {
-    global $errlog_fn;
-    ini_restore('error_log');
-    if ($errlog_fn === null || !file_exists($errlog_fn)) {
-        return null;
-    }
-    return array_map(function ($l) {
-        $l = rtrim($l);
-        preg_match('/GMT\] (.+)/', $l, $m);
-        return isset($m[1]) ? $m[1] : $l;
-    }, file($errlog_fn));
-}
-
 class errorTest extends TestCase
 {
     public function testException()
@@ -42,30 +17,26 @@ class errorTest extends TestCase
         }
     }
 
-    public function testErrorLog()
-    {
-        start_catch_error_log();
-        $php = LightnCandy::compile('{{{foo}}', array('flags' => LightnCandy::FLAG_ERROR_LOG));
-        $e = stop_catch_error_log();
-        if ($e) {
-            $this->assertEquals(array('Bad token {{{foo}} ! Do you mean {{foo}} or {{{foo}}}?'), $e);
-        } else {
-            $this->markTestIncomplete('skip HHVM');
-        }
-    }
-
     public function testLog()
     {
         $php = LightnCandy::compile('{{log foo}}');
         $renderer = LightnCandy::prepare($php);
-        start_catch_error_log();
+
+        date_default_timezone_set('GMT');
+        $tmpDir = sys_get_temp_dir();
+        $tmpFile = tempnam($tmpDir, 'terr_');
+        ini_set('error_log', $tmpFile);
+
         $renderer(array('foo' => 'OK!'));
-        $e = stop_catch_error_log();
-        if ($e) {
-            $this->assertEquals(array('array (', "  0 => 'OK!',", ')'), $e);
-        } else {
-            $this->markTestIncomplete('skip HHVM');
-        }
+
+        $contents = array_map(function ($l) {
+            $l = rtrim($l);
+            preg_match('/GMT\] (.+)/', $l, $m);
+            return $m[1] ?? $l;
+        }, file($tmpFile));
+
+        $this->assertEquals(['array (', "  0 => 'OK!',", ')'], $contents);
+        ini_restore('error_log');
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider("renderErrorProvider")]
@@ -81,26 +52,6 @@ class errorTest extends TestCase
             return;
         }
         $this->fail("Expected to throw exception: {$test['expected']} . CODE: $php");
-    }
-
-    #[\PHPUnit\Framework\Attributes\DataProvider("renderErrorProvider")]
-    public function testRenderingErrorLog($test)
-    {
-        start_catch_error_log();
-        $php = LightnCandy::compile($test['template'], $test['options']);
-        $renderer = LightnCandy::prepare($php);
-        try {
-            $in = array('dummy' => 'reference');
-            $renderer($in, array('debug' => Runtime::DEBUG_ERROR_LOG));
-        } catch (\Exception $E) {
-            $this->fail("Unexpected render exception: " . $E->getMessage() . ", CODE: $php");
-        }
-        $e = stop_catch_error_log();
-        if ($e) {
-            $this->assertEquals(array($test['expected']), $e);
-        } else {
-            $this->markTestIncomplete('skip HHVM');
-        }
     }
 
     public static function renderErrorProvider()
@@ -133,11 +84,11 @@ class errorTest extends TestCase
                  'options' => array(
                      'helpers' => array(
                          'foo' => function () {
-                             return 1/0;
+                             throw new Exception('Expect the unexpected');
                          }
                      ),
                  ),
-                 'expected' => 'Runtime: call custom helper \'foo\' error: Division by zero',
+                 'expected' => 'Runtime: call custom helper \'foo\' error: Expect the unexpected',
              ),
         );
 

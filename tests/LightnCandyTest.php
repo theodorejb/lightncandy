@@ -18,7 +18,7 @@ class LightnCandyTest extends TestCase
             array('error' => array())
         ))));
         $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
-            array('error' => array('some error'), 'flags' => array('errorlog' => 0, 'exception' => 0))
+            array('error' => array('some error'), 'flags' => array('exception' => 0))
         ))));
     }
 }

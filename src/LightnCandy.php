@@ -44,16 +44,13 @@ class LightnCandy extends Flags
      * @return boolean True when error detected
      *
      * @expect false when input array('error' => array())
-     * @expect true when input array('error' => array('some error'), 'flags' => array('errorlog' => 0, 'exception' => 0))
+     * @expect true when input array('error' => array('some error'), 'flags' => array('exception' => 0))
      */
     protected static function handleError(&$context)
     {
         static::$lastContext = $context;
 
         if (count($context['error'])) {
-            if ($context['flags']['errorlog']) {
-                error_log(implode("\n", $context['error']));
-            }
             if ($context['flags']['exception']) {
                 throw new \Exception(implode("\n", $context['error']));
             }

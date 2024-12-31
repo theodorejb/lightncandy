@@ -47,12 +47,11 @@ You can apply more options by running `LightnCandy::compile($template, $options)
 
 ```php
 LightnCandy::compile($template, array(
-    'flags' => LightnCandy::FLAG_ERROR_LOG
+    'flags' => LightnCandy::FLAG_PREVENTINDENT
 ));
 ```
 
 **Error Handling**
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_LOG.html">FLAG_ERROR_LOG</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_EXCEPTION.html">FLAG_ERROR_EXCEPTION</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RENDER_DEBUG.html">FLAG_RENDER_DEBUG</a>
 
@@ -229,7 +228,7 @@ Handlebars.registerHelper('list', function(context, options) {
 Template Debugging
 ------------------
 
-When template error happened, LightnCandy::compile() will return false. You may compile with `FLAG_ERROR_LOG` to see more error message, or compile with `FLAG_ERROR_EXCEPTION` to catch the exception.
+When template error happened, LightnCandy::compile() will return false. You may compile with `FLAG_ERROR_EXCEPTION` to catch the exception.
 
 You may generate debug version of templates with `FLAG_RENDER_DEBUG` when compile() . The debug template contained more debug information and slower (TBD: performance result) , you may pass extra LightnCandy\Runtime options into render function to know more rendering error (missing data). For example:
 

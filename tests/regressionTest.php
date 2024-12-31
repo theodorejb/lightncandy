@@ -867,7 +867,7 @@ VAREND
                 'template' => '{{#> foo bar}}a,b,{{.}},{{!-- comment --}},d{{/foo}}',
                 'data' => array('bar' => 'BA!'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_EXCEPTION,
                     'partials' => array('foo' => 'hello, {{> @partial-block}}')
                 ),
                 'expected' => 'hello, a,b,BA!,,d',
@@ -878,7 +878,7 @@ VAREND
                 'template' => '{{#> foo bar}}{{#if .}}OK! {{.}}{{else}}no bar{{/if}}{{/foo}}',
                 'data' => array('bar' => 'BA!'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION,
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_EXCEPTION,
                     'partials' => array('foo' => 'hello, {{> @partial-block}}')
                 ),
                 'expected' => 'hello, OK! BA!',
@@ -1687,7 +1687,6 @@ VAREND
                 ,
                 'data' => array('name' => 'John', 'value' => 10000, 'url' => 'http://yahoo.com', 'text' => 'You&Me!'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_ERROR_LOG,
                     'helpers' => array(
                         'helper1',
                         'myClass::helper2',

@@ -5,7 +5,6 @@ namespace LightnCandy;
 class Flags
 {
     // Compile time error handling flags
-    const FLAG_ERROR_LOG = 1;
     const FLAG_ERROR_EXCEPTION = 2;
 
     // Handlebars.js compatibility
