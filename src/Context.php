@@ -24,6 +24,7 @@ class Context extends Flags
                 'runpart' => $flags & static::FLAG_RUNTIMEPARTIAL,
                 'partnc' => $flags & static::FLAG_PARTIALNEWCONTEXT,
                 'nostd' => $flags & static::FLAG_IGNORESTANDALONE,
+                'knohlp' => $flags & static::FLAG_KNOWNHELPERSONLY,
             ),
             'level' => 0,
             'stack' => array(),

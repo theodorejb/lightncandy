@@ -59,6 +59,7 @@ class Compiler extends Validator
     {
         $flagProp = Expression::boolString($context['flags']['prop']);
         $flagPartNC = Expression::boolString($context['flags']['partnc']);
+        $flagKnownHlp = Expression::boolString($context['flags']['knohlp']);
         $runtime = Runtime::class;
 
         $constants = Exporter::constants($context);
@@ -76,6 +77,7 @@ $stringObject{$safeString}{$use}return function (\$in = null, \$options = null) 
         'flags' => array(
             'prop' => $flagProp,
             'partnc' => $flagPartNC,
+            'knohlp' => $flagKnownHlp,
             'debug' => 1,
         ),
         'constants' => $constants,

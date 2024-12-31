@@ -252,6 +252,12 @@ class HandlebarsSpecTest extends TestCase
                     }
                 }
 
+                if (isset($spec['compileOptions']['knownHelpersOnly'])) {
+                    if ($spec['compileOptions']['knownHelpersOnly']) {
+                        $f = $f | LightnCandy::FLAG_KNOWNHELPERSONLY;
+                    }
+                }
+
                 $php = LightnCandy::compile($spec['template'], array(
                     'flags' => $f,
                     'helpers' => $helpers,
@@ -271,11 +277,6 @@ class HandlebarsSpecTest extends TestCase
                 $this->fail('Exception:' . $e->getMessage());
             }
             $renderer = LightnCandy::prepare($php);
-            if ($spec['description'] === 'Tokenizer') {
-                // no compile error means passed
-                $this->assertEquals(true, true);
-                continue;
-            }
 
             try {
                 $ropt = array();

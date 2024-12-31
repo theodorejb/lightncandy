@@ -52,6 +52,7 @@ LightnCandy::compile($template, array(
 ```
 
 **Handlebars Options**
+* `FLAG_KNOWNHELPERSONLY`: Set to allow further optimizations based on the known helpers list. Same as the Handlebars.js `knownHelpersOnly` compile time option.
 * `FLAG_NOESCAPE` : Set to not HTML escape any content.
 * `FLAG_STRICT` : Run in strict mode. In this mode, templates will throw rather than silently ignore missing fields.
 * `FLAG_PREVENTINDENT` : Prevent indented partial-call from indenting the entire partial output by the same amount. Same as the Handlebars.js `preventIndent` compile option.

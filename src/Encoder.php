@@ -41,7 +41,7 @@ class Encoder
                 return '[object Object]';
             } else {
                 $ret = array();
-                foreach ($v as $k => $vv) {
+                foreach ($v as $vv) {
                     $ret[] = static::raw($cx, $vv);
                 }
                 return join(',', $ret);
