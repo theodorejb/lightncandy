@@ -10,7 +10,7 @@ class usageTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider("compileProvider")]
     public function testUsedFeature($test)
     {
-        LightnCandy::compile($test['template'], $test['options']);
+        LightnCandy::precompile($test['template'], $test['options']);
         $context = LightnCandy::getContext();
         $this->assertEquals($test['expected'], $context['usedFeature']);
     }

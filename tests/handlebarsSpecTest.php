@@ -249,24 +249,19 @@ class HandlebarsSpecTest extends TestCase
                     }
                 }
 
-                $php = LightnCandy::compile($spec['template'], array(
+                $php = LightnCandy::precompile($spec['template'], array(
                     'flags' => $f,
                     'helpers' => $helpers,
                     'partials' => $partials,
                 ));
-
-                $parsed = print_r(LightnCandy::$lastParsed, true);
             } catch (Exception $e) {
-                // Exception as expected, pass!
                 if (isset($spec['exception'])) {
                     $this->assertEquals(true, true);
                     continue;
                 }
-
-                // Failed this case
-                $this->fail('Exception:' . $e->getMessage());
+                $this->fail("Compile error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\n" . $e->getMessage());
             }
-            $renderer = LightnCandy::prepare($php);
+            $renderer = LightnCandy::template($php);
 
             try {
                 $ropt = array();
@@ -275,16 +270,15 @@ class HandlebarsSpecTest extends TestCase
                 }
                 $result = $renderer($spec['data'], $ropt);
             } catch (Exception $e) {
-                if (!isset($spec['expected'])) {
-                    // expected error and caught here, so passed
+                if (isset($spec['exception'])) {
                     $this->assertEquals(true, true);
                     continue;
                 }
-                $this->fail("Rendering Error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\n" . $e->getMessage());
+                $this->fail("Rendering Error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\nPHP code:\n$php\n\n" . $e->getMessage());
             }
 
-            if (!isset($spec['expected'])) {
-                $this->fail("Should Fail: [{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\nResult: $result");
+            if (isset($spec['exception'])) {
+                $this->fail("Should Fail: [{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\nPHP code:\n$php\n\nResult: $result");
             }
 
             $this->assertEquals($spec['expected'], $result, "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\nHELPERS:$helpersList");

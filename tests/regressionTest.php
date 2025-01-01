@@ -11,15 +11,15 @@ class regressionTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider("issueProvider")]
     public function testIssues($issue)
     {
-        $php = LightnCandy::compile($issue['template'], $issue['options'] ?? []);
+        $templateSpec = LightnCandy::precompile($issue['template'], $issue['options'] ?? []);
         $context = LightnCandy::getContext();
         $parsed = print_r(LightnCandy::$lastParsed, true);
         if (count($context['error'])) {
             $this->fail('Compile failed due to: ' . print_r($context['error'], true) . "\nPARSED: $parsed");
         }
-        $renderer = LightnCandy::prepare($php);
+        $template = LightnCandy::template($templateSpec);
 
-        $this->assertEquals($issue['expected'], $renderer($issue['data'] ?? null), "PHP CODE:\n$php");
+        $this->assertEquals($issue['expected'], $template($issue['data'] ?? null), "PHP CODE:\n$templateSpec");
     }
 
     public static function issueProvider()

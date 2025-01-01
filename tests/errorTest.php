@@ -10,7 +10,7 @@ class errorTest extends TestCase
     public function testException()
     {
         try {
-          $php = LightnCandy::compile('{{{foo}}');
+          $php = LightnCandy::precompile('{{{foo}}');
         } catch (\Exception $E) {
             $this->assertEquals('Bad token {{{foo}} ! Do you mean {{foo}} or {{{foo}}}?', $E->getMessage());
         }
@@ -18,15 +18,14 @@ class errorTest extends TestCase
 
     public function testLog()
     {
-        $php = LightnCandy::compile('{{log foo}}');
-        $renderer = LightnCandy::prepare($php);
+        $template = LightnCandy::compile('{{log foo}}');
 
         date_default_timezone_set('GMT');
         $tmpDir = sys_get_temp_dir();
         $tmpFile = tempnam($tmpDir, 'terr_');
         ini_set('error_log', $tmpFile);
 
-        $renderer(array('foo' => 'OK!'));
+        $template(array('foo' => 'OK!'));
 
         $contents = array_map(function ($l) {
             $l = rtrim($l);
@@ -41,8 +40,8 @@ class errorTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider("renderErrorProvider")]
     public function testRenderingException($test)
     {
-        $php = LightnCandy::compile($test['template'], $test['options'] ?? []);
-        $renderer = LightnCandy::prepare($php);
+        $php = LightnCandy::precompile($test['template'], $test['options'] ?? []);
+        $renderer = LightnCandy::template($php);
         try {
             $renderer($test['data'] ?? null);
             $this->fail("Expected to throw exception: {$test['expected']}. CODE: $php");
@@ -106,13 +105,13 @@ class errorTest extends TestCase
     {
         if (!isset($test['expected'])) {
             // should compile without error
-            LightnCandy::compile($test['template'], $test['options']);
+            LightnCandy::precompile($test['template'], $test['options']);
             $this->assertTrue(true);
             return;
         }
 
         try {
-            LightnCandy::compile($test['template'], $test['options']);
+            LightnCandy::precompile($test['template'], $test['options']);
             $this->fail("Expected to throw exception: {$test['expected']}");
         } catch (\Exception $e) {
             $this->assertEquals($test['expected'], explode("\n", $e->getMessage()));

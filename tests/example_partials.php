@@ -2,6 +2,8 @@
 
 use LightnCandy\LightnCandy;
 
+require 'vendor/autoload.php';
+
 $template = '{{> (partial_name_helper type)}}';
 
 $data = array(
@@ -23,7 +25,7 @@ function partial_name_helper ($type) {
     }
 }
 
-$php = LightnCandy::compile($template, array(
+$php = LightnCandy::precompile($template, array(
     'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
     'helpers' => array(
         'partial_name_helper'
@@ -35,7 +37,7 @@ $php = LightnCandy::compile($template, array(
     )
 ));
 
-$renderer = LightnCandy::prepare($php);
+$renderer = LightnCandy::template($php);
 
 echo "Data:\n";
 print_r($data);
@@ -47,4 +49,3 @@ echo "\nCode:\n$php\n\n";
 echo "\nOutput:\n";
 echo $renderer($data);
 echo "\n";
-

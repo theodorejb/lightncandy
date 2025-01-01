@@ -8,12 +8,17 @@ class LightnCandy extends Flags
     public static array $lastParsed;
 
     /**
-     * Compile handlebars template into PHP code.
-     *
-     * @param string $template handlebars template string
-     * @param array<string,array|string|integer> $options LightnCandy compile time and run time options
+     * Compiles a template so it can be executed immediately.
      */
-    public static function compile(string $template, array $options = []): string
+    public static function compile(string $template, array $options = []): \Closure
+    {
+        return self::template(self::precompile($template, $options));
+    }
+
+    /**
+     * Precompiles a handlebars template into PHP code which can be executed later.
+     */
+    public static function precompile(string $template, array $options = []): string
     {
         $context = Context::create($options);
         static::handleError($context);
@@ -24,6 +29,14 @@ class LightnCandy extends Flags
 
         // return full PHP render code as string
         return Compiler::composePHPRender($context, $code);
+    }
+
+    /**
+     * Sets up a template that was precompiled with precompile().
+     */
+    public static function template(string $templateSpec): \Closure
+    {
+        return eval($templateSpec);
     }
 
     /**
@@ -50,32 +63,5 @@ class LightnCandy extends Flags
     public static function getContext(): array
     {
         return static::$lastContext;
-    }
-
-    /**
-     * Get a working render function by a string of PHP code. This method may require php setting allow_url_include=1 and allow_url_fopen=1 , or access right to tmp file system.
-     *
-     * @deprecated
-     */
-    public static function prepare(string $php): \Closure
-    {
-        $php = "<?php $php ?>";
-
-        if (!ini_get('allow_url_include') || !ini_get('allow_url_fopen')) {
-            $tmpDir = sys_get_temp_dir();
-            $fn = tempnam($tmpDir, 'lci_');
-            if (!$fn) {
-                throw new \Exception("Can not generate tmp file under $tmpDir");
-            }
-            if (!file_put_contents($fn, $php)) {
-                throw new \Exception("Can not include saved temp php code from $fn, you should add $tmpDir into open_basedir");
-            }
-
-            $phpfunc = include($fn);
-            unlink($fn);
-            return $phpfunc;
-        }
-
-        return include('data://text/plain,' . urlencode($php));
     }
 }
