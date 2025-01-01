@@ -59,7 +59,7 @@ class HandlebarsSpecTest extends TestCase
     public function testSpecs($spec)
     {
         global $tested;
-        $test_flags = [LightnCandy::FLAG_RUNTIMEPARTIAL];
+        $test_flags = [0];
 
         recursive_unset($spec['data'], '!sparsearray');
         data_helpers_fix($spec);

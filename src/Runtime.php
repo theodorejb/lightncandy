@@ -410,7 +410,7 @@ class Runtime
         $pp = ($p === '@partial-block') ? "$p" . ($pid > 0 ? $pid : $cx['partialid']) : $p;
 
         if (!isset($cx['partials'][$pp])) {
-            static::err($cx, "Can not find partial named as '$p' !!");
+            static::err($cx, "The partial $p could not be found");
             return '';
         }
 

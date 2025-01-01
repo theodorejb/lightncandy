@@ -22,7 +22,7 @@ class regressionTest extends TestCase
         $this->assertEquals($issue['expected'], $template($issue['data'] ?? null), "PHP CODE:\n$templateSpec");
     }
 
-    public static function issueProvider()
+    public static function issueProvider(): array
     {
         $test_helpers = array('ouch' =>function() {
             return 'ok';
@@ -102,7 +102,6 @@ class regressionTest extends TestCase
                 'id' => 64,
                 'template' => '{{#each foo}} Test! {{this}} {{/each}}{{> test1}} ! >>> {{>recursive}}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'test1' => "123\n",
                         'recursive' => "{{#if foo}}{{bar}} -> {{#with foo}}{{>recursive}}{{/with}}{{else}}END!{{/if}}\n",
@@ -625,7 +624,6 @@ class regressionTest extends TestCase
                 'template' => '{{> test/test3 foo="bar"}}',
                 'data' => array('test' => 'OK!', 'foo' => 'error'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array('test/test3' => '{{test}}, {{foo}}'),
                 ),
                 'expected' => 'OK!, bar'
@@ -686,7 +684,6 @@ VAREND
                 'id' => 157,
                 'template' => '{{>test_js_partial}}',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'test_js_partial' => <<<VAREND
 Test GA....
@@ -811,7 +808,6 @@ VAREND
                 'template' => '{{#> test name="A"}}B{{/test}}{{#> test name="C"}}D{{/test}}',
                 'data' => array('bar' => true),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'test' => '{{name}}:{{> @partial-block}},',
                     )
@@ -886,7 +882,6 @@ VAREND
                 'template' => '{{#> foo bar}}a,b,{{.}},{{!-- comment --}},d{{/foo}}',
                 'data' => array('bar' => 'BA!'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array('foo' => 'hello, {{> @partial-block}}')
                 ),
                 'expected' => 'hello, a,b,BA!,,d',
@@ -897,7 +892,6 @@ VAREND
                 'template' => '{{#> foo bar}}{{#if .}}OK! {{.}}{{else}}no bar{{/if}}{{/foo}}',
                 'data' => array('bar' => 'BA!'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array('foo' => 'hello, {{> @partial-block}}')
                 ),
                 'expected' => 'hello, OK! BA!',
@@ -956,7 +950,6 @@ VAREND
                 'template' => '{{> (lookup foo 2)}}',
                 'data' => array('foo' => array('a', 'b', 'c')),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'a' => '1st',
                         'b' => '2nd',
@@ -971,7 +964,6 @@ VAREND
                 'template' => '{{#> "myPartial"}}{{#> myOtherPartial}}{{ @root.foo}}{{/myOtherPartial}}{{/"myPartial"}}',
                 'data' => array('foo' => 'hello!'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'myPartial' => '<div>outer {{> @partial-block}}</div>',
                         'myOtherPartial' => '<div>inner {{> @partial-block}}</div>'
@@ -984,7 +976,6 @@ VAREND
                 'id' => 236,
                 'template' => 'A{{#> foo}}B{{#> bar}}C{{>moo}}D{{/bar}}E{{/foo}}F',
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'foo' => 'FOO>{{> @partial-block}}<FOO',
                         'bar' => 'bar>{{> @partial-block}}<bar',
@@ -999,7 +990,6 @@ VAREND
                 'template' => '{{#>foo}}{{#*inline "bar"}}GOOD!{{#each .}}>{{.}}{{/each}}{{/inline}}{{/foo}}',
                 'data' => array('1', '3', '5'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'foo' => 'A{{#>bar}}BAD{{/bar}}B',
                         'moo' => 'oh'
@@ -1027,7 +1017,6 @@ VAREND
                 'template' => '{{#>outer}}content{{/outer}}',
                 'data' => array('test' => 'OK'),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'outer' => 'outer+{{#>nested}}~{{>@partial-block}}~{{/nested}}+outer-end',
                         'nested' => 'nested={{>@partial-block}}=nested-end'
@@ -1184,7 +1173,6 @@ VAREND
                 'template' => '{{> (lookup foo 2)}}',
                 'data' => array('foo' => array('a', 'b', 'c')),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'a' => '1st',
                         'b' => '2nd',
@@ -1205,9 +1193,6 @@ VAREND
                 'id' => 289,
                 'template' => "1\n2\n{{#test}}\n3TEST\n{{/test}}\n4",
                 'data' => array('test' => 1),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL
-                ),
                 'expected' => "1\n2\n3TEST\n4"
             ),
 
@@ -1215,36 +1200,24 @@ VAREND
                 'id' => 289,
                 'template' => "1\n2\n{{~#test}}\n3TEST\n{{/test}}\n4",
                 'data' => array('test' => 1),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL
-                ),
                 'expected' => "1\n23TEST\n4"
             ),
 
             array(
                 'id' => 289,
                 'template' => "1\n2\n{{#>test}}\n3TEST\n{{/test}}\n4",
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL
-                ),
                 'expected' => "1\n2\n3TEST\n4"
             ),
 
             array(
                 'id' => 289,
                 'template' => "1\n2\n\n{{#>test}}\n3TEST\n{{/test}}\n4",
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL
-                ),
                 'expected' => "1\n2\n\n3TEST\n4"
             ),
 
             array(
                 'id' => 289,
                 'template' => "1\n2\n\n{{#>test~}}\n\n3TEST\n{{/test}}\n4",
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL
-                ),
                 'expected' => "1\n2\n\n3TEST\n4"
             ),
 
@@ -1285,26 +1258,14 @@ VAREND
             ),
 
             array(
-                'id' => 291,
-                'template' => 'a{{> @partial-block}}b',
-                'expected' => 'ab'
-            ),
-
-            array(
                 'id' => 302,
                 'template' => "{{#*inline \"t1\"}}{{#if imageUrl}}<span />{{else}}<div />{{/if}}{{/inline}}{{#*inline \"t2\"}}{{#if imageUrl}}<span />{{else}}<div />{{/if}}{{/inline}}{{#*inline \"t3\"}}{{#if imageUrl}}<span />{{else}}<div />{{/if}}{{/inline}}",
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
-                ),
                 'expected' => '',
             ),
 
             array(
                 'id' => 303,
                 'template' => '{{#*inline "t1"}} {{#if url}} <a /> {{else if imageUrl}} <img /> {{else}} <span /> {{/if}} {{/inline}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
-                ),
                 'expected' => ''
             ),
 
@@ -1364,7 +1325,6 @@ VAREND
                             return $arg;
                          }
                     ),
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array('test/test3' => '{{.}}'),
                 ),
                 'expected' => 'OK! SUBEXP+PARTIAL!'
@@ -1374,7 +1334,6 @@ VAREND
                 'template' => '{{> testpartial newcontext mixed=foo}}',
                 'data' => array('foo' => 'OK!', 'newcontext' => array('bar' => 'test')),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array('testpartial' => '{{bar}}-{{mixed}}'),
                 ),
                 'expected' => 'test-OK!'
@@ -1502,7 +1461,6 @@ VAREND
                 'template' => '{{#each .}}->{{>tests/test3 ../foo}}{{/each}}',
                 'data' => array('a', 'foo' => array('d', 'e', 'f')),
                 'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => array(
                         'tests/test3' => 'New context:{{.}}'
                     ),
@@ -1833,17 +1791,11 @@ VAREND
 
             array(
                 'template' => '{{#>foo}}inline\'partial{{/foo}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
-                ),
                 'expected' => 'inline\'partial',
             ),
 
             array(
                 'template' => "{{#> testPartial}}\n ERROR: testPartial is not found!\n  {{#> innerPartial}}\n   ERROR: innerPartial is not found!\n   ERROR: innerPartial is not found!\n  {{/innerPartial}}\n ERROR: testPartial is not found!\n {{/testPartial}}",
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
-                ),
                 'expected' => " ERROR: testPartial is not found!\n   ERROR: innerPartial is not found!\n   ERROR: innerPartial is not found!\n ERROR: testPartial is not found!\n",
             ),
 

@@ -303,21 +303,18 @@ class Compiler extends Validator
         Parser::getBlockParams($vars);
         $pid = Parser::getPartialBlock($vars);
         $p = array_shift($vars);
-        if ($context['flags']['runpart']) {
-            if (!isset($vars[0])) {
-                $vars[0] = $context['flags']['partnc'] ? array(0, 'null') : array();
-            }
-            $v = static::getVariableNames($context, $vars);
-            $tag = ">$p[0] " .implode(' ', $v[1]);
-            if (Parser::isSubExp($p)) {
-                [$p] = static::compileSubExpression($context, $p[1]);
-            } else {
-                $p = "'$p[0]'";
-            }
-            $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
-            return $context['ops']['separator'] . static::getFuncName($context, 'p', $tag) . "\$cx, $p, $v[0],$pid$sp){$context['ops']['separator']}";
+        if (!isset($vars[0])) {
+            $vars[0] = $context['flags']['partnc'] ? array(0, 'null') : array();
         }
-        return isset($context['usedPartial'][$p[0]]) ? "{$context['ops']['separator']}'" . Partial::compileStatic($context, $p[0]) . "'{$context['ops']['separator']}" : $context['ops']['separator'];
+        $v = static::getVariableNames($context, $vars);
+        $tag = ">$p[0] " .implode(' ', $v[1]);
+        if (Parser::isSubExp($p)) {
+            [$p] = static::compileSubExpression($context, $p[1]);
+        } else {
+            $p = "'$p[0]'";
+        }
+        $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
+        return $context['ops']['separator'] . static::getFuncName($context, 'p', $tag) . "\$cx, $p, $v[0],$pid$sp){$context['ops']['separator']}";
     }
 
     /**

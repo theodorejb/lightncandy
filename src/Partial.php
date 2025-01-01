@@ -44,7 +44,7 @@ class Partial
         }
 
         if (!$isPB) {
-            $context['error'][] = "Can not find partial for '$name', you should provide partials in options";
+            $context['error'][] = "The partial $name could not be found";
         }
     }
 
@@ -68,32 +68,6 @@ class Partial
     }
 
     /**
-     * compile a partial to static embed PHP code
-     *
-     * @param array<string,array|string|integer> $context Current context of compiler progress.
-     * @param string $name partial name
-     */
-    public static function compileStatic(array &$context, string $name): string
-    {
-        // Check for recursive partial
-        if (!$context['flags']['runpart']) {
-            $context['partialStack'][] = $name;
-            $diff = count($context['partialStack']) - count(array_unique($context['partialStack']));
-            if ($diff) {
-                $context['error'][] = 'I found recursive partial includes as the path: ' . implode(' -> ', $context['partialStack']) . '! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.';
-            }
-        }
-
-        $code = Compiler::compileTemplate($context, preg_replace('/^/m', $context['tokens']['partialind'], $context['usedPartial'][$name]));
-
-        if (!$context['flags']['runpart']) {
-            array_pop($context['partialStack']);
-        }
-
-        return $code;
-    }
-
-    /**
      * compile partial as closure, stored in context
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
@@ -103,10 +77,6 @@ class Partial
      */
     public static function compileDynamic(array &$context, string $name): ?string
     {
-        if (!$context['flags']['runpart']) {
-            return null;
-        }
-
         $func = static::compile($context, $context['usedPartial'][$name], $name);
 
         if (!isset($context['partialCode'][$name]) && $func) {

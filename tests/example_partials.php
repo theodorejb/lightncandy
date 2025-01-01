@@ -26,7 +26,6 @@ function partial_name_helper ($type) {
 }
 
 $php = LightnCandy::precompile($template, array(
-    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
     'helpers' => array(
         'partial_name_helper'
     ),

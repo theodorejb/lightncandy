@@ -248,7 +248,7 @@ class Parser
         $avars = static::advancedVariable($vars, $context, $expression);
         if (isset($avars[0][0])) {
             if (!Validator::helper($context, $avars, true)) {
-                $context['error'][] = "Can not find custom helper function defination {$avars[0][0]}() !";
+                $context['error'][] = 'Missing helper: "' . $avars[0][0] . '"';
             }
         }
         return array(static::SUBEXP, $avars, $expression);
@@ -450,7 +450,7 @@ class Parser
                                 continue;
                             }
                             if ($stack < 0) {
-                                $context['error'][] = "Unexcepted ')' in expression '$token' !!";
+                                $context['error'][] = "Unexpected ')' in expression '$token' !!";
                                 $expect = 0;
                                 break;
                             }

@@ -20,7 +20,6 @@ class Context
                 'noesc' => $flags & Flags::FLAG_NOESCAPE,
                 'noind' => $flags & Flags::FLAG_PREVENTINDENT,
                 'debug' => $flags & Flags::FLAG_STRICT,
-                'runpart' => $flags & Flags::FLAG_RUNTIMEPARTIAL,
                 'partnc' => $flags & Flags::FLAG_PARTIALNEWCONTEXT,
                 'nostd' => $flags & Flags::FLAG_IGNORESTANDALONE,
                 'knohlp' => $flags & Flags::FLAG_KNOWNHELPERSONLY,
@@ -96,10 +95,6 @@ class Context
         $context['ops']['enc'] = 'encq';
         $context['ops']['array_check'] = '$inary=is_array($in) || $in instanceof \ArrayAccess;';
         static::updateHelperTable($context, $options);
-
-        if ($context['flags']['partnc'] && ($context['flags']['runpart'] == 0)) {
-            $context['error'][] = 'The FLAG_PARTIALNEWCONTEXT requires FLAG_RUNTIMEPARTIAL! Fix your compile options please';
-        }
 
         return $context;
     }

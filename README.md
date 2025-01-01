@@ -59,9 +59,6 @@ LightnCandy::compile($template, array(
 * `FLAG_IGNORESTANDALONE` : prevent standalone detection on `{{#foo}}`, `{{/foo}}` or `{{^}}`, the behavior is same with handlebars.js `ignoreStandalone` compile time option.
 * `FLAG_PARTIALNEWCONTEXT` : Disables implicit context for partials. When enabled, partials that are not passed a context value will execute against an empty object.
 
-**PHP**
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RUNTIMEPARTIAL.html">FLAG_RUNTIMEPARTIAL</a>
-
 Partial Support
 ---------------
 
@@ -318,9 +315,9 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{lookup foo bar}}` : lookup foo by value of bar as key.
 * `{{../var}}` : parent template scope.
 * `{{>file}}` : partial; include another template inside a template.
-* `{{>file foo}}` : partial with new context (require `FLAG_RUNTIMEPARTIAL`)
-* `{{>file foo bar=another}}` : partial with new context which mixed with followed key value (require `FLAG_RUNTIMEPARTIAL`)
-* `{{>(helper) foo}}` : include dynamic partial by name provided from a helper (require `FLAG_RUNTIMEPARTIAL`)
+* `{{>file foo}}` : partial with new context
+* `{{>file foo bar=another}}` : partial with new context which mixed with followed key value
+* `{{>(helper) foo}}` : include dynamic partial by name provided from a helper
 * `{{@index}}` : references to current index in a `{{#each}}` loop on an array.
 * `{{@key}}` : references to current key in a `{{#each}}` loop on an object.
 * `{{@root}}` : references to root context.
@@ -340,7 +337,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#helper ...}}...{{/helper}}` : Execute block custom helper
 * `{{helper (helper2 foo) bar}}` : Execute custom helpers as subexpression
 * `{{{{raw_block}}}} {{will_not_parsed}} {{{{/raw_block}}}}` : Raw block
-* `{{#> foo}}block{{/foo}}` : Partial block, provide `foo` partial default content (require `FLAG_RUNTIMEPARTIAL`)
+* `{{#> foo}}block{{/foo}}` : Partial block, provide `foo` partial default content
 * `{{#> @partial-block}}` : access partial block content inside a partial
 * `{{#*inline "partial_name"}}...{{/inline}}` : Inline partial, provide a partial and overwrite the original one.
 * `{{log foo}}` : output value to stderr for debug.

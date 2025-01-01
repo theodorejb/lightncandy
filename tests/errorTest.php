@@ -56,18 +56,16 @@ class errorTest extends TestCase
             [
                 'template' => "{{#> testPartial}}\n  {{#> innerPartial}}\n   {{> @partial-block}}\n  {{/innerPartial}}\n{{/testPartial}}",
                 'options' => [
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => [
                         'testPartial' => 'testPartial => {{> @partial-block}} <=',
                         'innerPartial' => 'innerPartial -> {{> @partial-block}} <-',
                     ],
                 ],
-                'expected' => "Can not find partial named as '@partial-block' !!",
+                'expected' => "The partial @partial-block could not be found",
             ],
             [
                 'template' => '{{> @partial-block}}',
-                'options' => ['flags' => LightnCandy::FLAG_RUNTIMEPARTIAL],
-                'expected' => "Can not find partial named as '@partial-block' !!",
+                'expected' => "The partial @partial-block could not be found",
             ],
             [
                 'template' => '{{foo}}',
@@ -365,12 +363,7 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{>not_found}}',
-                'expected' => "Can not find partial for 'not_found', you should provide partials in options",
-            ),
-            array(
-                'template' => '{{>tests/test1 foo}}',
-                'options' => array('partials' => array('tests/test1' => '')),
-                'expected' => 'Do not support {{>tests/test1 foo}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag',
+                'expected' => "The partial not_found could not be found",
             ),
             array(
                 'template' => '{{abc}}',
@@ -378,16 +371,11 @@ class errorTest extends TestCase
                 'expected' => "You provide a custom helper named as 'abc' in options['helpers'], but the function abc() is not defined!",
             ),
             array(
-                'template' => '{{>recursive}}',
-                'options' => array('partials' => array('recursive' => '{{>recursive}}')),
-                'expected' => 'I found recursive partial includes as the path: recursive -> recursive! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.',
-            ),
-            array(
                 'template' => '{{test_join (foo bar)}}',
                 'options' => array(
                     'helpers' => array('test_join'),
                 ),
-                'expected' => "Can not find custom helper function defination foo() !",
+                'expected' => 'Missing helper: "foo"',
             ),
             array(
                 'template' => '{{1 + 2}}',
@@ -399,8 +387,7 @@ class errorTest extends TestCase
             array(
                 'template' => '{{> (foo) bar}}',
                 'expected' => array(
-                    "Can not find custom helper function defination foo() !",
-                    "You use dynamic partial name as '(foo)', this only works with option FLAG_RUNTIMEPARTIAL enabled",
+                    'Missing helper: "foo"',
                 )
             ),
             array(
@@ -424,7 +411,7 @@ class errorTest extends TestCase
                          }
                      )
                 ),
-                'expected' => 'Unexcepted \')\' in expression \'foo (foo (foo 1 2) 3))\' !!',
+                'expected' => 'Unexpected \')\' in expression \'foo (foo (foo 1 2) 3))\' !!',
             ),
             array(
                 'template' => '{{{{foo}}}} {{ {{{{#foo}}}}',
@@ -439,26 +426,15 @@ class errorTest extends TestCase
                 'expected' => 'No argument after {{log}} !',
             ),
             array(
-                'template' => '{{#*inline test}}{{/inline}}',
-                'expected' => 'Do not support {{#*inline test}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag',
-            ),
-            array(
                 'template' => '{{#*help me}}{{/help}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
-                ),
                 'expected' => 'Do not support {{#*help me}}, now we only support {{#*inline "partialName"}}template...{{/inline}}',
             ),
             array(
                 'template' => '{{#*inline}}{{/inline}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
-                ),
                 'expected' => 'Error in {{#*inline}}: inline require 1 argument for partial name!',
             ),
             array(
                 'template' => '{{#>foo}}bar',
-                'options' => ['flags' => LightnCandy::FLAG_RUNTIMEPARTIAL],
                 'expected' => 'Unclosed token {{#>foo}} !!',
             ),
             array(

@@ -163,12 +163,12 @@ class Validator
      * @expect true when input '/', array('stack' => array('[with]', '#'), 'level' => 1, 'currentToken' => array(0,0,0,0,0,0,0,'with'), 'flags' => array()), array(array())
      * @expect 4 when input '#', array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('x'))
      * @expect 5 when input '#', array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('if'))
-     * @expect 6 when input '#', array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('runpart' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elsechain' => false, 'elselvl' => array()), array(array('with'))
+     * @expect 6 when input '#', array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array(), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elsechain' => false, 'elselvl' => array()), array(array('with'))
      * @expect 7 when input '#', array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('each'))
      * @expect 8 when input '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('unless'))
      * @expect 9 when input '#', array('helpers' => array('abc' => ''), 'usedFeature' => array('helper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('abc'))
      * @expect 11 when input '#', array('helpers' => array('abc' => ''), 'usedFeature' => array('helper' => 10), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('abc'))
-     * @expect true when input '>', array('usedFeature' => array('partial' => 7), 'level' => 0, 'flags' => array('runpart' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elsechain' => false, 'elselvl' => array()), array('test')
+     * @expect true when input '>', array('usedFeature' => array('partial' => 7), 'level' => 0, 'flags' => array(), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elsechain' => false, 'elselvl' => array()), array('test')
      */
     protected static function operator(string $operator, array &$context, array &$vars): bool|int|string|null
     {
@@ -765,9 +765,6 @@ class Validator
      */
     protected static function inline(array &$context, array $vars)
     {
-        if (!$context['flags']['runpart']) {
-            $context['error'][] = "Do not support {{#*{$context['currentToken'][Token::POS_INNERTAG]}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
-        }
         if (!isset($vars[0][0]) || ($vars[0][0] !== 'inline')) {
             $context['error'][] = "Do not support {{#*{$context['currentToken'][Token::POS_INNERTAG]}}}, now we only support {{#*inline \"partialName\"}}template...{{/inline}}";
         }
@@ -788,21 +785,10 @@ class Validator
     protected static function partial(array &$context, array $vars)
     {
         if (Parser::isSubExp($vars[0])) {
-            if ($context['flags']['runpart']) {
-                return $context['usedFeature']['dynpartial']++;
-            } else {
-                $context['error'][] = "You use dynamic partial name as '{$vars[0][2]}', this only works with option FLAG_RUNTIMEPARTIAL enabled";
-                return true;
-            }
+            return $context['usedFeature']['dynpartial']++;
         } else {
             if ($context['currentToken'][Token::POS_OP] !== '#>') {
                 Partial::read($context, $vars[0][0]);
-            }
-        }
-        if (!$context['flags']['runpart']) {
-            $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
-            if ($named || (count($vars) > 1)) {
-                $context['error'][] = "Do not support {{>{$context['currentToken'][Token::POS_INNERTAG]}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
             }
         }
 
