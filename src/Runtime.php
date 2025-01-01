@@ -443,7 +443,7 @@ class Runtime
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      * @param array<string,array|string|integer> $_this current rendering context for the helper
      */
-    public static function hbch(array &$cx, string $ch, array $vars, string $op, array|string|null &$_this): mixed
+    public static function hbch(array &$cx, string $ch, array $vars, string $op, mixed &$_this): mixed
     {
         if (isset($cx['blparam'][0][$ch])) {
             return $cx['blparam'][0][$ch];
@@ -473,7 +473,7 @@ class Runtime
      * @param \Closure|null $cb callback function to render child context
      * @param \Closure|null $else callback function to render child context when {{else}}
      */
-    public static function hbbch(array &$cx, string $ch, array $vars, array|int|null &$_this, bool $inverted, ?\Closure $cb, ?\Closure $else = null): mixed
+    public static function hbbch(array &$cx, string $ch, array $vars, mixed &$_this, bool $inverted, ?\Closure $cb, ?\Closure $else = null): mixed
     {
         $options = array(
             'name' => $ch,
