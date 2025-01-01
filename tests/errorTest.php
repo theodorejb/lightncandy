@@ -1,7 +1,6 @@
 <?php
 
 use LightnCandy\LightnCandy;
-use LightnCandy\Runtime;
 use PHPUnit\Framework\TestCase;
 
 require_once('tests/helpers_for_test.php');
@@ -46,75 +45,81 @@ class errorTest extends TestCase
         $renderer = LightnCandy::prepare($php);
         try {
             $renderer($test['data'] ?? null);
+            $this->fail("Expected to throw exception: {$test['expected']}. CODE: $php");
         } catch (\Exception $E) {
             $this->assertEquals($test['expected'], $E->getMessage());
-            return;
         }
-        $this->fail("Expected to throw exception: {$test['expected']} . CODE: $php");
     }
 
-    public static function renderErrorProvider()
+    public static function renderErrorProvider(): array
     {
-        $errorCases = array(
-             array(
-                 'template' => "{{#> testPartial}}\n  {{#> innerPartial}}\n   {{> @partial-block}}\n  {{/innerPartial}}\n{{/testPartial}}",
-                 'options' => array(
-                   'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
-                   'partials' => array(
-                     'testPartial' => 'testPartial => {{> @partial-block}} <=',
-                     'innerPartial' => 'innerPartial -> {{> @partial-block}} <-',
-                   ),
-                 ),
-                 'expected' => "Can not find partial named as '@partial-block' !!",
-             ),
-             array(
-                 'template' => '{{> @partial-block}}',
-                 'options' => array(
-                   'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
-                 ),
-                 'expected' => "Can not find partial named as '@partial-block' !!",
-             ),
-             array(
-                 'template' => '{{{foo}}}',
-                 'options' => [
-                     'flags' => LightnCandy::FLAG_STRICT,
-                 ],
-                 'expected' => 'Runtime: [foo] does not exist',
-             ),
-             array(
-                 'template' => '{{foo}}',
-                 'options' => array(
-                     'helpers' => array(
-                         'foo' => function () {
-                             throw new Exception('Expect the unexpected');
-                         }
-                     ),
-                 ),
-                 'expected' => 'Runtime: call custom helper \'foo\' error: Expect the unexpected',
-             ),
-        );
+        $errorCases = [
+            [
+                'template' => "{{#> testPartial}}\n  {{#> innerPartial}}\n   {{> @partial-block}}\n  {{/innerPartial}}\n{{/testPartial}}",
+                'options' => [
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'partials' => [
+                        'testPartial' => 'testPartial => {{> @partial-block}} <=',
+                        'innerPartial' => 'innerPartial -> {{> @partial-block}} <-',
+                    ],
+                ],
+                'expected' => "Can not find partial named as '@partial-block' !!",
+            ],
+            [
+                'template' => '{{> @partial-block}}',
+                'options' => ['flags' => LightnCandy::FLAG_RUNTIMEPARTIAL],
+                'expected' => "Can not find partial named as '@partial-block' !!",
+            ],
+            [
+                'template' => '{{foo}}',
+                'options' => ['flags' => LightnCandy::FLAG_STRICT],
+                'expected' => 'Runtime: [foo] does not exist',
+            ],
+            [
+                'template' => '{{#foo}}OK{{/foo}}',
+                'options' => ['flags' => LightnCandy::FLAG_STRICT],
+                'expected' => 'Runtime: [foo] does not exist',
+            ],
+            [
+                'template' => '{{{foo}}}',
+                'options' => ['flags' => LightnCandy::FLAG_STRICT],
+                'expected' => 'Runtime: [foo] does not exist',
+            ],
+            [
+                'template' => '{{foo}}',
+                'options' => [
+                    'helpers' => [
+                        'foo' => function () {
+                            throw new Exception('Expect the unexpected');
+                        }
+                    ],
+                ],
+                'expected' => 'Runtime: call custom helper \'foo\' error: Expect the unexpected',
+            ],
+        ];
 
-        return array_map(function($i) {
-            return array($i);
-        }, $errorCases);
+        return array_map(fn($i) => [$i], $errorCases);
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider("errorProvider")]
     public function testErrors($test)
     {
+        if (!isset($test['expected'])) {
+            // should compile without error
+            LightnCandy::compile($test['template'], $test['options']);
+            $this->assertTrue(true);
+            return;
+        }
+
         try {
-            $php = LightnCandy::compile($test['template'], $test['options']);
+            LightnCandy::compile($test['template'], $test['options']);
+            $this->fail("Expected to throw exception: {$test['expected']}");
         } catch (\Exception $e) {
             $this->assertEquals($test['expected'], explode("\n", $e->getMessage()));
         }
-
-        // This case should be compiled without error
-        if (!isset($test['expected'])) {
-            $this->assertEquals(true, true);
-        }
     }
 
-    public static function errorProvider()
+    public static function errorProvider(): array
     {
         $errorCases = array(
             array(
@@ -156,21 +161,21 @@ class errorTest extends TestCase
                 'template' => '{{wi[n]ner.test3}}',
                 'expected' => array(
                     'Wrong variable naming as \'wi[n]ner.test3\' in {{wi[n]ner.test3}} !',
-                    "Unexpected charactor in 'wi[n]ner.test3' ! (should it be 'wi.[n].ner.test3' ?)",
+                    "Unexpected character in 'wi[n]ner.test3' (should it be 'wi.[n].ner.test3' ?)",
                 ),
             ),
             array(
                 'template' => '{{winner].[test4]}}',
                 'expected' => array(
                     'Wrong variable naming as \'winner].[test4]\' in {{winner].[test4]}} !',
-                    "Unexpected charactor in 'winner].[test4]' ! (should it be 'winner.[test4]' ?)",
+                    "Unexpected character in 'winner].[test4]' (should it be 'winner.[test4]' ?)",
                 ),
             ),
             array(
                 'template' => '{{winner[.test5]}}',
                 'expected' => array(
                     'Wrong variable naming as \'winner[.test5]\' in {{winner[.test5]}} !',
-                    "Unexpected charactor in 'winner[.test5]' ! (should it be 'winner.[.test5]' ?)",
+                    "Unexpected character in 'winner[.test5]' (should it be 'winner.[.test5]' ?)",
                 ),
             ),
             array(
@@ -186,7 +191,7 @@ class errorTest extends TestCase
                 'template' => '{{test9]}}',
                 'expected' => array(
                     'Wrong variable naming as \'test9]\' in {{test9]}} !',
-                    "Unexpected charactor in 'test9]' ! (should it be 'test9' ?)",
+                    "Unexpected character in 'test9]' (should it be 'test9' ?)",
                 ),
             ),
             array(
@@ -207,7 +212,7 @@ class errorTest extends TestCase
                 'template' => '{{]testC}}',
                 'expected' => array(
                     'Wrong variable naming as \']testC\' in {{]testC}} !',
-                    "Unexpected charactor in ']testC' ! (should it be 'testC' ?)",
+                    "Unexpected character in ']testC' (should it be 'testC' ?)",
                 )
             ),
             array(
@@ -253,21 +258,21 @@ class errorTest extends TestCase
                 'template' => '{{te.t[est].endL}}',
                 'expected' => array(
                     'Wrong variable naming as \'te.t[est].endL\' in {{te.t[est].endL}} !',
-                    "Unexpected charactor in 'te.t[est].endL' ! (should it be 'te.t.[est].endL' ?)",
+                    "Unexpected character in 'te.t[est].endL' (should it be 'te.t.[est].endL' ?)",
                 ),
             ),
             array(
                 'template' => '{{te.t[est]o.endM}}',
                 'expected' => array(
                     'Wrong variable naming as \'te.t[est]o.endM\' in {{te.t[est]o.endM}} !',
-                    "Unexpected charactor in 'te.t[est]o.endM' ! (should it be 'te.t.[est].o.endM' ?)"
+                    "Unexpected character in 'te.t[est]o.endM' (should it be 'te.t.[est].o.endM' ?)"
                 ),
             ),
             array(
                 'template' => '{{te.[est]o.endN}}',
                 'expected' => array(
                     'Wrong variable naming as \'te.[est]o.endN\' in {{te.[est]o.endN}} !',
-                    "Unexpected charactor in 'te.[est]o.endN' ! (should it be 'te.[est].o.endN' ?)",
+                    "Unexpected character in 'te.[est]o.endN' (should it be 'te.[est].o.endN' ?)",
                 ),
             ),
             array(
@@ -368,9 +373,7 @@ class errorTest extends TestCase
             array(
                 'template' => '{{>recursive}}',
                 'options' => array('partials' => array('recursive' => '{{>recursive}}')),
-                'expected' => array(
-                    'I found recursive partial includes as the path: recursive -> recursive! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.',
-                )
+                'expected' => 'I found recursive partial includes as the path: recursive -> recursive! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.',
             ),
             array(
                 'template' => '{{test_join (foo bar)}}',
@@ -403,9 +406,7 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{{{foo}}}} {{ {{{{/bar}}}}',
-                'expected' => array(
-                    'Unclosed token {{{{foo}}}} !!',
-                )
+                'expected' => 'Unclosed token {{{{foo}}}} !!',
             ),
             array(
                 'template' => '{{foo (foo (foo 1 2) 3))}}',
@@ -416,84 +417,57 @@ class errorTest extends TestCase
                          }
                      )
                 ),
-                'expected' => array(
-                    'Unexcepted \')\' in expression \'foo (foo (foo 1 2) 3))\' !!',
-                )
+                'expected' => 'Unexcepted \')\' in expression \'foo (foo (foo 1 2) 3))\' !!',
             ),
             array(
                 'template' => '{{{{foo}}}} {{ {{{{#foo}}}}',
-                'expected' => array(
-                    'Unclosed token {{{{foo}}}} !!',
-                )
+                'expected' => 'Unclosed token {{{{foo}}}} !!',
             ),
             array(
                 'template' => '{{else}}',
-                'expected' => array(
-                    '{{else}} only valid in if, unless, each, and #section context',
-                )
+                'expected' => '{{else}} only valid in if, unless, each, and #section context',
             ),
             array(
                 'template' => '{{log}}',
-                'expected' => array(
-                    'No argument after {{log}} !',
-                )
+                'expected' => 'No argument after {{log}} !',
             ),
             array(
                 'template' => '{{#*inline test}}{{/inline}}',
-                'expected' => array(
-                    'Do not support {{#*inline test}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag',
-                )
+                'expected' => 'Do not support {{#*inline test}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag',
             ),
             array(
                 'template' => '{{#*help me}}{{/help}}',
                 'options' => array(
                     'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                 ),
-                'expected' => array(
-                    'Do not support {{#*help me}}, now we only support {{#*inline "partialName"}}template...{{/inline}}'
-                )
+                'expected' => 'Do not support {{#*help me}}, now we only support {{#*inline "partialName"}}template...{{/inline}}',
             ),
             array(
                 'template' => '{{#*inline}}{{/inline}}',
                 'options' => array(
                     'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
                 ),
-                'expected' => array(
-                    'Error in {{#*inline}}: inline require 1 argument for partial name!',
-                )
+                'expected' => 'Error in {{#*inline}}: inline require 1 argument for partial name!',
             ),
             array(
                 'template' => '{{#>foo}}bar',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
-                ),
-                'expected' => array(
-                    'Unclosed token {{#>foo}} !!',
-                )
+                'options' => ['flags' => LightnCandy::FLAG_RUNTIMEPARTIAL],
+                'expected' => 'Unclosed token {{#>foo}} !!',
             ),
             array(
                 'template' => '{{ #2 }}',
-                'options' => array(
-                    'flags' => 0,
-                ),
-                'expected' => array(
-                    'Unclosed token {{#2}} !!',
-                )
+                'expected' => 'Unclosed token {{#2}} !!',
             ),
         );
 
-        return array_map(function($i) {
+        return array_map(function ($i) {
             if (!isset($i['options'])) {
-                $i['options'] = array('flags' => 0);
+                $i['options'] = [];
             }
-            if (!isset($i['options']['flags'])) {
-                $i['options']['flags'] = 0;
+            if (isset($i['expected']) && is_string($i['expected'])) {
+                $i['expected'] = [$i['expected']];
             }
-            if (isset($i['expected']) && !is_array($i['expected'])) {
-                $i['expected'] = array($i['expected']);
-            }
-            return array($i);
+            return [$i];
         }, $errorCases);
     }
 }
-

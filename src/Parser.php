@@ -131,7 +131,7 @@ class Parser
         if ($v !== '.') {
             $vv = implode('.', $matchedall[1]);
             if (strlen($v) !== strlen($vv)) {
-                $context['error'][] = "Unexpected charactor in '$v' ! (should it be '$vv' ?)";
+                $context['error'][] = "Unexpected character in '$v' (should it be '$vv' ?)";
             }
         }
 

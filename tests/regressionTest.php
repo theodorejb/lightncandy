@@ -1,6 +1,7 @@
 <?php
 
 use LightnCandy\LightnCandy;
+use LightnCandy\SafeString;
 use PHPUnit\Framework\TestCase;
 
 require_once('tests/helpers_for_test.php');
@@ -17,16 +18,6 @@ class regressionTest extends TestCase
             $this->fail('Compile failed due to: ' . print_r($context['error'], true) . "\nPARSED: $parsed");
         }
         $renderer = LightnCandy::prepare($php);
-
-        if (isset($issue['exception'])) {
-            try {
-                $renderer($issue['data'] ?? null);
-                $this->fail("Failed to throw expected exception: {$issue['exception']}");
-            } catch (Exception $e) {
-                $this->assertSame($issue['exception'], $e->getMessage());
-                return;
-            }
-        }
 
         $this->assertEquals($issue['expected'], $renderer($issue['data'] ?? null), "PHP CODE:\n$php");
     }
@@ -1573,18 +1564,6 @@ VAREND
             array(
                 'template' => '{{foo}}',
                 'expected' => '',
-            ),
-
-            array(
-                'template' => '{{foo}}',
-                'options' => array('flags' => LightnCandy::FLAG_STRICT),
-                'exception' => 'Runtime: [foo] does not exist',
-            ),
-
-            array(
-                'template' => '{{#foo}}OK{{/foo}}',
-                'options' => array('flags' => LightnCandy::FLAG_STRICT),
-                'exception' => 'Runtime: [foo] does not exist',
             ),
 
             array(
