@@ -139,7 +139,7 @@ class Partial
 
         if (!$context['flags']['noind']) {
             $sp = ', $sp';
-            $code = preg_replace('/^/m', "'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'", $code);
+            $code = preg_replace('/^/m', "'{$context['ops']['separator']}\$sp{$context['ops']['separator']}'", $code);
             // callbacks inside partial should be aware of $sp
             $code = preg_replace('/\bfunction\s*\(([^\(]*?)\)\s*{/', 'function(\\1)use($sp){', $code);
             $code = preg_replace('/function\(\$cx, \$in, \$sp\)use\(\$sp\){/', 'function($cx, $in)use($sp){', $code);

@@ -83,7 +83,7 @@ class Context extends Flags
         );
 
         $context['ops'] = array(
-            'seperator' => '.',
+            'separator' => '.',
             'f_start' => 'return ',
             'f_end' => ';',
             'op_start' => 'return ',

@@ -815,8 +815,6 @@ class Validator
      * @param array<string> $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
      * @param boolean $nost do not do standalone logic
-     *
-     * @return string|null Return compiled code segment for the token
      */
     protected static function spacing(array &$token, array &$context, bool $nost = false): ?string
     {
@@ -860,7 +858,7 @@ class Validator
             } else {
                 $token[Token::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
             }
-            $token[Token::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
+            $token[Token::POS_RSPACE] = $rmatch[3] ?? '';
         }
 
         // Handle space control.

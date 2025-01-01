@@ -101,8 +101,5 @@ class CompilerTest extends TestCase
         $this->assertEquals(3, $method->invokeArgs(null, array_by_ref(array(
             array('usedCount' => array('test' => array('testname' => 2))), 'test', 'testname'
         ))));
-        $this->assertEquals(5, $method->invokeArgs(null, array_by_ref(array(
-            array('usedCount' => array('test' => array('testname' => 2))), 'test', 'testname', 3
-        ))));
     }
 }

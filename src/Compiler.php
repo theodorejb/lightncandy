@@ -94,7 +94,7 @@ VAREND
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      * @param string $name base function name
-     * @param string $tag original handlabars tag for debug
+     * @param string $tag original handlebars tag for debug
      *
      * @return string compiled Function name
      *
@@ -157,7 +157,7 @@ VAREND
      */
     public static function compileSubExpression(array &$context, array $vars): array
     {
-        $ret = static::customHelper($context, $vars, true, true, true);
+        $ret = static::customHelper($context, $vars, true);
 
         return array($ret, 'FIXME: $subExpression');
     }
@@ -170,7 +170,7 @@ VAREND
      *
      * @return array<string> variable names
      */
-    protected static function getVariableNameOrSubExpression(&$context, $var): array
+    protected static function getVariableNameOrSubExpression(array &$context, ?array $var): array
     {
         return Parser::isSubExp($var) ? static::compileSubExpression($context, $var[1]) : static::getVariableName($context, $var);
     }
@@ -277,8 +277,8 @@ VAREND
         }
 
         if (isset($vars[0][0])) {
-            if ($ret = static::customHelper($context, $vars, $raw, true)) {
-                return static::compileOutput($context, $ret, 'FIXME: helper', $raw, false);
+            if ($ret = static::customHelper($context, $vars, $raw)) {
+                return static::compileOutput($context, $ret, 'FIXME: helper', $raw);
             }
             if ($vars[0][0] === 'else') {
                 return static::doElse($context, $vars);
@@ -291,7 +291,7 @@ VAREND
             }
         }
 
-        return static::compileVariable($context, $vars, $raw, false);
+        return static::compileVariable($context, $vars, $raw);
     }
 
     /**
@@ -317,9 +317,9 @@ VAREND
                 $p = "'$p[0]'";
             }
             $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
-            return $context['ops']['seperator'] . static::getFuncName($context, 'p', $tag) . "\$cx, $p, $v[0],$pid$sp){$context['ops']['seperator']}";
+            return $context['ops']['separator'] . static::getFuncName($context, 'p', $tag) . "\$cx, $p, $v[0],$pid$sp){$context['ops']['separator']}";
         }
-        return isset($context['usedPartial'][$p[0]]) ? "{$context['ops']['seperator']}'" . Partial::compileStatic($context, $p[0]) . "'{$context['ops']['seperator']}" : $context['ops']['seperator'];
+        return isset($context['usedPartial'][$p[0]]) ? "{$context['ops']['separator']}'" . Partial::compileStatic($context, $p[0]) . "'{$context['ops']['separator']}" : $context['ops']['separator'];
     }
 
     /**
@@ -338,7 +338,7 @@ VAREND
         }
         $v = static::getVariableNames($context, $vars);
         $tag = ">*inline $p[0]" .implode(' ', $v[1]);
-        return $context['ops']['seperator'] . static::getFuncName($context, 'in', $tag) . "\$cx, '{$p[0]}', $code){$context['ops']['seperator']}";
+        return $context['ops']['separator'] . static::getFuncName($context, 'in', $tag) . "\$cx, '{$p[0]}', $code){$context['ops']['separator']}";
     }
 
     /**
@@ -368,7 +368,7 @@ VAREND
         static::addUsageCount($context, 'helpers', $ch[0]);
         $v = static::getVariableNames($context, $vars, $bp);
 
-        return $context['ops']['seperator'] . static::getFuncName($context, 'hbbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, $inverted, function(\$cx, \$in) {{$context['ops']['array_check']}{$context['ops']['f_start']}";
+        return $context['ops']['separator'] . static::getFuncName($context, 'hbbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, $inverted, function(\$cx, \$in) {{$context['ops']['array_check']}{$context['ops']['f_start']}";
     }
 
     /**
@@ -377,8 +377,6 @@ VAREND
      * @param array $context current compile context
      * @param array $vars parsed arguments list
      * @param string|null $match should also match to this operator
-     *
-     * @return string Return compiled code segment for the token
      */
     protected static function blockEnd(array &$context, array &$vars, ?string $match = null): string
     {
@@ -393,17 +391,17 @@ VAREND
                 }
                 return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
             case 'with':
-                return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
+                return "{$context['ops']['f_end']}}){$context['ops']['separator']}";
         }
 
         if ($pop === ':') {
             array_pop($context['stack']);
-            return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
+            return "{$context['ops']['f_end']}}){$context['ops']['separator']}";
         }
 
         switch ($pop) {
             case '#':
-                return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
+                return "{$context['ops']['f_end']}}){$context['ops']['separator']}";
             case '^':
                 return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
         }
@@ -416,8 +414,6 @@ VAREND
      *
      * @param array $context current compile context
      * @param array $vars parsed arguments list
-     *
-     * @return string Return compiled code segment for the token
      */
     protected static function blockBegin(array &$context, array $vars): string
     {
@@ -446,8 +442,6 @@ VAREND
      * @param array $context current compile context
      * @param array $vars parsed arguments list
      * @param boolean $isEach the section is #each
-     *
-     * @return string Return compiled code segment for the token
      */
     protected static function section(array &$context, array $vars, bool $isEach = false): string
     {
@@ -461,7 +455,7 @@ VAREND
         }
         $v = static::getVariableNameOrSubExpression($context, $vars[0]);
         $each = $isEach ? 'true' : 'false';
-        return $context['ops']['seperator'] . static::getFuncName($context, 'sec', ($isEach ? 'each ' : '') . $v[1] . $be) . "\$cx, {$v[0]}, $bs, \$in, $each, function(\$cx, \$in) {{$context['ops']['array_check']}{$context['ops']['f_start']}";
+        return $context['ops']['separator'] . static::getFuncName($context, 'sec', ($isEach ? 'each ' : '') . $v[1] . $be) . "\$cx, {$v[0]}, $bs, \$in, $each, function(\$cx, \$in) {{$context['ops']['array_check']}{$context['ops']['f_start']}";
     }
 
     /**
@@ -478,7 +472,7 @@ VAREND
         $bp = Parser::getBlockParams($vars);
         $bs = $bp ? ('array(' . Expression::listString($bp) . ')') : 'null';
         $be = $bp ? " as |$bp[0]|" : '';
-        return $context['ops']['seperator'] . static::getFuncName($context, 'wi', 'with ' . $v[1] . $be) . "\$cx, {$v[0]}, $bs, \$in, function(\$cx, \$in) {{$context['ops']['array_check']}{$context['ops']['f_start']}";
+        return $context['ops']['separator'] . static::getFuncName($context, 'wi', 'with ' . $v[1] . $be) . "\$cx, {$v[0]}, $bs, \$in, function(\$cx, \$in) {{$context['ops']['array_check']}{$context['ops']['f_start']}";
     }
 
     /**
@@ -487,22 +481,16 @@ VAREND
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
-     * @param boolean $nosep true to compile without seperator
-     * @param boolean $subExp true when compile for subexpression
-     *
-     * @return string Return compiled code segment for the token when the token is custom helper
      */
-    protected static function customHelper(array &$context, array $vars, bool $raw, bool $nosep, bool $subExp = false): string
+    protected static function customHelper(array &$context, array $vars, bool $raw): string
     {
         if (count($vars[0]) > 1) {
             return '';
         }
 
         if (!isset($context['helpers'][$vars[0][0]])) {
-            if ($subExp) {
-                if ($vars[0][0] == 'lookup') {
-                    return static::compileLookup($context, $vars, $raw, true);
-                }
+            if ($vars[0][0] == 'lookup') {
+                return static::compileLookup($context, $vars, $raw, true);
             }
             return '';
         }
@@ -511,9 +499,8 @@ VAREND
         $ch = array_shift($vars);
         $v = static::getVariableNames($context, $vars);
         static::addUsageCount($context, 'helpers', $ch[0]);
-        $sep = $nosep ? '' : $context['ops']['seperator'];
 
-        return $sep . static::getFuncName($context, 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn', \$in)$sep";
+        return static::getFuncName($context, 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn', \$in)";
     }
 
     /**
@@ -521,8 +508,6 @@ VAREND
      *
      * @param array $context current compile context
      * @param array $vars parsed arguments list
-     *
-     * @return string Return compiled code segment for the token when the token is else
      */
     protected static function doElse(array &$context, array $vars)
     {
@@ -543,14 +528,12 @@ VAREND
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
-     *
-     * @return string Return compiled code segment for the token
      */
-    protected static function compileLog(&$context, &$vars, $raw)
+    protected static function compileLog(array &$context, array &$vars, bool $raw): string
     {
         array_shift($vars);
         $v = static::getVariableNames($context, $vars);
-        return $context['ops']['seperator'] . static::getFuncName($context, 'lo', $v[1]) . "\$cx, {$v[0]}){$context['ops']['seperator']}";
+        return $context['ops']['separator'] . static::getFuncName($context, 'lo', $v[1]) . "\$cx, {$v[0]}){$context['ops']['separator']}";
     }
 
     /**
@@ -559,15 +542,13 @@ VAREND
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
-     * @param boolean $nosep true to compile without seperator
-     *
-     * @return string Return compiled code segment for the token
+     * @param boolean $nosep true to compile without separator
      */
-    protected static function compileLookup(&$context, &$vars, $raw, $nosep = false)
+    protected static function compileLookup(array &$context, array &$vars, bool $raw, bool $nosep = false): string
     {
         $v2 = static::getVariableName($context, $vars[2]);
         $v = static::getVariableName($context, $vars[1], $v2);
-        $sep = $nosep ? '' : $context['ops']['seperator'];
+        $sep = $nosep ? '' : $context['ops']['separator'];
         $ex = $nosep ? ', 1' : '';
 
         return $sep . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $v[1]) . "\$cx, {$v[0]}$ex){$sep}";
@@ -580,13 +561,10 @@ VAREND
      * @param string $variable PHP code for the variable
      * @param string $expression normalized handlebars expression
      * @param boolean $raw is this {{{ token or not
-     * @param boolean $nosep true to compile without seperator
-     *
-     * @return string Return compiled code segment for the token
      */
-    protected static function compileOutput(&$context, $variable, $expression, $raw, $nosep)
+    protected static function compileOutput(array &$context, string $variable, string $expression, bool $raw): string
     {
-        $sep = $nosep ? '' : $context['ops']['seperator'];
+        $sep = $context['ops']['separator'];
         return $sep . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $expression) . "\$cx, $variable)$sep";
     }
 
@@ -596,14 +574,11 @@ VAREND
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
-     * @param boolean $nosep true to compile without seperator
-     *
-     * @return string Return compiled code segment for the token
      */
-    protected static function compileVariable(&$context, &$vars, $raw, $nosep)
+    protected static function compileVariable(array &$context, array &$vars, bool $raw): string
     {
         $v = static::getVariableName($context, $vars[0]);
-        return static::compileOutput($context, $v[0], $v[1], $raw, $nosep);
+        return static::compileOutput($context, $v[0], $v[1], $raw);
     }
 
     /**
@@ -612,17 +587,15 @@ VAREND
      * @param array<string,array|string|integer> $context current context
      * @param string $category category name, can be one of: 'var', 'helpers', 'runtime'
      * @param string $name used name
-     * @param integer $count increment
      *
      * @expect 1 when input array('usedCount' => array('test' => array())), 'test', 'testname'
      * @expect 3 when input array('usedCount' => array('test' => array('testname' => 2))), 'test', 'testname'
-     * @expect 5 when input array('usedCount' => array('test' => array('testname' => 2))), 'test', 'testname', 3
      */
-    protected static function addUsageCount(&$context, $category, $name, $count = 1)
+    protected static function addUsageCount(array &$context, string $category, string $name): int
     {
         if (!isset($context['usedCount'][$category][$name])) {
             $context['usedCount'][$category][$name] = 0;
         }
-        return ($context['usedCount'][$category][$name] += $count);
+        return $context['usedCount'][$category][$name] += 1;
     }
 }
