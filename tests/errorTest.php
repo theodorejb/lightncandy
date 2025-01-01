@@ -291,6 +291,14 @@ class errorTest extends TestCase
                 'expected' => 'I found an array in helpers with key as helper, please fix it.',
             ),
             array(
+                'template' => '{{typeof hello}}',
+            ),
+            array(
+                'template' => '{{typeof hello}}',
+                'options' => ['flags' => LightnCandy::FLAG_KNOWNHELPERSONLY],
+                'expected' => 'Missing helper: "typeof"',
+            ),
+            array(
                 'template' => '<ul>{{#each item}}<li>{{name}}</li>',
                 'expected' => 'Unclosed token {{#each item}} !!',
             ),

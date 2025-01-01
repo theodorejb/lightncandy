@@ -288,8 +288,7 @@ class HandlebarsSpecTest extends TestCase
     public static function jsonSpecProvider()
     {
         $ret = array();
-        $allowed = ['basic', 'blocks', 'builtins', 'data', 'partials', 'strict', 'subexpressions', 'whitespace-control'];
-        //$allowed = ['helpers'];
+        $allowed = ['basic', 'blocks', 'builtins', 'data', 'helpers', 'partials', 'strict', 'subexpressions', 'whitespace-control'];
 
         // stringParams and trackIds mode were removed from Handlebars in 2015:
         // https://github.com/handlebars-lang/handlebars.js/pull/1148

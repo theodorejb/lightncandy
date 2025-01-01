@@ -489,6 +489,8 @@ class Compiler extends Validator
         if (!isset($context['helpers'][$vars[0][0]])) {
             if ($vars[0][0] == 'lookup') {
                 return static::compileLookup($context, $vars, $raw, true);
+            } elseif ($context['flags']['knohlp'] && count($vars) > 1) {
+                throw new \Exception('Missing helper: "' . $vars[0][0] . '"');
             }
             return '';
         }
