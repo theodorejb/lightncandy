@@ -123,8 +123,7 @@ class Runtime
      */
     public static function enc(array $cx, $var): string
     {
-        // Use full namespace classname for more specific code export/match in Exporter.php replaceSafeString.
-        if ($var instanceof \LightnCandy\SafeString) {
+        if ($var instanceof SafeString) {
             return (string)$var;
         }
 
@@ -146,8 +145,7 @@ class Runtime
      */
     public static function encq(array $cx, $var): string
     {
-        // Use full namespace classname for more specific code export/match in Exporter.php replaceSafeString.
-        if ($var instanceof \LightnCandy\SafeString) {
+        if ($var instanceof SafeString) {
             return (string)$var;
         }
 

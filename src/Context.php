@@ -76,8 +76,6 @@ class Context
             'partialblock' => array(),
             'inlinepartial' => array(),
             'helpers' => array(),
-            'safestring' => '\\LightnCandy\\SafeString',
-            'safestringalias' => isset($options['safestring']) ? $options['safestring'] : 'LS',
             'rawblock' => false,
             'funcprefix' => uniqid('lcr'),
         );

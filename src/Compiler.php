@@ -57,36 +57,34 @@ class Compiler extends Validator
         $flagKnownHlp = Expression::boolString($context['flags']['knohlp']);
         $runtime = Runtime::class;
 
-        $constants = Exporter::constants($context);
         $helpers = Exporter::helpers($context);
         $partials = implode(",\n", $context['partialCode']);
         $use = "use {$runtime} as LR;";
-        $stringObject = 'use \\LightnCandy\\StringObject as StringObject;';
-        $safeString = ($context['usedFeature']['enc'] > 0) ? "use {$context['safestring']} as SafeString;" : '';
+        $safeString = ($context['usedFeature']['enc'] > 0) ? "use \\LightnCandy\\SafeString;\n" : '';
         // Return generated PHP code string.
         return <<<VAREND
-$stringObject{$safeString}{$use}return function (\$in = null, \$options = null) {
-    \$helpers = $helpers;
-    \$partials = array($partials);
-    \$cx = array(
-        'flags' => array(
-            'partnc' => $flagPartNC,
-            'knohlp' => $flagKnownHlp,
-            'debug' => 1,
-        ),
-        'constants' => $constants,
-        'helpers' => isset(\$options['helpers']) ? array_merge(\$helpers, \$options['helpers']) : \$helpers,
-        'partials' => isset(\$options['partials']) ? array_merge(\$partials, \$options['partials']) : \$partials,
-        'scopes' => array(),
-        'sp_vars' => isset(\$options['data']) ? array_merge(array('root' => \$in), \$options['data']) : array('root' => \$in),
-        'blparam' => array(),
-        'partialid' => 0,
-    );
-    {$context['ops']['array_check']}
-    {$context['ops']['op_start']}'$code'{$context['ops']['op_end']}
-};
-VAREND
-        ;
+            use \\LightnCandy\\StringObject;
+            {$safeString}{$use}
+            return function (\$in = null, \$options = null) {
+                \$helpers = $helpers;
+                \$partials = array($partials);
+                \$cx = array(
+                    'flags' => array(
+                        'partnc' => $flagPartNC,
+                        'knohlp' => $flagKnownHlp,
+                        'debug' => 1,
+                    ),
+                    'helpers' => isset(\$options['helpers']) ? array_merge(\$helpers, \$options['helpers']) : \$helpers,
+                    'partials' => isset(\$options['partials']) ? array_merge(\$partials, \$options['partials']) : \$partials,
+                    'scopes' => array(),
+                    'sp_vars' => isset(\$options['data']) ? array_merge(array('root' => \$in), \$options['data']) : array('root' => \$in),
+                    'blparam' => array(),
+                    'partialid' => 0,
+                );
+                {$context['ops']['array_check']}
+                {$context['ops']['op_start']}'$code'{$context['ops']['op_end']}
+            };
+            VAREND;
     }
 
     /**
