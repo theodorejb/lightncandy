@@ -4,8 +4,8 @@ namespace LightnCandy;
 
 class LightnCandy extends Flags
 {
-    protected static $lastContext;
-    public static $lastParsed;
+    protected static array $lastContext;
+    public static array $lastParsed;
 
     /**
      * Compile handlebars template into PHP code.
@@ -33,7 +33,7 @@ class LightnCandy extends Flags
      *
      * @throws \Exception
      */
-    protected static function handleError(&$context): void
+    protected static function handleError(array &$context): void
     {
         static::$lastContext = $context;
 
@@ -47,7 +47,7 @@ class LightnCandy extends Flags
      *
      * @return array<string,array|string|integer> Context data
      */
-    public static function getContext()
+    public static function getContext(): array
     {
         return static::$lastContext;
     }

@@ -8,22 +8,15 @@ class SafeString extends Encoder
     const IS_SUBEXP_SEARCH = '/^\(.+\)$/s';
     const IS_BLOCKPARAM_SEARCH = '/^ +\|(.+)\|$/s';
 
-    private $string;
-
-    public static $jsContext = array(
-        'flags' => array(
-        )
-    );
+    private string $string;
 
     /**
-     * Constructor
-     *
      * @param string $str input string
      * @param bool|string $escape false to not escape, true to escape, 'encq' to escape as handlebars.js
      */
-    public function __construct($str, $escape = false)
+    public function __construct(string $str, bool|string $escape = false)
     {
-        $this->string = $escape ? (($escape === 'encq') ? static::encq(static::$jsContext, $str) : static::enc(static::$jsContext, $str)) : $str;
+        $this->string = $escape ? (($escape === 'encq') ? static::encq([], $str) : static::enc([], $str)) : $str;
     }
 
     public function __toString()
@@ -34,15 +27,11 @@ class SafeString extends Encoder
     /**
      * Strip extended comments {{!-- .... --}}
      *
-     * @param string $template handlebars template string
-     *
-     * @return string Stripped template
-     *
      * @expect 'abc' when input 'abc'
      * @expect 'abc{{!}}cde' when input 'abc{{!}}cde'
      * @expect 'abc{{! }}cde' when input 'abc{{!----}}cde'
      */
-    public static function stripExtendedComments($template)
+    public static function stripExtendedComments(string $template): string
     {
         return preg_replace(static::EXTENDED_COMMENT_SEARCH, '{{! }}', $template);
     }
@@ -58,7 +47,7 @@ class SafeString extends Encoder
      * @expect 'a\\\\bc' when input 'a\bc'
      * @expect 'a\\\'bc' when input 'a\'bc'
      */
-    public static function escapeTemplate($template)
+    public static function escapeTemplate(string $template): string
     {
         return addcslashes(addcslashes($template, '\\'), "'");
     }

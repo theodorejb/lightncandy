@@ -77,7 +77,7 @@ class RuntimeTest extends TestCase
             array('flags' => array()), 'a\'b'
         ))));
         $this->assertEquals('a&b', $method->invokeArgs(null, array_by_ref(array(
-            null, new \LightnCandy\SafeString('a&b')
+            [], new \LightnCandy\SafeString('a&b')
         ))));
     }
     public function testOn_encq() {

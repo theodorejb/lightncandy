@@ -4,12 +4,12 @@ namespace LightnCandy;
 
 class Partial
 {
-    public static $TMP_JS_FUNCTION_STR = "!!\aFuNcTiOn\a!!";
+    public static string $TMP_JS_FUNCTION_STR = "!!\aFuNcTiOn\a!!";
 
     /**
      * Include all partials when using dynamic partials
      */
-    public static function handleDynamic(&$context)
+    public static function handleDynamic(array &$context): void
     {
         if ($context['usedFeature']['dynpartial'] == 0) {
             return;
@@ -25,10 +25,8 @@ class Partial
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      * @param string $name partial name
-     *
-     * @return string|null $code compiled PHP code when success
      */
-    public static function read(&$context, $name)
+    public static function read(array &$context, string $name): void
     {
         $isPB = ($name === '@partial-block');
         $context['usedFeature']['partial']++;
@@ -41,7 +39,8 @@ class Partial
 
         if ($cnt !== null) {
             $context['usedPartial'][$name] = SafeString::escapeTemplate($cnt);
-            return static::compileDynamic($context, $name);
+            static::compileDynamic($context, $name);
+            return;
         }
 
         if (!$isPB) {
@@ -57,7 +56,7 @@ class Partial
      *
      * @return string|null $content partial content
      */
-    public static function resolve(&$context, &$name)
+    public static function resolve(array &$context, string &$name): ?string
     {
         if ($name === '@partial-block') {
             $name = "@partial-block{$context['usedFeature']['pblock']}";
@@ -65,6 +64,7 @@ class Partial
         if (isset($context['partials'][$name])) {
             return $context['partials'][$name];
         }
+        return null;
     }
 
     /**
@@ -72,10 +72,8 @@ class Partial
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      * @param string $name partial name
-     *
-     * @return string|null $code PHP code string
      */
-    public static function compileStatic(&$context, $name)
+    public static function compileStatic(array &$context, string $name): string
     {
         // Check for recursive partial
         if (!$context['flags']['runpart']) {
@@ -103,10 +101,10 @@ class Partial
      *
      * @return string|null $code compiled PHP code when success
      */
-    public static function compileDynamic(&$context, $name)
+    public static function compileDynamic(array &$context, string $name): ?string
     {
         if (!$context['flags']['runpart']) {
-            return;
+            return null;
         }
 
         $func = static::compile($context, $context['usedPartial'][$name], $name);
@@ -123,29 +121,22 @@ class Partial
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      * @param string $template template string
-     * @param string|integer $name partial name or 0
-     *
-     * @return string $code compiled PHP code
+     * @param string $name partial name
      */
-    public static function compile(&$context, $template, $name = 0)
+    public static function compile(array &$context, string $template, string $name): ?string
     {
-        if ((end($context['partialStack']) === $name) && (substr($name, 0, 14) === '@partial-block')) {
-            return;
+        if ((end($context['partialStack']) === $name) && (str_starts_with($name, '@partial-block'))) {
+            return null;
         }
 
         $tmpContext = $context;
         $tmpContext['inlinepartial'] = array();
         $tmpContext['partialblock'] = array();
-
-        if ($name !== 0) {
-            $tmpContext['partialStack'][] = $name;
-        }
+        $tmpContext['partialStack'][] = $name;
 
         $code = Compiler::compileTemplate($tmpContext, str_replace('function', static::$TMP_JS_FUNCTION_STR, $template));
         Context::merge($context, $tmpContext);
-        if ($code === null) {
-            $code = '';
-        }
+
         if (!$context['flags']['noind']) {
             $sp = ', $sp';
             $code = preg_replace('/^/m', "'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'", $code);

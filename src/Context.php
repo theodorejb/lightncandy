@@ -11,7 +11,7 @@ class Context extends Flags
      *
      * @return array<string,array|string|integer> Context from options
      */
-    public static function create(array $options)
+    public static function create(array $options): array
     {
         $flags = $options['flags'] ?? 0;
 
@@ -120,7 +120,7 @@ class Context extends Flags
      * @expect array('flags' => array(), 'helpers' => array('\\LightnCandy\\Runtime::raw' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array(), 'helpers' => array()), array('helpers' => array('\\LightnCandy\\Runtime::raw'))
      * @expect array('flags' => array(), 'helpers' => array('test' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array(), 'helpers' => array()), array('helpers' => array('test' => '\\LightnCandy\\Runtime::raw'))
      */
-    protected static function updateHelperTable(&$context, $options, $tname = 'helpers')
+    protected static function updateHelperTable(array &$context, array $options, string $tname = 'helpers'): array
     {
         if (isset($options[$tname]) && is_array($options[$tname])) {
             foreach ($options[$tname] as $name => $func) {
@@ -143,9 +143,9 @@ class Context extends Flags
      * Merge a context into another
      *
      * @param array<string,array|string|integer> $context master context
-     * @param array<string,array|string|integer> $tmp another context will be overwrited into master context
+     * @param array<string,array|string|integer> $tmp another context will be overwritten into master context
      */
-    public static function merge(&$context, $tmp)
+    public static function merge(array &$context, array $tmp): void
     {
         $context['error'] = $tmp['error'];
         $context['helpers'] = $tmp['helpers'];

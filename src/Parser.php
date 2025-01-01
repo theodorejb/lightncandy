@@ -14,11 +14,8 @@ class Parser extends Token
      * Get partial block id and fix the variable list
      *
      * @param array<boolean|integer|string|array> $vars parsed token
-     *
-     * @return integer Return partial block id
-     *
      */
-    public static function getPartialBlock(&$vars)
+    public static function getPartialBlock(array &$vars): int
     {
         if (isset($vars[static::PARTIALBLOCK])) {
             $id = $vars[static::PARTIALBLOCK];
@@ -32,17 +29,15 @@ class Parser extends Token
      * Get block params and fix the variable list
      *
      * @param array<boolean|integer|string|array> $vars parsed token
-     *
-     * @return array<string>|null Return list of block params or null
-     *
      */
-    public static function getBlockParams(&$vars)
+    public static function getBlockParams(array &$vars): array
     {
         if (isset($vars[static::BLOCKPARAM])) {
             $list = $vars[static::BLOCKPARAM];
             unset($vars[static::BLOCKPARAM]);
             return $list;
         }
+        return [];
     }
 
     /**
@@ -53,9 +48,8 @@ class Parser extends Token
      * @param boolean $quote add single quote or not
      *
      * @return array<integer|string> Return variable name array
-     *
      */
-    protected static function getLiteral($name, $asis, $quote = false)
+    protected static function getLiteral(string $name, bool $asis, bool $quote = false)
     {
         return $asis ? array($name) : array(static::LITERAL, $quote ? "'$name'" : $name);
     }
@@ -65,7 +59,6 @@ class Parser extends Token
      *
      * @param string $v analyzed expression names.
      * @param array<string,array|string|integer> $context Current compile content.
-     * @param integer $pos expression position
      *
      * @return array<integer,string> Return variable name array
      *
@@ -83,7 +76,7 @@ class Parser extends Token
      * @expect array(\LightnCandy\Parser::LITERAL, '123') when input '123', array('flags' => array(), 'usedFeature' => array('parent' => 0)), 1
      * @expect array(\LightnCandy\Parser::LITERAL, 'null') when input 'null', array('flags' => array(), 'usedFeature' => array('parent' => 0)), 1
      */
-    protected static function getExpression($v, &$context, $pos)
+    protected static function getExpression(string $v, array &$context, int|string $pos): array
     {
         $asis = ($pos === 0);
 
@@ -92,7 +85,7 @@ class Parser extends Token
             return static::getLiteral(strval(1 * $v), $asis);
         }
 
-        // handle double quoted string
+        // handle double-quoted string
         if (preg_match('/^"(.*)"$/', $v, $matched)) {
             return static::getLiteral(preg_replace('/([^\\\\])\\\\\\\\"/', '$1"', preg_replace('/^\\\\\\\\"/', '"', $matched[1])), $asis, true);
         }
@@ -193,7 +186,7 @@ class Parser extends Token
      * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','[foo] '), array('flags' => array('noesc' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
      * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','\\\'foo\\\''), array('flags' => array('noesc' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
      */
-    public static function parse(&$token, &$context)
+    public static function parse(array &$token, array &$context): array
     {
         $vars = static::analyze($token[static::POS_INNERTAG], $context);
         if ($token[static::POS_OP] === '>') {
@@ -204,7 +197,7 @@ class Parser extends Token
 
         $avars = static::advancedVariable($vars, $context, static::toString($token));
 
-        if (isset($fn) && ($fn !== null)) {
+        if (isset($fn)) {
             if ($token[static::POS_OP] === '>') {
                 $avars[0] = $fn;
             } elseif ($token[static::POS_OP] === '#*') {
@@ -230,10 +223,10 @@ class Parser extends Token
      * @expect array('foo') when input array("\\'foo\\'")
      * @expect array('foo') when input array(0, 'foo'), 1
      */
-    public static function getPartialName(&$vars, $pos = 0)
+    public static function getPartialName(array &$vars, int $pos = 0): ?array
     {
         if (!isset($vars[$pos])) {
-            return;
+            return null;
         }
         return preg_match(SafeString::IS_SUBEXP_SEARCH, $vars[$pos]) ? null : array(preg_replace('/^("(.+)")|(\\[(.+)\\])|(\\\\\'(.+)\\\\\')$/', '$2$4$6', $vars[$pos]));
     }
@@ -248,7 +241,7 @@ class Parser extends Token
      *
      * @expect array(\LightnCandy\Parser::SUBEXP, array(array('a'), array('b')), '(a b)') when input '(a b)', array('usedFeature' => array('subexp' => 0), 'flags' => array())
      */
-    public static function subexpression($expression, &$context)
+    public static function subexpression(string $expression, array &$context): array
     {
         $context['usedFeature']['subexp']++;
         $vars = static::analyze(substr($expression, 1, -1), $context);
@@ -264,7 +257,7 @@ class Parser extends Token
     /**
      * Check a parsed result is a subexpression or not
      *
-     * @param array<string|integer|array> $var
+     * @param array<string|integer|array>|string $var
      *
      * @return boolean return true when input is a subexpression
      *
@@ -275,13 +268,13 @@ class Parser extends Token
      * @expect false when input array(\LightnCandy\Parser::SUBEXP, 0, '', 0)
      * @expect true when input array(\LightnCandy\Parser::SUBEXP, 0, '')
      */
-    public static function isSubExp($var)
+    public static function isSubExp($var): bool
     {
         return is_array($var) && (count($var) === 3) && ($var[0] === static::SUBEXP) && is_string($var[2]);
     }
 
     /**
-     * Analyze parsed token for advanved variables.
+     * Analyze parsed token for advanced variables.
      *
      * @param array<boolean|integer|array> $vars parsed token
      * @param array<string,array|string|integer> $context current compile context
@@ -296,7 +289,7 @@ class Parser extends Token
      * @expect array('fo o' => array(\LightnCandy\Parser::LITERAL, '123')) when input array('[fo o]=123'), array('flags' => array()), 0
      * @expect array('fo o' => array(\LightnCandy\Parser::LITERAL, '\'bar\'')) when input array('[fo o]="bar"'), array('flags' => array()), 0
      */
-    protected static function advancedVariable($vars, &$context, $token)
+    protected static function advancedVariable(array $vars, array &$context, string $token): array
     {
         $ret = array();
         $i = 0;
@@ -358,13 +351,11 @@ class Parser extends Token
     }
 
     /**
-     * Detect quote charactors
+     * Detect quote characters in a string
      *
-     * @param string $string the string to be detect the quote charactors
-     *
-     * @return array<string,integer>|null Expected ending string when quote charactor be detected
+     * @return array<string,integer>|null Expected ending string when there is a quote character
      */
-    protected static function detectQuote($string)
+    protected static function detectQuote(string $string): ?array
     {
         // begin with '(' without ending ')'
         if (preg_match('/^\([^\)]*$/', $string)) {
@@ -400,6 +391,8 @@ class Parser extends Token
         if (preg_match('/.+(\(+)[^\)]*$/', $string, $m)) {
             return array(')', strlen($m[1]));
         }
+
+        return null;
     }
 
     /**
@@ -419,7 +412,7 @@ class Parser extends Token
      * @expect array('[fo o]="1 2 3"') when input '[fo o]="1 2 3"', array('flags' => array())
      * @expect array('foo', 'a=(foo a=(foo a="ok"))') when input 'foo a=(foo a=(foo a="ok"))', array('flags' => array())
      */
-    protected static function analyze($token, &$context)
+    protected static function analyze(string $token, array &$context): array
     {
         $count = preg_match_all('/(\s*)([^\s]+)/', $token, $matchedall);
         // Parse arguments and deal with "..." or [...] or (...) or \'...\' or |...|
@@ -500,6 +493,6 @@ class Parser extends Token
 
             return $vars;
         }
-        return ($count > 0) ? $matchedall[2] : explode(' ', $token);
+        return explode(' ', $token);
     }
 }

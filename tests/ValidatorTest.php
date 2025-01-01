@@ -14,10 +14,10 @@ class ValidatorTest extends TestCase
     public function testOn_delimiter() {
         $method = new \ReflectionMethod('LightnCandy\Validator', 'delimiter');
         $method->setAccessible(true);
-        $this->assertEquals(null, $method->invokeArgs(null, array_by_ref(array(
+        $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
             array_fill(0, 11, ''), array()
         ))));
-        $this->assertEquals(null, $method->invokeArgs(null, array_by_ref(array(
+        $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
             array(0, 0, 0, 0, 0, '{{', '#', '...', '}}'), array()
         ))));
         $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(

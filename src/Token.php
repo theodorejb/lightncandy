@@ -27,7 +27,7 @@ class Token
      *
      * @param array<string,array|string|integer> $context Current context
      */
-    public static function setDelimiter(&$context)
+    public static function setDelimiter(array &$context): void
     {
         $left = '{{';
         $right = '}}';
@@ -53,7 +53,7 @@ class Token
      * @expect 'cd' when input array(0, 'a', 'b', 'c', 'd', 'e', 'f')
      * @expect 'qd' when input array(0, 'a', 'b', 'c', 'd', 'e', 'f'), array(3 => 'q')
      */
-    public static function toString($token, $merge = null)
+    public static function toString(array $token, ?array $merge = null): string
     {
         if (is_array($merge)) {
             $token = array_replace($token, $merge);

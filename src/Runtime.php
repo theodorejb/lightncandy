@@ -53,7 +53,7 @@ class Runtime extends Encoder
      * @param string $f runtime function name
      * @param array<string,array|string|integer> $cx render time context for lightncandy
      */
-    public static function debug($v, $f, $cx)
+    public static function debug(string $v, string $f, array $cx)
     {
         // Build array of reference for call_user_func_array
         $P = func_get_args();
@@ -70,12 +70,11 @@ class Runtime extends Encoder
     /**
      * Handle error by error_log or throw exception.
      *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
-     * @param string $err error message
+     * @param array<string,array|string|integer> $cx render time context
      *
      * @throws \Exception
      */
-    public static function err($cx, $err)
+    public static function err(array $cx, string $err)
     {
         if ($cx['flags']['debug']) {
             throw new \Exception($err);
@@ -85,10 +84,10 @@ class Runtime extends Encoder
     /**
      * Handle missing data error.
      *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param array<string,array|string|integer> $cx render time context
      * @param string $v expression
      */
-    public static function miss($cx, $v)
+    public static function miss(array $cx, string $v): void
     {
         static::err($cx, "Runtime: $v does not exist");
     }
@@ -96,10 +95,10 @@ class Runtime extends Encoder
     /**
      * For {{log}} .
      *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param array<string,array|string|integer> $cx render time context
      * @param string $v expression
      */
-    public static function lo($cx, $v)
+    public static function lo(array $cx, $v): string
     {
         error_log(var_export($v[0], true));
         return '';
@@ -153,17 +152,15 @@ class Runtime extends Encoder
     /**
      * For {{var}} .
      *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param array $cx render time context
      * @param array<array|string|integer>|string|integer|null $var value to be htmlencoded
-     *
-     * @return string The htmlencoded value of the specified variable
      *
      * @expect 'a' when input array('flags' => array()), 'a'
      * @expect 'a&amp;b' when input array('flags' => array()), 'a&b'
      * @expect 'a&#039;b' when input array('flags' => array()), 'a\'b'
-     * @expect 'a&b' when input null, new \LightnCandy\SafeString('a&b')
+     * @expect 'a&b' when input [], new \LightnCandy\SafeString('a&b')
      */
-    public static function enc($cx, $var)
+    public static function enc(array $cx, $var): string
     {
         // Use full namespace classname for more specific code export/match in Exporter.php replaceSafeString.
         if ($var instanceof \LightnCandy\SafeString) {
@@ -176,7 +173,7 @@ class Runtime extends Encoder
     /**
      * For {{var}} , do html encode just like handlebars.js .
      *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param array $cx render time context for lightncandy
      * @param array<array|string|integer>|string|integer|null $var value to be htmlencoded
      *
      * @return string The htmlencoded value of the specified variable
@@ -186,7 +183,7 @@ class Runtime extends Encoder
      * @expect 'a&#x27;b' when input array('flags' => array()), 'a\'b'
      * @expect '&#x60;a&#x27;b' when input array('flags' => array()), '`a\'b'
      */
-    public static function encq($cx, $var)
+    public static function encq(array $cx, $var): string
     {
         // Use full namespace classname for more specific code export/match in Exporter.php replaceSafeString.
         if ($var instanceof \LightnCandy\SafeString) {
@@ -234,7 +231,7 @@ class Runtime extends Encoder
      * @expect '268' when input array('scopes' => array(), 'flags' => array(), 'sp_vars'=>array('root' => 0)), array(1,3,4), null, 0, false, function ($c, $i) {return $i * 2;}
      * @expect '038' when input array('scopes' => array(), 'flags' => array(), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), null, 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
      */
-    public static function sec($cx, $v, $bp, $in, $each, $cb, $else = null)
+    public static function sec(array $cx, $v, ?array $bp, $in, bool $each, \Closure $cb, ?\Closure $else = null)
     {
         $push = ($in !== $v) || $each;
 
@@ -297,7 +294,6 @@ class Runtime extends Encoder
             }
             unset($cx['sp_vars']['index']);
             unset($cx['sp_vars']['first']);
-            $cx['sp_vars'] = $old_spvar;
             if ($push) {
                 array_pop($cx['scopes']);
             }

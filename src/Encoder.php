@@ -22,7 +22,7 @@ class Encoder
      * @expect 'a,true' when input array('flags' => array()), array('a', true)
      * @expect 'a,false' when input array('flags' => array()), array('a',false)
      */
-    public static function raw($cx, $v, $ex = 0)
+    public static function raw(array $cx, $v, int $ex = 0)
     {
         if ($ex) {
             return $v;
@@ -63,7 +63,7 @@ class Encoder
      * @expect 'a&amp;b' when input array('flags' => array()), 'a&b'
      * @expect 'a&#039;b' when input array('flags' => array()), 'a\'b'
      */
-    public static function enc($cx, $var)
+    public static function enc(array $cx, $var): string
     {
         return htmlspecialchars(static::raw($cx, $var), ENT_QUOTES, 'UTF-8');
     }
@@ -81,7 +81,7 @@ class Encoder
      * @expect 'a&#x27;b' when input array('flags' => array()), 'a\'b'
      * @expect '&#x60;a&#x27;b' when input array('flags' => array()), '`a\'b'
      */
-    public static function encq($cx, $var)
+    public static function encq(array $cx, $var)
     {
         return str_replace(array('=', '`', '&#039;'), array('&#x3D;', '&#x60;', '&#x27;'), htmlspecialchars(static::raw($cx, $var), ENT_QUOTES, 'UTF-8'));
     }
