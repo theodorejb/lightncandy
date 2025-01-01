@@ -325,15 +325,15 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{#with}}OK!{{/with}}',
-                'expected' => 'No argument after {{#with}} !',
+                'expected' => '#with requires exactly one argument',
             ),
             array(
                 'template' => '{{#if}}OK!{{/if}}',
-                'expected' => 'No argument after {{#if}} !',
+                'expected' => '#if requires exactly one argument',
             ),
             array(
                 'template' => '{{#unless}}OK!{{/unless}}',
-                'expected' => 'No argument after {{#unless}} !',
+                'expected' => '#unless requires exactly one argument',
             ),
             array(
                 'template' => '{{#each}}OK!{{/each}}',

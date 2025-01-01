@@ -321,9 +321,8 @@ class Validator
             case 'each':
                 return static::section($context, $vars, true);
             case 'unless':
-                return static::unless($context, $vars);
             case 'if':
-                return static::doIf($context, $vars);
+                return static::requireOneArgument($context, $vars);
             default:
                 return static::section($context, $vars);
         }
@@ -375,31 +374,35 @@ class Validator
      */
     protected static function with(array &$context, array $vars)
     {
-        static::builtin($context, $vars);
+        if (isset($vars[Parser::BLOCKPARAM])) {
+            unset($vars[Parser::BLOCKPARAM]);
+        }
+        if (count($vars) !== 2) {
+            $context['error'][] = "#{$vars[0][0]} requires exactly one argument";
+        }
+        $context['usedFeature'][$vars[0][0]]++;
         return true;
     }
 
     /**
-     * validate unless token
+     * validate if, unless, or with token
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      */
-    protected static function unless(array &$context, array $vars): true
+    protected static function requireOneArgument(array &$context, array $vars): true
     {
-        static::builtin($context, $vars);
-        return true;
-    }
-
-    /**
-     * validate if token
-     *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
-     */
-    protected static function doIf(array &$context, array $vars): true
-    {
-        static::builtin($context, $vars);
+        // don't count non-int keys (hash arguments)
+        $intKeys = 0;
+        foreach ($vars as $key => $var) {
+            if (is_int($key)) {
+                $intKeys++;
+            }
+        }
+        if ($intKeys !== 2) {
+            $context['error'][] = "#{$vars[0][0]} requires exactly one argument";
+        }
+        $context['usedFeature'][$vars[0][0]]++;
         return true;
     }
 
@@ -696,7 +699,7 @@ class Validator
      *
      * @return boolean Return true when it is custom helper
      */
-    public static function helper(array &$context, array $vars, bool $checkSubexp = false)
+    public static function helper(array &$context, array $vars, bool $checkSubexp = false): bool
     {
         if (static::resolveHelper($context, $vars)) {
             $context['usedFeature']['helper']++;

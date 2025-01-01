@@ -797,6 +797,25 @@ VAREND
             ),
 
             array(
+                'id' => 200,
+                'template' => '{{#unless 0}}1{{else if foo}}2{{else}}3{{/unless}}',
+                'data' => array('foo' => false),
+                'expected' => '1',
+            ),
+            array(
+                'id' => 201,
+                'template' => '{{#unless 0 includeZero=true}}1{{else if foo}}2{{else}}3{{/unless}}',
+                'data' => array('foo' => true),
+                'expected' => '2',
+            ),
+            array(
+                'id' => 202,
+                'template' => '{{#unless 0 includeZero=true}}1{{else if foo}}2{{else}}3{{/unless}}',
+                'data' => array('foo' => false),
+                'expected' => '3',
+            ),
+
+            array(
                 'id' => 204,
                 'template' => '{{#> test name="A"}}B{{/test}}{{#> test name="C"}}D{{/test}}',
                 'data' => array('bar' => true),

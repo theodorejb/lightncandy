@@ -57,18 +57,17 @@ class Runtime extends Encoder
      * For {{log}} .
      *
      * @param array<string,array|string|integer> $cx render time context
-     * @param string $v expression
      */
-    public static function lo(array $cx, $v): string
+    public static function lo(array $cx, array $v): string
     {
         error_log(var_export($v[0], true));
         return '';
     }
 
     /**
-     * For {{#if}} .
+     * For {{#if}} and {{#unless}}.
      *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value to be tested
      * @param boolean $zero include zero as true
      *
@@ -81,13 +80,14 @@ class Runtime extends Encoder
      * @expect true when input array(), true, false
      * @expect true when input array(), 1, false
      * @expect false when input array(), '', false
+     * @expect true when input array(), '0', false
      * @expect false when input array(), array(), false
      * @expect true when input array(), array(''), false
      * @expect true when input array(), array(0), false
      */
-    public static function ifvar($cx, $v, $zero)
+    public static function ifvar(array $cx, mixed $v, bool $zero): bool
     {
-        return ($v !== null) && ($v !== false) && ($zero || ($v !== 0) && ($v !== 0.0)) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
+        return ($v !== null) && ($v !== false) && ($zero || ($v !== 0) && ($v !== 0.0)) && ($v !== '') && (!is_array($v) || count($v) > 0);
     }
 
     /**
@@ -105,7 +105,7 @@ class Runtime extends Encoder
      * @expect true when input array(), array()
      * @expect false when input array(), array('1')
      */
-    public static function isec($cx, $v)
+    public static function isec(array $cx, mixed $v): bool
     {
         return ($v === null) || ($v === false) || (is_array($v) && (count($v) === 0));
     }

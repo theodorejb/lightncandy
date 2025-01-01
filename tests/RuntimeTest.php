@@ -34,6 +34,9 @@ class RuntimeTest extends TestCase
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
             array(), '', false
         ))));
+        $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
+            array(), '0', false
+        ))));
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
             array(), array(), false
         ))));
