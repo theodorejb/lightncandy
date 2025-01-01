@@ -5,53 +5,6 @@ namespace LightnCandy;
 class Encoder
 {
     /**
-     * Get string value
-     *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param array<array|string|integer>|string|integer|null $v value to be output
-     * @param integer $ex 1 to return untouched value, default is 0
-     *
-     * @return array<array|string|integer>|string|integer|null The raw value of the specified variable
-     *
-     * @expect 'true' when input array('flags' => array()), true
-     * @expect 'false' when input array('flags' => array()), false
-     * @expect false when input array('flags' => array()), false, true
-     * @expect 'a,b' when input array('flags' => array()), array('a', 'b')
-     * @expect '[object Object]' when input array('flags' => array()), array('a', 'c' => 'b')
-     * @expect '[object Object]' when input array('flags' => array()), array('c' => 'b')
-     * @expect 'a,true' when input array('flags' => array()), array('a', true)
-     * @expect 'a,false' when input array('flags' => array()), array('a',false)
-     */
-    public static function raw(array $cx, $v, int $ex = 0)
-    {
-        if ($ex) {
-            return $v;
-        }
-
-        if ($v === true) {
-            return 'true';
-        }
-
-        if (($v === false)) {
-            return 'false';
-        }
-
-        if (is_array($v)) {
-            if (count(array_diff_key($v, array_keys(array_keys($v)))) > 0) {
-                return '[object Object]';
-            } else {
-                $ret = array();
-                foreach ($v as $vv) {
-                    $ret[] = static::raw($cx, $vv);
-                }
-                return join(',', $ret);
-            }
-        }
-
-        return "$v";
-    }
-
-    /**
      * Get html encoded string
      *
      * @param array<string,array|string|integer> $cx render time context
@@ -65,7 +18,7 @@ class Encoder
      */
     public static function enc(array $cx, $var): string
     {
-        return htmlspecialchars(static::raw($cx, $var), ENT_QUOTES, 'UTF-8');
+        return htmlspecialchars(Runtime::raw($cx, $var), ENT_QUOTES, 'UTF-8');
     }
 
     /**
@@ -83,6 +36,6 @@ class Encoder
      */
     public static function encq(array $cx, $var)
     {
-        return str_replace(array('=', '`', '&#039;'), array('&#x3D;', '&#x60;', '&#x27;'), htmlspecialchars(static::raw($cx, $var), ENT_QUOTES, 'UTF-8'));
+        return str_replace(array('=', '`', '&#039;'), array('&#x3D;', '&#x60;', '&#x27;'), htmlspecialchars(Runtime::raw($cx, $var), ENT_QUOTES, 'UTF-8'));
     }
 }

@@ -5,14 +5,14 @@ namespace LightnCandy;
 /**
  * LightnCandy class for compiled PHP runtime.
  */
-class Runtime extends Encoder
+class Runtime
 {
     /**
      * Output debug info.
      *
      * @param string $v expression
      * @param string $f runtime function name
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param array<string,array|string|integer> $cx render time context
      */
     public static function debug(string $v, string $f, array $cx)
     {
@@ -93,7 +93,7 @@ class Runtime extends Encoder
     /**
      * For {{^var}} .
      *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value to be tested
      *
      * @return boolean Return true when the value is not null nor false.
@@ -128,7 +128,7 @@ class Runtime extends Encoder
             return (string)$var;
         }
 
-        return htmlspecialchars(static::raw($cx, $var), ENT_QUOTES, 'UTF-8');
+        return Encoder::enc($cx, $var);
     }
 
     /**
@@ -151,21 +151,66 @@ class Runtime extends Encoder
             return (string)$var;
         }
 
-        return str_replace(array('=', '`', '&#039;'), array('&#x3D;', '&#x60;', '&#x27;'), htmlspecialchars(static::raw($cx, $var), ENT_QUOTES, 'UTF-8'));
+        return Encoder::encq($cx, $var);
+    }
+
+    /**
+     * Get string value
+     *
+     * @param array<string,array|string|integer> $cx render time context
+     * @param array<array|string|integer>|string|integer|null $v value to be output
+     * @param integer $ex 1 to return untouched value, default is 0
+     *
+     * @return array<array|string|integer>|string|integer|null The raw value of the specified variable
+     *
+     * @expect 'true' when input array('flags' => array()), true
+     * @expect 'false' when input array('flags' => array()), false
+     * @expect false when input array('flags' => array()), false, true
+     * @expect 'a,b' when input array('flags' => array()), array('a', 'b')
+     * @expect '[object Object]' when input array('flags' => array()), array('a', 'c' => 'b')
+     * @expect '[object Object]' when input array('flags' => array()), array('c' => 'b')
+     * @expect 'a,true' when input array('flags' => array()), array('a', true)
+     * @expect 'a,false' when input array('flags' => array()), array('a',false)
+     */
+    public static function raw(array $cx, $v, int $ex = 0)
+    {
+        if ($ex) {
+            return $v;
+        }
+
+        if ($v === true) {
+            return 'true';
+        }
+
+        if (($v === false)) {
+            return 'false';
+        }
+
+        if (is_array($v)) {
+            if (count(array_diff_key($v, array_keys(array_keys($v)))) > 0) {
+                return '[object Object]';
+            } else {
+                $ret = array();
+                foreach ($v as $vv) {
+                    $ret[] = static::raw($cx, $vv);
+                }
+                return join(',', $ret);
+            }
+        }
+
+        return "$v";
     }
 
     /**
      * For {{#var}} or {{#each}} .
      *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value for the section
      * @param array<string>|null $bp block parameters
      * @param array<array|string|integer>|string|integer|null $in input data with current scope
      * @param boolean $each true when rendering #each
      * @param \Closure $cb callback function to render child context
      * @param \Closure|null $else callback function to render child context when {{else}}
-     *
-     * @return string The rendered string of the section
      *
      * @expect '' when input array('flags' => array()), false, null, false, false, function () {return 'A';}
      * @expect '' when input array('flags' => array()), null, null, null, false, function () {return 'A';}
@@ -192,7 +237,7 @@ class Runtime extends Encoder
      * @expect '268' when input array('scopes' => array(), 'flags' => array(), 'sp_vars'=>array('root' => 0)), array(1,3,4), null, 0, false, function ($c, $i) {return $i * 2;}
      * @expect '038' when input array('scopes' => array(), 'flags' => array(), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), null, 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
      */
-    public static function sec(array $cx, $v, ?array $bp, $in, bool $each, \Closure $cb, ?\Closure $else = null)
+    public static function sec(array $cx, mixed $v, ?array $bp, mixed $in, bool $each, \Closure $cb, ?\Closure $else = null): string
     {
         $push = ($in !== $v) || $each;
 
@@ -295,21 +340,19 @@ class Runtime extends Encoder
     /**
      * For {{#with}} .
      *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value to be the new context
      * @param array<array|string|integer>|string|integer|null $in input data with current scope
      * @param array<string>|null $bp block parameters
      * @param \Closure $cb callback function to render child context
      * @param \Closure|null $else callback function to render child context when {{else}}
      *
-     * @return string The rendered string of the token
-     *
-     * @expect '' when input array(), false, null, false, function () {return 'A';}
+     * @expect '' when input array(), false, null, new \stdClass(), function () {return 'A';}
      * @expect '' when input array(), null, null, null, function () {return 'A';}
      * @expect '{"a":"b"}' when input array(), array('a'=>'b'), null, array('a'=>'c'), function ($c, $i) {return json_encode($i);}
      * @expect '-b=' when input array(), 'b', null, array('a'=>'b'), function ($c, $i) {return "-$i=";}
      */
-    public static function wi($cx, $v, $bp, $in, $cb, $else = null)
+    public static function wi(array $cx, mixed $v, ?array $bp, array|\stdClass|null $in, \Closure $cb, ?\Closure $else = null): string
     {
         if (isset($bp[0])) {
             $v = static::m($cx, $v, array($bp[0] => $v));
@@ -330,14 +373,14 @@ class Runtime extends Encoder
     /**
      * Get merged context.
      *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $a the context to be merged
      * @param array<array|string|integer>|string|integer|null $b the new context to overwrite
      *
      * @return array<array|string|integer>|string|integer the merged context object
      *
      */
-    public static function m($cx, $a, $b)
+    public static function m(array $cx, $a, $b)
     {
         if (is_array($b)) {
             if ($a === null) {
@@ -359,14 +402,12 @@ class Runtime extends Encoder
     /**
      * For {{> partial}} .
      *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param array<string,array|string|integer> $cx render time context
      * @param string $p partial name
      * @param array<array|string|integer>|string|integer|null $v value to be the new context
      *
-     * @return string The rendered string of the partial
-     *
      */
-    public static function p($cx, $p, $v, $pid, $sp = '')
+    public static function p(array $cx, string $p, $v, int $pid, $sp = ''): string
     {
         $pp = ($p === '@partial-block') ? "$p" . ($pid > 0 ? $pid : $cx['partialid']) : $p;
 
@@ -383,27 +424,26 @@ class Runtime extends Encoder
     /**
      * For {{#* inlinepartial}} .
      *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param array<string,array|string|integer> $cx render time context
      * @param string $p partial name
-     * @param Closure $code the compiled partial code
+     * @param \Closure $code the compiled partial code
      *
      */
-    public static function in(&$cx, $p, $code)
+    public static function in(array &$cx, string $p, \Closure $code)
     {
         $cx['partials'][$p] = $code;
     }
 
-    /* For single custom helpers.
+    /**
+     * For single custom helpers.
      *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param array<string,array|string|int> $cx render time context
      * @param string $ch the name of custom helper to be executed
-     * @param array<array|string|integer>|string|integer|null $vars variables for the helper
+     * @param array<array|string|int>|string|int|null $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      * @param array<string,array|string|integer> $_this current rendering context for the helper
-     *
-     * @return string The rendered string of the token
      */
-    public static function hbch(&$cx, $ch, $vars, $op, &$_this)
+    public static function hbch(array &$cx, string $ch, array $vars, string $op, array|string|null &$_this): mixed
     {
         if (isset($cx['blparam'][0][$ch])) {
             return $cx['blparam'][0][$ch];
@@ -425,17 +465,15 @@ class Runtime extends Encoder
     /**
      * For block custom helpers.
      *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param array<string,array|string|integer> $cx render time context
      * @param string $ch the name of custom helper to be executed
      * @param array<array|string|integer>|string|integer|null $vars variables for the helper
      * @param array<string,array|string|integer> $_this current rendering context for the helper
      * @param boolean $inverted the logic will be inverted
      * @param \Closure|null $cb callback function to render child context
      * @param \Closure|null $else callback function to render child context when {{else}}
-     *
-     * @return string The rendered string of the token
      */
-    public static function hbbch(&$cx, $ch, $vars, &$_this, $inverted, $cb, $else = null)
+    public static function hbbch(array &$cx, string $ch, array $vars, array|int|null &$_this, bool $inverted, ?\Closure $cb, ?\Closure $else = null): mixed
     {
         $options = array(
             'name' => $ch,
@@ -506,25 +544,21 @@ class Runtime extends Encoder
     /**
      * Execute custom helper with prepared options
      *
-     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param array<string,array|string|integer> $cx render time context
      * @param string $ch the name of custom helper to be executed
-     * @param array<array|string|integer>|string|integer|null $vars variables for the helper
+     * @param array<array|string|int> $vars variables for the helper
      * @param array<string,array|string|integer> $options the options object
-     *
-     * @return string The rendered string of the token
      */
-    public static function exch($cx, $ch, $vars, &$options)
+    public static function exch(array $cx, string $ch, array $vars, array &$options): mixed
     {
         $args = $vars[0];
         $args[] = &$options;
-        $r = true;
 
         try {
-            $r = call_user_func_array($cx['helpers'][$ch], $args);
-        } catch (\Throwable $E) {
-            static::err($cx, "Runtime: call custom helper '$ch' error: " . $E->getMessage());
+            return call_user_func_array($cx['helpers'][$ch], $args);
+        } catch (\Throwable $e) {
+            static::err($cx, "Runtime: call custom helper '$ch' error: " . $e->getMessage());
+            return '';
         }
-
-        return $r;
     }
 }

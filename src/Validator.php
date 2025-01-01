@@ -14,7 +14,7 @@ class Validator
     {
         $template = SafeString::stripExtendedComments($template);
         $context['level'] = 0;
-        Parser::setDelimiter($context);
+        Token::setDelimiter($context);
 
         while (preg_match($context['tokens']['search'], $template, $matches)) {
             // Skip a token when it is slash escaped
@@ -517,14 +517,14 @@ class Validator
                 $context['error'][] = 'Bad token ' . Token::toString($token) . ' ! Do you mean ' . Token::toString($token, array(Token::POS_ENDRAW => '}}')) . ' ?';
             }
             if ($context['rawblock']) {
-                Parser::setDelimiter($context);
+                Token::setDelimiter($context);
                 $context['rawblock'] = false;
             } else {
                 if ($token[Token::POS_OP]) {
                     $context['error'][] = "Wrong raw block begin with " . Token::toString($token) . ' ! Remove "' . $token[Token::POS_OP] . '" to fix this issue.';
                 }
                 $context['rawblock'] = $token[Token::POS_INNERTAG];
-                Parser::setDelimiter($context);
+                Token::setDelimiter($context);
                 $token[Token::POS_OP] = '#';
             }
             $token[Token::POS_ENDRAW] = '}}';

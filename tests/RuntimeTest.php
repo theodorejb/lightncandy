@@ -98,6 +98,33 @@ class RuntimeTest extends TestCase
             array('flags' => array()), '`a\'b'
         ))));
     }
+    public function testOn_raw() {
+        $method = new \ReflectionMethod('LightnCandy\Runtime', 'raw');
+        $this->assertEquals('true', $method->invokeArgs(null, array_by_ref(array(
+            array('flags' => array()), true
+        ))));
+        $this->assertEquals('false', $method->invokeArgs(null, array_by_ref(array(
+            array('flags' => array()), false
+        ))));
+        $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
+            array('flags' => array()), false, true
+        ))));
+        $this->assertEquals('a,b', $method->invokeArgs(null, array_by_ref(array(
+            array('flags' => array()), array('a', 'b')
+        ))));
+        $this->assertEquals('[object Object]', $method->invokeArgs(null, array_by_ref(array(
+            array('flags' => array()), array('a', 'c' => 'b')
+        ))));
+        $this->assertEquals('[object Object]', $method->invokeArgs(null, array_by_ref(array(
+            array('flags' => array()), array('c' => 'b')
+        ))));
+        $this->assertEquals('a,true', $method->invokeArgs(null, array_by_ref(array(
+            array('flags' => array()), array('a', true)
+        ))));
+        $this->assertEquals('a,false', $method->invokeArgs(null, array_by_ref(array(
+            array('flags' => array()), array('a',false)
+        ))));
+    }
     public function testOn_sec() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'sec');
         $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
@@ -176,7 +203,7 @@ class RuntimeTest extends TestCase
     public function testOn_wi() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'wi');
         $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
-            array(), false, null, false, function () {return 'A';}
+            array(), false, null, new \stdClass(), function () {return 'A';}
         ))));
         $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
             array(), null, null, null, function () {return 'A';}

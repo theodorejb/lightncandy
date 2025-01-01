@@ -2,7 +2,7 @@
 
 namespace LightnCandy;
 
-class SafeString extends Encoder
+class SafeString
 {
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
     const IS_SUBEXP_SEARCH = '/^\(.+\)$/s';
@@ -16,7 +16,7 @@ class SafeString extends Encoder
      */
     public function __construct(string $str, bool|string $escape = false)
     {
-        $this->string = $escape ? (($escape === 'encq') ? static::encq([], $str) : static::enc([], $str)) : $str;
+        $this->string = $escape ? (($escape === 'encq') ? Encoder::encq([], $str) : Encoder::enc([], $str)) : $str;
     }
 
     public function __toString()

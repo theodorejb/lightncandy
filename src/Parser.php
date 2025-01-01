@@ -2,7 +2,7 @@
 
 namespace LightnCandy;
 
-class Parser extends Token
+class Parser
 {
     // Compile time error handling flags
     const BLOCKPARAM = 9999;
@@ -123,7 +123,7 @@ class Parser extends Token
         }
 
         if (preg_match('/\\]/', $v)) {
-            preg_match_all(static::VARNAME_SEARCH, $v, $matchedall);
+            preg_match_all(Token::VARNAME_SEARCH, $v, $matchedall);
         } else {
             preg_match_all('/([^\\.\\/]+)/', $v, $matchedall);
         }
@@ -188,24 +188,24 @@ class Parser extends Token
      */
     public static function parse(array &$token, array &$context): array
     {
-        $vars = static::analyze($token[static::POS_INNERTAG], $context);
-        if ($token[static::POS_OP] === '>') {
+        $vars = static::analyze($token[Token::POS_INNERTAG], $context);
+        if ($token[Token::POS_OP] === '>') {
             $fn = static::getPartialName($vars);
-        } elseif ($token[static::POS_OP] === '#*') {
+        } elseif ($token[Token::POS_OP] === '#*') {
             $fn = static::getPartialName($vars, 1);
         }
 
-        $avars = static::advancedVariable($vars, $context, static::toString($token));
+        $avars = static::advancedVariable($vars, $context, Token::toString($token));
 
         if (isset($fn)) {
-            if ($token[static::POS_OP] === '>') {
+            if ($token[Token::POS_OP] === '>') {
                 $avars[0] = $fn;
-            } elseif ($token[static::POS_OP] === '#*') {
+            } elseif ($token[Token::POS_OP] === '#*') {
                 $avars[1] = $fn;
             }
         }
 
-        return array(($token[static::POS_BEGINRAW] === '{') || ($token[static::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $avars);
+        return array(($token[Token::POS_BEGINRAW] === '{') || ($token[Token::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $avars);
     }
 
     /**

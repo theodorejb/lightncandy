@@ -11,33 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 
 class EncoderTest extends TestCase
 {
-    public function testOn_raw() {
-        $method = new \ReflectionMethod('LightnCandy\Encoder', 'raw');
-        $this->assertEquals('true', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array()), true
-        ))));
-        $this->assertEquals('false', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array()), false
-        ))));
-        $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array()), false, true
-        ))));
-        $this->assertEquals('a,b', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array()), array('a', 'b')
-        ))));
-        $this->assertEquals('[object Object]', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array()), array('a', 'c' => 'b')
-        ))));
-        $this->assertEquals('[object Object]', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array()), array('c' => 'b')
-        ))));
-        $this->assertEquals('a,true', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array()), array('a', true)
-        ))));
-        $this->assertEquals('a,false', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array()), array('a',false)
-        ))));
-    }
     public function testOn_enc() {
         $method = new \ReflectionMethod('LightnCandy\Encoder', 'enc');
         $this->assertEquals('a', $method->invokeArgs(null, array_by_ref(array(

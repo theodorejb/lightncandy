@@ -2,7 +2,7 @@
 
 namespace LightnCandy;
 
-class Context extends Flags
+class Context
 {
     /**
      * Create a context from options
@@ -17,13 +17,13 @@ class Context extends Flags
 
         $context = array(
             'flags' => array(
-                'noesc' => $flags & static::FLAG_NOESCAPE,
-                'noind' => $flags & static::FLAG_PREVENTINDENT,
-                'debug' => $flags & static::FLAG_STRICT,
-                'runpart' => $flags & static::FLAG_RUNTIMEPARTIAL,
-                'partnc' => $flags & static::FLAG_PARTIALNEWCONTEXT,
-                'nostd' => $flags & static::FLAG_IGNORESTANDALONE,
-                'knohlp' => $flags & static::FLAG_KNOWNHELPERSONLY,
+                'noesc' => $flags & Flags::FLAG_NOESCAPE,
+                'noind' => $flags & Flags::FLAG_PREVENTINDENT,
+                'debug' => $flags & Flags::FLAG_STRICT,
+                'runpart' => $flags & Flags::FLAG_RUNTIMEPARTIAL,
+                'partnc' => $flags & Flags::FLAG_PARTIALNEWCONTEXT,
+                'nostd' => $flags & Flags::FLAG_IGNORESTANDALONE,
+                'knohlp' => $flags & Flags::FLAG_KNOWNHELPERSONLY,
             ),
             'level' => 0,
             'stack' => array(),

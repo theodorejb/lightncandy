@@ -22,7 +22,7 @@ class Compiler extends Validator
             return '';
         }
 
-        Parser::setDelimiter($context);
+        Token::setDelimiter($context);
 
         $context['compile'] = true;
 
