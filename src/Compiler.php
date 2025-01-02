@@ -100,7 +100,7 @@ class Compiler extends Validator
      * @expect 'LR::test2(' when input array('flags' => array('debug' => 0)), 'test2', ''
      * @expect 'LR::debug(\'abc\', \'test\', ' when input array('flags' => array('debug' => 1), 'funcprefix' => 'haha456'), 'test', 'abc'
      */
-    protected static function getFuncName(array &$context, string $name, $tag): string
+    protected static function getFuncName(array &$context, string $name, string $tag): string
     {
         static::addUsageCount($context, 'runtime', $name);
 
@@ -530,7 +530,7 @@ class Compiler extends Validator
     {
         array_shift($vars);
         $v = static::getVariableNames($context, $vars);
-        return $context['ops']['separator'] . static::getFuncName($context, 'lo', $v[1]) . "\$cx, {$v[0]}){$context['ops']['separator']}";
+        return $context['ops']['separator'] . static::getFuncName($context, 'lo', $v[1][0]) . "\$cx, {$v[0]}){$context['ops']['separator']}";
     }
 
     /**

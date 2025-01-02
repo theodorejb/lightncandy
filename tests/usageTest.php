@@ -15,7 +15,7 @@ class usageTest extends TestCase
         $this->assertEquals($test['expected'], $context['usedFeature']);
     }
 
-    public static function compileProvider()
+    public static function compileProvider(): array
     {
         $default = array(
             'rootthis' => 0,
