@@ -65,7 +65,6 @@ class Context
                 'log' => 0,
             ),
             'usedCount' => array(
-                'var' => array(),
                 'helpers' => array(),
                 'runtime' => array(),
             ),
@@ -76,7 +75,6 @@ class Context
             'inlinepartial' => array(),
             'helpers' => array(),
             'rawblock' => false,
-            'funcprefix' => uniqid('lcr'),
         );
 
         $context['ops'] = array(
@@ -93,7 +91,6 @@ class Context
         );
 
         $context['ops']['enc'] = 'encq';
-        $context['ops']['array_check'] = '$inary=is_array($in) || $in instanceof \ArrayAccess;';
         static::updateHelperTable($context, $options);
 
         return $context;

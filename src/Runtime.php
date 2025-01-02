@@ -29,28 +29,13 @@ class Runtime
     }
 
     /**
-     * Handle error by error_log or throw exception.
+     * Throw exception for missing expression. Only used in strict mode.
      *
      * @param array<string,array|string|integer> $cx render time context
-     *
-     * @throws \Exception
-     */
-    public static function err(array $cx, string $err)
-    {
-        if ($cx['flags']['debug']) {
-            throw new \Exception($err);
-        }
-    }
-
-    /**
-     * Handle missing data error.
-     *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param string $v expression
      */
     public static function miss(array $cx, string $v): void
     {
-        static::err($cx, "Runtime: $v does not exist");
+        throw new \Exception("Runtime: $v does not exist");
     }
 
     /**
@@ -410,8 +395,7 @@ class Runtime
         $pp = ($p === '@partial-block') ? "$p" . ($pid > 0 ? $pid : $cx['partialid']) : $p;
 
         if (!isset($cx['partials'][$pp])) {
-            static::err($cx, "The partial $p could not be found");
-            return '';
+            throw new \Exception("The partial $p could not be found");
         }
 
         $cx['partialid'] = ($p === '@partial-block') ? (($pid > 0) ? $pid : (($cx['partialid'] > 0) ? $cx['partialid'] - 1 : 0)) : $pid;
@@ -555,8 +539,7 @@ class Runtime
         try {
             return call_user_func_array($cx['helpers'][$ch], $args);
         } catch (\Throwable $e) {
-            static::err($cx, "Runtime: call custom helper '$ch' error: " . $e->getMessage());
-            return '';
+            throw new \Exception("Runtime: call custom helper '$ch' error: " . $e->getMessage());
         }
     }
 }

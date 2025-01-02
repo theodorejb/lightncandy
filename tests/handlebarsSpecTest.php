@@ -121,9 +121,6 @@ class HandlebarsSpecTest extends TestCase
                $spec['it'] === 'in string params mode,' ||
                $spec['it'] === 'as hashes in string params mode' ||
 
-               // chained inverted sections + block params
-               ($spec['it'] === 'should allow block params on chained helpers') ||
-
                // Decorators are deprecated: https://github.com/wycats/handlebars.js/blob/master/docs/decorators-api.md
                ($spec['description'] === 'blocks - decorators') ||
 

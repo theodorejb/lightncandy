@@ -17,9 +17,14 @@ class regressionTest extends TestCase
         if (count($context['error'])) {
             $this->fail('Compile failed due to: ' . print_r($context['error'], true) . "\nPARSED: $parsed");
         }
-        $template = LightnCandy::template($templateSpec);
 
-        $this->assertEquals($issue['expected'], $template($issue['data'] ?? null), "PHP CODE:\n$templateSpec");
+        try {
+            $template = LightnCandy::template($templateSpec);
+            $result = $template($issue['data'] ?? null);
+            $this->assertEquals($issue['expected'], $result, "PHP CODE:\n$templateSpec");
+        } catch (Throwable $e) {
+            $this->fail("Error: {$e->getMessage()}\nPHP code:\n$templateSpec");
+        }
     }
 
     public static function issueProvider(): array

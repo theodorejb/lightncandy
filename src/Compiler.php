@@ -46,7 +46,7 @@ class Compiler extends Validator
     }
 
     /**
-     * Compose LightnCandy render codes for include()
+     * Compile Handlebars template to PHP function.
      *
      * @param array<string,array|string|integer> $context Current context
      * @param string $code generated PHP code
@@ -56,32 +56,30 @@ class Compiler extends Validator
         $flagPartNC = Expression::boolString($context['flags']['partnc']);
         $flagKnownHlp = Expression::boolString($context['flags']['knohlp']);
         $runtime = Runtime::class;
-
+        $safeStringClass = SafeString::class;
+        $useSafeString = ($context['usedFeature']['enc'] > 0) ? "use $safeStringClass;" : '';
         $helpers = Exporter::helpers($context);
         $partials = implode(",\n", $context['partialCode']);
-        $use = "use {$runtime} as LR;";
-        $safeString = ($context['usedFeature']['enc'] > 0) ? "use \\LightnCandy\\SafeString;\n" : '';
+
         // Return generated PHP code string.
         return <<<VAREND
-            use \\LightnCandy\\StringObject;
-            {$safeString}{$use}
-            return function (\$in = null, \$options = null) {
+            use {$runtime} as LR;
+            $useSafeString
+            return function (\$in = null, array \$options = []) {
                 \$helpers = $helpers;
-                \$partials = array($partials);
-                \$cx = array(
-                    'flags' => array(
+                \$partials = [$partials];
+                \$cx = [
+                    'flags' => [
                         'partnc' => $flagPartNC,
                         'knohlp' => $flagKnownHlp,
-                        'debug' => 1,
-                    ),
+                    ],
                     'helpers' => isset(\$options['helpers']) ? array_merge(\$helpers, \$options['helpers']) : \$helpers,
                     'partials' => isset(\$options['partials']) ? array_merge(\$partials, \$options['partials']) : \$partials,
-                    'scopes' => array(),
-                    'sp_vars' => isset(\$options['data']) ? array_merge(array('root' => \$in), \$options['data']) : array('root' => \$in),
-                    'blparam' => array(),
+                    'scopes' => [],
+                    'sp_vars' => isset(\$options['data']) ? array_merge(['root' => \$in], \$options['data']) : ['root' => \$in],
+                    'blparam' => [],
                     'partialid' => 0,
-                );
-                {$context['ops']['array_check']}
+                ];
                 {$context['ops']['op_start']}'$code'{$context['ops']['op_end']}
             };
             VAREND;
@@ -98,7 +96,7 @@ class Compiler extends Validator
      *
      * @expect 'LR::test(' when input array('flags' => array('debug' => 0)), 'test', ''
      * @expect 'LR::test2(' when input array('flags' => array('debug' => 0)), 'test2', ''
-     * @expect 'LR::debug(\'abc\', \'test\', ' when input array('flags' => array('debug' => 1), 'funcprefix' => 'haha456'), 'test', 'abc'
+     * @expect 'LR::debug(\'abc\', \'test\', ' when input array('flags' => array('debug' => 1)), 'test', 'abc'
      */
     protected static function getFuncName(array &$context, string $name, string $tag): string
     {
@@ -124,14 +122,14 @@ class Compiler extends Validator
      *
      * @return array<string|array> variable names
      *
-     * @expect array('array(array($in),array())', array('this')) when input array('flags'=>array()), array(null)
-     * @expect array('array(array($in,$in),array())', array('this', 'this')) when input array('flags'=>array()), array(null, null)
-     * @expect array('array(array(),array(\'a\'=>$in))', array('this')) when input array('flags'=>array()), array('a' => null)
+     * @expect ['[[$in],[]]', array('this')] when input array('flags'=>array()), array(null)
+     * @expect ['[[$in,$in],[]]', array('this', 'this')] when input array('flags'=>array()), array(null, null)
+     * @expect ['[[],[\'a\'=>$in]]', array('this')] when input array('flags'=>array()), array('a' => null)
      */
     protected static function getVariableNames(array &$context, array $vn, array $blockParams = []): array
     {
-        $vars = array(array(), array());
-        $exps = array();
+        $vars = [[], []];
+        $exps = [];
         foreach ($vn as $i => $v) {
             $V = static::getVariableNameOrSubExpression($context, $v);
             if (is_string($i)) {
@@ -141,8 +139,8 @@ class Compiler extends Validator
             }
             $exps[] = $V[1];
         }
-        $bp = $blockParams ? (',array(' . Expression::listString($blockParams) . ')') : '';
-        return array('array(array(' . implode(',', $vars[0]) . '),array(' . implode(',', $vars[1]) . ")$bp)", $exps);
+        $bp = $blockParams ? (',[' . Expression::listString($blockParams) . ']') : '';
+        return ['[[' . implode(',', $vars[0]) . '],[' . implode(',', $vars[1]) . "]$bp]", $exps];
     }
 
     /**
@@ -182,23 +180,23 @@ class Compiler extends Validator
      *
      * @return array<string> variable names
      *
-     * @expect array('$in', 'this') when input array('flags'=>array('debug'=>0)), array(null)
-     * @expect array('(isset($in[\'true\']) ? $in[\'true\'] : null)', '[true]') when input array('flags'=>array('debug'=>0)), array('true')
-     * @expect array('(isset($in[\'false\']) ? $in[\'false\'] : null)', '[false]') when input array('flags'=>array('debug'=>0)), array('false')
-     * @expect array('true', 'true') when input array('flags'=>array('debug'=>0)), array(-1, 'true')
-     * @expect array('false', 'false') when input array('flags'=>array('debug'=>0)), array(-1, 'false')
-     * @expect array('(isset($in[\'2\']) ? $in[\'2\'] : null)', '[2]') when input array('flags'=>array('debug'=>0)), array('2')
-     * @expect array('2', '2') when input array('flags'=>array('debug'=>0)), array(-1, '2')
-     * @expect array("(isset(\$cx['sp_vars']['index']) ? \$cx['sp_vars']['index'] : null)", '@[index]') when input array('flags'=>array('debug'=>0)), array('@index')
-     * @expect array("(isset(\$cx['sp_vars']['key']) ? \$cx['sp_vars']['key'] : null)", '@[key]') when input array('flags'=>array('debug'=>0)), array('@key')
-     * @expect array("(isset(\$cx['sp_vars']['first']) ? \$cx['sp_vars']['first'] : null)", '@[first]') when input array('flags'=>array('debug'=>0)), array('@first')
-     * @expect array("(isset(\$cx['sp_vars']['last']) ? \$cx['sp_vars']['last'] : null)", '@[last]') when input array('flags'=>array('debug'=>0)), array('@last')
-     * @expect array('(isset($in[\'"a"\']) ? $in[\'"a"\'] : null)', '["a"]') when input array('flags'=>array('debug'=>0)), array('"a"')
-     * @expect array('"a"', '"a"') when input array('flags'=>array('debug'=>0)), array(-1, '"a"')
-     * @expect array('(isset($in[\'a\']) ? $in[\'a\'] : null)', '[a]') when input array('flags'=>array('debug'=>0)), array('a')
-     * @expect array('(isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\']) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input array('flags'=>array('debug'=>0)), array(1,'a')
-     * @expect array('(isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\']) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input array('flags'=>array('debug'=>0)), array(3,'a')
-     * @expect array('(isset($in[\'id\']) ? $in[\'id\'] : null)', 'this.[id]') when input array('flags'=>array('debug'=>0)), array(null, 'id')
+     * @expect ['$in', 'this'] when input array('flags'=>array('debug'=>0)), array(null)
+     * @expect ['$in[\'true\'] ?? null', '[true]'] when input array('flags'=>array('debug'=>0)), array('true')
+     * @expect ['$in[\'false\'] ?? null', '[false]'] when input array('flags'=>array('debug'=>0)), array('false')
+     * @expect ['true', 'true'] when input array('flags'=>array('debug'=>0)), array(-1, 'true')
+     * @expect ['false', 'false'] when input array('flags'=>array('debug'=>0)), array(-1, 'false')
+     * @expect ['$in[\'2\'] ?? null', '[2]'] when input array('flags'=>array('debug'=>0)), array('2')
+     * @expect ['2', '2'] when input array('flags'=>array('debug'=>0)), array(-1, '2')
+     * @expect ["\$cx['sp_vars']['index'] ?? null", '@[index]'] when input array('flags'=>array('debug'=>0)), array('@index')
+     * @expect ["\$cx['sp_vars']['key'] ?? null", '@[key]'] when input array('flags'=>array('debug'=>0)), array('@key')
+     * @expect ["\$cx['sp_vars']['first'] ?? null", '@[first]'] when input array('flags'=>array('debug'=>0)), array('@first')
+     * @expect ["\$cx['sp_vars']['last'] ?? null", '@[last]'] when input array('flags'=>array('debug'=>0)), array('@last')
+     * @expect ['$in[\'"a"\'] ?? null', '["a"]'] when input array('flags'=>array('debug'=>0)), array('"a"')
+     * @expect ['"a"', '"a"'] when input array('flags'=>array('debug'=>0)), array(-1, '"a"')
+     * @expect ['$in[\'a\'] ?? null', '[a]'] when input array('flags'=>array('debug'=>0)), array('a')
+     * @expect ['$cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] ?? null', '../[a]'] when input array('flags'=>array('debug'=>0)), array(1,'a')
+     * @expect ['$cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] ?? null', '../../../[a]'] when input array('flags'=>array('debug'=>0)), array(3,'a')
+     * @expect ['$in[\'id\'] ?? null', 'this.[id]'] when input array('flags'=>array('debug'=>0)), array(null, 'id')
      */
     protected static function getVariableName(array &$context, ?array $var, ?array $lookup = null): array
     {
@@ -234,7 +232,6 @@ class Compiler extends Validator
         $k = array_pop($var);
         $L = $lookup ? "[{$lookup[0]}]" : '';
 
-        $check = "isset($base$n$L)";
         $lenStart = '';
         $lenEnd = '';
 
@@ -254,7 +251,7 @@ class Compiler extends Validator
             $lenEnd = ')';
         }
 
-        return array("($check ? $base$n$L : $lenStart" . ($context['flags']['debug'] ? (static::getFuncName($context, 'miss', '') . "\$cx, '$exp')") : 'null') . ")$lenEnd", $lookup ? "lookup $exp $lookup[1]" : $exp);
+        return array("$base$n$L ?? $lenStart" . ($context['flags']['debug'] ? (static::getFuncName($context, 'miss', '') . "\$cx, '$exp')") : 'null') . "$lenEnd", $lookup ? "lookup $exp $lookup[1]" : $exp);
     }
 
     /**
@@ -359,11 +356,12 @@ class Compiler extends Validator
     {
         $bp = Parser::getBlockParams($vars);
         $ch = array_shift($vars);
-        $inverted = $inverted ? 'true' : 'false';
+        $invertedStr = $inverted ? 'true' : 'false';
         static::addUsageCount($context, 'helpers', $ch[0]);
         $v = static::getVariableNames($context, $vars, $bp);
 
-        return $context['ops']['separator'] . static::getFuncName($context, 'hbbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, $inverted, function(\$cx, \$in) {{$context['ops']['array_check']}{$context['ops']['f_start']}";
+        return $context['ops']['separator'] . static::getFuncName($context, 'hbbch', ($inverted ? '^' : '#') . implode(' ', $v[1]))
+            . "\$cx, '$ch[0]', {$v[0]}, \$in, $invertedStr, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -416,10 +414,12 @@ class Compiler extends Validator
         switch ($vars[0][0] ?? null) {
             case 'if':
                 $includeZero = (isset($vars['includeZero'][1]) && $vars['includeZero'][1]) ? 'true' : 'false';
-                return "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, {$includeZero})){$context['ops']['cnd_then']}";
+                return "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1])
+                    . "\$cx, {$v[0]}, {$includeZero})){$context['ops']['cnd_then']}";
             case 'unless':
                 $includeZero = (isset($vars['includeZero'][1]) && $vars['includeZero'][1]) ? 'true' : 'false';
-                return "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, {$includeZero})){$context['ops']['cnd_then']}";
+                return "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1])
+                    . "\$cx, {$v[0]}, {$includeZero})){$context['ops']['cnd_then']}";
             case 'each':
                 return static::section($context, $vars, true);
             case 'with':
@@ -450,7 +450,8 @@ class Compiler extends Validator
         }
         $v = static::getVariableNameOrSubExpression($context, $vars[0]);
         $each = $isEach ? 'true' : 'false';
-        return $context['ops']['separator'] . static::getFuncName($context, 'sec', ($isEach ? 'each ' : '') . $v[1] . $be) . "\$cx, {$v[0]}, $bs, \$in, $each, function(\$cx, \$in) {{$context['ops']['array_check']}{$context['ops']['f_start']}";
+        return $context['ops']['separator'] . static::getFuncName($context, 'sec', ($isEach ? 'each ' : '') . $v[1] . $be)
+            . "\$cx, {$v[0]}, $bs, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -467,7 +468,8 @@ class Compiler extends Validator
         $bp = Parser::getBlockParams($vars);
         $bs = $bp ? ('array(' . Expression::listString($bp) . ')') : 'null';
         $be = $bp ? " as |$bp[0]|" : '';
-        return $context['ops']['separator'] . static::getFuncName($context, 'wi', 'with ' . $v[1] . $be) . "\$cx, {$v[0]}, $bs, \$in, function(\$cx, \$in) {{$context['ops']['array_check']}{$context['ops']['f_start']}";
+        return $context['ops']['separator'] . static::getFuncName($context, 'wi', 'with ' . $v[1] . $be)
+            . "\$cx, {$v[0]}, $bs, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -497,7 +499,8 @@ class Compiler extends Validator
         $v = static::getVariableNames($context, $vars);
         static::addUsageCount($context, 'helpers', $ch[0]);
 
-        return static::getFuncName($context, 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn', \$in)";
+        return static::getFuncName($context, 'hbch', "$ch[0] " . implode(' ', $v[1]))
+            . "\$cx, '$ch[0]', {$v[0]}, '$fn', \$in)";
     }
 
     /**
@@ -516,7 +519,7 @@ class Compiler extends Validator
             return "{$context['ops']['cnd_else']}";
         }
 
-        return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['array_check']}{$context['ops']['f_start']}";
+        return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -530,7 +533,8 @@ class Compiler extends Validator
     {
         array_shift($vars);
         $v = static::getVariableNames($context, $vars);
-        return $context['ops']['separator'] . static::getFuncName($context, 'lo', $v[1][0]) . "\$cx, {$v[0]}){$context['ops']['separator']}";
+        return $context['ops']['separator'] . static::getFuncName($context, 'lo', $v[1][0])
+            . "\$cx, {$v[0]}){$context['ops']['separator']}";
     }
 
     /**
@@ -582,7 +586,7 @@ class Compiler extends Validator
      * Add usage count to context
      *
      * @param array<string,array|string|integer> $context current context
-     * @param string $category category name, can be one of: 'var', 'helpers', 'runtime'
+     * @param string $category category name, can be 'helpers' or 'runtime'
      * @param string $name used name
      *
      * @expect 1 when input array('usedCount' => array('test' => array())), 'test', 'testname'
