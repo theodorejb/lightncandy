@@ -1257,6 +1257,19 @@ VAREND
                 'expected' => '{{YES{{'
             ),
 
+            [
+                'id' => 297,
+                'template' => '{{test "foo" prop="\" "}}',
+                'options' => [
+                    'helpers' => [
+                        'test' => function ($arg1, $options) {
+                            return "{$arg1} {$options['hash']['prop']}";
+                        },
+                    ],
+                ],
+                'expected' => 'foo &quot; '
+            ],
+
             array(
                 'id' => 302,
                 'template' => "{{#*inline \"t1\"}}{{#if imageUrl}}<span />{{else}}<div />{{/if}}{{/inline}}{{#*inline \"t2\"}}{{#if imageUrl}}<span />{{else}}<div />{{/if}}{{/inline}}{{#*inline \"t3\"}}{{#if imageUrl}}<span />{{else}}<div />{{/if}}{{/inline}}",
@@ -1289,6 +1302,31 @@ VAREND
                 ),
                 'expected' => '#a(0)=b-321-123#c(1)=d-321-123#e(2)=f-321-123'
             ),
+
+            [
+                'id' => 357,
+                'template' => '{{echo (echo "foobar(moo).")}}',
+                'options' => [
+                    'helpers' => [
+                        'echo' => function ($arg1) {
+                            return "ECHO: $arg1";
+                        }
+                    ]
+                ],
+                'expected' => 'ECHO: ECHO: foobar(moo).'
+            ],
+            [
+                'id' => 357,
+                'template' => '{{echo (echo "foobar(moo)." (echo "moobar(foo)"))}}',
+                'options' => [
+                    'helpers' => [
+                        'echo' => function ($arg1) {
+                            return "ECHO: $arg1";
+                        }
+                    ]
+                ],
+                'expected' => 'ECHO: ECHO: foobar(moo).'
+            ],
 
             array(
                 'id' => 369,

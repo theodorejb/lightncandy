@@ -414,7 +414,8 @@ class Parser
      */
     protected static function analyze(string $token, array &$context): array
     {
-        $count = preg_match_all('/(\s*)([^\s]+)/', $token, $matchedall);
+        // Do not break quoted strings. Also, allow escaped quotes inside them.
+        $count = preg_match_all('/(\s*)([^"\s]*"(\\\\\\\\.|[^"])*"|[^\'\s]*\'(\\\\\\\\.|[^\'])*\'|\S+)/', $token, $matches);
         // Parse arguments and deal with "..." or [...] or (...) or \'...\' or |...|
         if ($count > 0) {
             $vars = array();
@@ -423,7 +424,7 @@ class Parser
             $quote = 0;
             $stack = 0;
 
-            foreach ($matchedall[2] as $index => $t) {
+            foreach ($matches[2] as $index => $t) {
                 $detected = static::detectQuote($t);
 
                 if ($expect === ')') {
@@ -434,16 +435,18 @@ class Parser
                         $quote = 0;
                     }
                 }
+                // if we are inside quotes, we should later skip stack changes
+                $quotes = preg_match("/^\".*\"$|^'.*'$/", $t);
 
                 // continue from previous match when expect something
                 if ($expect) {
-                    $prev .= "{$matchedall[1][$index]}$t";
-                    if (($quote === 0) && ($stack > 0) && preg_match('/(.+=)*(\\(+)/', $t, $m)) {
+                    $prev .= "{$matches[1][$index]}$t";
+                    if ($quote === 0 && $stack > 0 && preg_match('/(.+=)*(\\(+)/', $t, $m) && !$quotes) {
                         $stack += strlen($m[2]);
                     }
-                    // end an argument when end with expected charactor
+                    // end an argument when end with expected character
                     if (substr($t, -1, 1) === $expect) {
-                        if ($stack > 0) {
+                        if ($stack > 0 && !$quotes) {
                             preg_match('/(\\)+)$/', $t, $matchedq);
                             $stack -= isset($matchedq[0]) ? strlen($matchedq[0]) : 1;
                             if ($stack > 0) {
@@ -459,7 +462,7 @@ class Parser
                         $prev = '';
                         $expect = 0;
                         continue;
-                    } elseif (($expect == ']') && (strpos($t, $expect) !== false)) {
+                    } elseif ($expect == ']' && str_contains($t, $expect)) {
                         $t = $prev;
                         $detected = static::detectQuote($t);
                         $expect = 0;
@@ -467,7 +470,6 @@ class Parser
                         continue;
                     }
                 }
-
 
                 if ($detected) {
                     $prev = $t;
