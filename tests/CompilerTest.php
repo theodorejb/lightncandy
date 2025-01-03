@@ -79,14 +79,4 @@ class CompilerTest extends TestCase
             array('flags'=>array('debug'=>0)), array(null, 'id')
         ))));
     }
-    public function testOn_addUsageCount() {
-        $method = new \ReflectionMethod('LightnCandy\Compiler', 'addUsageCount');
-        $method->setAccessible(true);
-        $this->assertEquals(1, $method->invokeArgs(null, array_by_ref(array(
-            array('usedCount' => array('test' => array())), 'test', 'testname'
-        ))));
-        $this->assertEquals(3, $method->invokeArgs(null, array_by_ref(array(
-            array('usedCount' => array('test' => array('testname' => 2))), 'test', 'testname'
-        ))));
-    }
 }

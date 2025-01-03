@@ -64,10 +64,7 @@ class Context
                 'lookup' => 0,
                 'log' => 0,
             ),
-            'usedCount' => array(
-                'helpers' => array(),
-                'runtime' => array(),
-            ),
+            'usedHelpers' => [],
             'compile' => false,
             'parsed' => array(),
             'partials' => (isset($options['partials']) && is_array($options['partials'])) ? $options['partials'] : array(),
@@ -142,7 +139,7 @@ class Context
         $context['partials'] = $tmp['partials'];
         $context['partialCode'] = $tmp['partialCode'];
         $context['partialStack'] = $tmp['partialStack'];
-        $context['usedCount'] = $tmp['usedCount'];
+        $context['usedHelpers'] = $tmp['usedHelpers'];
         $context['usedFeature'] = $tmp['usedFeature'];
         $context['usedPartial'] = $tmp['usedPartial'];
     }

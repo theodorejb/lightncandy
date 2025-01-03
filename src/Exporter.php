@@ -29,7 +29,7 @@ class Exporter
     {
         $ret = '';
         foreach ($context['helpers'] as $name => $func) {
-            if (!isset($context['usedCount']['helpers'][$name])) {
+            if (!isset($context['usedHelpers'][$name])) {
                 continue;
             }
             if ($func instanceof \Closure) {

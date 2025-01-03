@@ -100,12 +100,9 @@ class Compiler extends Validator
      */
     protected static function getFuncName(array &$context, string $name, string $tag): string
     {
-        static::addUsageCount($context, 'runtime', $name);
-
         if ($context['flags']['debug'] && ($name != 'miss')) {
             $dbg = "'$tag', '$name', ";
             $name = 'debug';
-            static::addUsageCount($context, 'runtime', 'debug');
         } else {
             $dbg = '';
         }
@@ -353,7 +350,7 @@ class Compiler extends Validator
         $bp = Parser::getBlockParams($vars);
         $ch = array_shift($vars);
         $invertedStr = $inverted ? 'true' : 'false';
-        static::addUsageCount($context, 'helpers', $ch[0]);
+        static::markUsedHelper($context, $ch[0]);
         $v = static::getVariableNames($context, $vars, $bp);
 
         return $context['ops']['separator'] . static::getFuncName($context, 'hbbch', ($inverted ? '^' : '#') . implode(' ', $v[1]))
@@ -493,7 +490,7 @@ class Compiler extends Validator
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         $ch = array_shift($vars);
         $v = static::getVariableNames($context, $vars);
-        static::addUsageCount($context, 'helpers', $ch[0]);
+        static::markUsedHelper($context, $ch[0]);
 
         return static::getFuncName($context, 'hbch', "$ch[0] " . implode(' ', $v[1]))
             . "\$cx, '$ch[0]', {$v[0]}, '$fn', \$in)";
@@ -579,20 +576,12 @@ class Compiler extends Validator
     }
 
     /**
-     * Add usage count to context
-     *
      * @param array<string,array|string|integer> $context current context
-     * @param string $category category name, can be 'helpers' or 'runtime'
-     * @param string $name used name
-     *
-     * @expect 1 when input array('usedCount' => array('test' => array())), 'test', 'testname'
-     * @expect 3 when input array('usedCount' => array('test' => array('testname' => 2))), 'test', 'testname'
      */
-    protected static function addUsageCount(array &$context, string $category, string $name): int
+    protected static function markUsedHelper(array &$context, string $name): void
     {
-        if (!isset($context['usedCount'][$category][$name])) {
-            $context['usedCount'][$category][$name] = 0;
+        if (!isset($context['usedHelpers'][$name])) {
+            $context['usedHelpers'][$name] = true;
         }
-        return $context['usedCount'][$category][$name] += 1;
     }
 }
