@@ -241,9 +241,8 @@ class Validator
         $ended = false;
         if ($context['currentToken'][Token::POS_OP] === '/') {
             if (static::blockEnd($context, $vars, '#*')) {
-                $tmpl = array_shift($context['inlinepartial']) . $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
-                $c = $context['stack'][count($context['stack']) - 4];
-                $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
+                $tmpl = self::getTmpl($context, 'inlinepartial');
+                $c = self::getPartialTokensIndex($context);
                 $P = &$context['parsed'][0][$c];
                 if (isset($P[1][1][0])) {
                     $context['usedPartial'][$P[1][1][0]] = $tmpl;
@@ -268,26 +267,34 @@ class Validator
         $ended = false;
         if ($context['currentToken'][Token::POS_OP] === '/') {
             if (static::blockEnd($context, $vars, '#>')) {
-                $c = $context['stack'][count($context['stack']) - 4];
-                $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
+                $tmpl = self::getTmpl($context, 'partialblock');
+                $c = self::getPartialTokensIndex($context);
+                $P = &$context['parsed'][0][$c];
                 $found = Partial::resolve($context, $vars[0][0]) !== null;
-                $v = $found ? "@partial-block{$context['parsed'][0][$c][1][Parser::PARTIALBLOCK]}" : "{$vars[0][0]}";
-                if (count($context['partialblock']) == 1) {
-                    $tmpl = $context['partialblock'][0] . $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
-                    if ($found) {
-                        $context['partials'][$v] = $tmpl;
-                    }
+                $v = $found ? "@partial-block{$P[1][Parser::PARTIALBLOCK]}" : $vars[0][0];
+                if (!$context['partialblock']) {
                     $context['usedPartial'][$v] = $tmpl;
                     Partial::compileDynamic($context, $v);
                     if ($found) {
                         Partial::read($context, $vars[0][0]);
                     }
                 }
-                array_shift($context['partialblock']);
                 $ended = true;
             }
         }
         return $ended;
+    }
+
+    private static function getPartialTokensIndex(array &$context): int
+    {
+        $c = $context['stack'][count($context['stack']) - 4];
+        $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
+        return $c;
+    }
+
+    private static function getTmpl(array &$context, string $name): string
+    {
+        return array_shift($context[$name]) . $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
     }
 
     /**
