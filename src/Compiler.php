@@ -114,7 +114,6 @@ class Compiler extends Validator
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array> $vn variable name array.
-     * @param array<string>|null $blockParams block param list
      *
      * @return array<string|array> variable names
      */

@@ -63,7 +63,7 @@ class Expression
      * @param array<string,array|string|integer> $context Current context
      * @param array<array|string|integer> $var variable parsed path
      *
-     * @return array<integer|boolean|array> analyzed result
+     * @return array{int, bool, array} analyzed result
      *
      * @expect array(0, false, array('foo')) when input array('flags' => array()), array(0, 'foo')
      * @expect array(1, false, array('foo')) when input array('flags' => array()), array(1, 'foo')

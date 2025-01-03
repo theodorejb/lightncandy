@@ -325,7 +325,7 @@ class Runtime
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value to be the new context
-     * @param array<array|string|integer>|string|integer|null $in input data with current scope
+     * @param array<array|string|integer>|\stdClass|null $in input data with current scope
      * @param array<string>|null $bp block parameters
      * @param \Closure $cb callback function to render child context
      * @param \Closure|null $else callback function to render child context when {{else}}
@@ -421,7 +421,7 @@ class Runtime
      *
      * @param array<string,array|string|int> $cx render time context
      * @param string $ch the name of custom helper to be executed
-     * @param array<array|string|int>|string|int|null $vars variables for the helper
+     * @param array<array|string|int> $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      * @param array<string,array|string|integer> $_this current rendering context for the helper
      */
@@ -449,7 +449,7 @@ class Runtime
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param string $ch the name of custom helper to be executed
-     * @param array<array|string|integer>|string|integer|null $vars variables for the helper
+     * @param array<array|string|integer> $vars variables for the helper
      * @param array<string,array|string|integer> $_this current rendering context for the helper
      * @param boolean $inverted the logic will be inverted
      * @param \Closure|null $cb callback function to render child context
@@ -478,9 +478,9 @@ class Runtime
             $cb = $tmp;
         }
 
-        $options['fn'] = function ($context = '_NO_INPUT_HERE_', $data = null) use ($cx, &$_this, $cb, $options, $vars) {
+        $options['fn'] = function ($context = '_NO_INPUT_HERE_', $data = null) use ($cx, &$_this, $cb, $vars) {
+            $old_spvar = $cx['sp_vars'];
             if (isset($data['data'])) {
-                $old_spvar = $cx['sp_vars'];
                 $cx['sp_vars'] = array_merge(array('root' => $old_spvar['root']), $data['data'], array('_parent' => $old_spvar));
             }
             $ex = false;

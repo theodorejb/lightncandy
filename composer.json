@@ -19,6 +19,7 @@
     },
     "require-dev": {
         "jbboehr/handlebars-spec": "dev-master",
+        "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^11.5"
     },
     "autoload": {
@@ -27,6 +28,7 @@
         }
     },
     "scripts": {
+        "analyze": "phpstan analyze src --level 1",
         "test": [
             "php build/gen_test.php",
             "vendor/bin/phpunit tests"
