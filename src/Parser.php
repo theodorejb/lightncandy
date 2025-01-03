@@ -49,7 +49,7 @@ class Parser
      *
      * @return array<integer|string> Return variable name array
      */
-    protected static function getLiteral(string $name, bool $asis, bool $quote = false)
+    protected static function getLiteral(string $name, bool $asis, bool $quote = false): array
     {
         return $asis ? array($name) : array(static::LITERAL, $quote ? "'$name'" : $name);
     }
@@ -268,7 +268,7 @@ class Parser
      * @expect false when input array(\LightnCandy\Parser::SUBEXP, 0, '', 0)
      * @expect true when input array(\LightnCandy\Parser::SUBEXP, 0, '')
      */
-    public static function isSubExp(array|string|null $var): bool
+    public static function isSubExp(array|string $var): bool
     {
         return is_array($var) && (count($var) === 3) && ($var[0] === static::SUBEXP) && is_string($var[2]);
     }

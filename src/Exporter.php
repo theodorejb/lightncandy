@@ -39,7 +39,7 @@ class Exporter
             $ret .= "            '$name' => '$func',\n";
         }
 
-        return "array($ret)";
+        return "[$ret]";
     }
 
     public static function getMeta(\ReflectionFunction $refobj): array

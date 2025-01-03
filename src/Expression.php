@@ -16,7 +16,7 @@ class Expression
      * @expect 'false' when input 0
      * @expect 'false' when input -1
      */
-    public static function boolString($v)
+    public static function boolString(int $v): string
     {
         return ($v > 0) ? 'true' : 'false';
     }
@@ -32,7 +32,7 @@ class Expression
      * @expect "'a'" when input array('a')
      * @expect "'a','b','c'" when input array('a', 'b', 'c')
      */
-    public static function listString($list)
+    public static function listString(array $list): string
     {
         return implode(',', (array_map(function ($v) {
             return "'$v'";
@@ -50,7 +50,7 @@ class Expression
      * @expect "['a']" when input array('a')
      * @expect "['a']['b']['c']" when input array('a', 'b', 'c')
      */
-    public static function arrayString($list)
+    public static function arrayString(array $list): string
     {
         return implode('', (array_map(function ($v) {
             return "['$v']";
@@ -68,14 +68,14 @@ class Expression
      * @expect array(0, false, array('foo')) when input array('flags' => array()), array(0, 'foo')
      * @expect array(1, false, array('foo')) when input array('flags' => array()), array(1, 'foo')
      */
-    public static function analyze($context, $var)
+    public static function analyze(array $context, array $var): array
     {
         $levels = 0;
         $spvar = false;
 
         if (isset($var[0])) {
             // trace to parent
-            if (!is_string($var[0]) && is_int($var[0])) {
+            if (is_int($var[0])) {
                 $levels = array_shift($var);
             }
         }
@@ -102,15 +102,14 @@ class Expression
      *
      * @expect '[a].[b]' when input 0, false, array('a', 'b')
      * @expect '@[root]' when input 0, true, array('root')
-     * @expect 'this' when input 0, false, null
      * @expect 'this.[id]' when input 0, false, array(null, 'id')
      * @expect '@[root].[a].[b]' when input 0, true, array('root', 'a', 'b')
      * @expect '../../[a].[b]' when input 2, false, array('a', 'b')
      * @expect '../[a\'b]' when input 1, false, array('a\'b')
      */
-    public static function toString($levels, $spvar, $var)
+    public static function toString(int $levels, bool $spvar, array $var): string
     {
-        return ($spvar ? '@' : '') . str_repeat('../', $levels) . ((is_array($var) && count($var)) ? implode('.', array_map(function ($v) {
+        return ($spvar ? '@' : '') . str_repeat('../', $levels) . (count($var) ? implode('.', array_map(function ($v) {
             return ($v === null) ? 'this' : "[$v]";
         }, $var)) : 'this');
     }

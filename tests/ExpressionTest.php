@@ -67,9 +67,6 @@ class ExpressionTest extends TestCase
         $this->assertEquals('@[root]', $method->invokeArgs(null, array_by_ref(array(
             0, true, array('root')
         ))));
-        $this->assertEquals('this', $method->invokeArgs(null, array_by_ref(array(
-            0, false, null
-        ))));
         $this->assertEquals('this.[id]', $method->invokeArgs(null, array_by_ref(array(
             0, false, array(null, 'id')
         ))));

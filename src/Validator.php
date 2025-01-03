@@ -67,7 +67,7 @@ class Validator
      * @param array<string,array|string|integer> $context Current context
      * @param string $append a string to be appended int partial stacks
      */
-    protected static function pushPartial(&$context, string $append): void
+    protected static function pushPartial(array &$context, string $append): void
     {
         $appender = function (&$p) use ($append) {
             $p .= $append;

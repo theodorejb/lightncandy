@@ -24,19 +24,6 @@ class CompilerTest extends TestCase
             array('flags' => array('debug' => 1)), 'test', 'abc'
         ))));
     }
-    public function testOn_getVariableNames() {
-        $method = new \ReflectionMethod('LightnCandy\Compiler', 'getVariableNames');
-        $method->setAccessible(true);
-        $this->assertEquals(['[[$in],[]]', array('this')], $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array()), array(null)
-        ))));
-        $this->assertEquals(['[[$in,$in],[]]', array('this', 'this')], $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array()), array(null, null)
-        ))));
-        $this->assertEquals(['[[],[\'a\'=>$in]]', array('this')], $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array()), array('a' => null)
-        ))));
-    }
     public function testOn_getVariableName() {
         $method = new \ReflectionMethod('LightnCandy\Compiler', 'getVariableName');
         $method->setAccessible(true);

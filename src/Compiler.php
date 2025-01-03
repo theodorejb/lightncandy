@@ -121,10 +121,6 @@ class Compiler extends Validator
      * @param array<string>|null $blockParams block param list
      *
      * @return array<string|array> variable names
-     *
-     * @expect ['[[$in],[]]', array('this')] when input array('flags'=>array()), array(null)
-     * @expect ['[[$in,$in],[]]', array('this', 'this')] when input array('flags'=>array()), array(null, null)
-     * @expect ['[[],[\'a\'=>$in]]', array('this')] when input array('flags'=>array()), array('a' => null)
      */
     protected static function getVariableNames(array &$context, array $vn, array $blockParams = []): array
     {
@@ -166,7 +162,7 @@ class Compiler extends Validator
      *
      * @return array<string> variable names
      */
-    protected static function getVariableNameOrSubExpression(array &$context, ?array $var): array
+    protected static function getVariableNameOrSubExpression(array &$context, array $var): array
     {
         return Parser::isSubExp($var) ? static::compileSubExpression($context, $var[1]) : static::getVariableName($context, $var);
     }
@@ -198,7 +194,7 @@ class Compiler extends Validator
      * @expect ['$cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] ?? null', '../../../[a]'] when input array('flags'=>array('debug'=>0)), array(3,'a')
      * @expect ['$in[\'id\'] ?? null', 'this.[id]'] when input array('flags'=>array('debug'=>0)), array(null, 'id')
      */
-    protected static function getVariableName(array &$context, ?array $var, ?array $lookup = null): array
+    protected static function getVariableName(array &$context, array $var, ?array $lookup = null): array
     {
         if (isset($var[0]) && ($var[0] === Parser::LITERAL)) {
             if ($var[1] === "undefined") {
