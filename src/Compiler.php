@@ -57,14 +57,13 @@ class Compiler extends Validator
         $flagKnownHlp = Expression::boolString($context['flags']['knohlp']);
         $runtime = Runtime::class;
         $safeStringClass = SafeString::class;
-        $useSafeString = ($context['usedFeature']['enc'] > 0) ? "use $safeStringClass;" : '';
         $helpers = Exporter::helpers($context);
         $partials = implode(",\n", $context['partialCode']);
 
         // Return generated PHP code string.
         return <<<VAREND
             use {$runtime} as LR;
-            $useSafeString
+            use {$safeStringClass};
             return function (\$in = null, array \$options = []) {
                 \$helpers = $helpers;
                 \$partials = [$partials];

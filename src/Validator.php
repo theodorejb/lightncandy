@@ -159,16 +159,16 @@ class Validator
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @expect null when input '', array(), array()
-     * @expect 2 when input '^', array('usedFeature' => array('isec' => 1), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'elselvl' => array(), 'flags' => array(), 'elsechain' => false), array(array('foo'))
+     * @expect 2 when input '^', array('level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'elselvl' => array(), 'flags' => array(), 'elsechain' => false), array(array('foo'))
      * @expect true when input '/', array('stack' => array('[with]', '#'), 'level' => 1, 'currentToken' => array(0,0,0,0,0,0,0,'with'), 'flags' => array()), array(array())
-     * @expect 4 when input '#', array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('x'))
-     * @expect 5 when input '#', array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('if'))
-     * @expect 6 when input '#', array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array(), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elsechain' => false, 'elselvl' => array()), array(array('with'))
-     * @expect 7 when input '#', array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('each'))
-     * @expect 8 when input '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('unless'))
-     * @expect 9 when input '#', array('helpers' => array('abc' => ''), 'usedFeature' => array('helper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('abc'))
-     * @expect 11 when input '#', array('helpers' => array('abc' => ''), 'usedFeature' => array('helper' => 10), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('abc'))
-     * @expect true when input '>', array('usedFeature' => array('partial' => 7), 'level' => 0, 'flags' => array(), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elsechain' => false, 'elselvl' => array()), array('test')
+     * @expect 4 when input '#', array('level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('x'))
+     * @expect 5 when input '#', array('level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('if'))
+     * @expect 6 when input '#', array('level' => 0, 'flags' => array(), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elsechain' => false, 'elselvl' => array()), array(array('with'))
+     * @expect 7 when input '#', array('level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('each'))
+     * @expect 8 when input '#', array('level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('unless'))
+     * @expect 9 when input '#', array('helpers' => array('abc' => ''), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('abc'))
+     * @expect 11 when input '#', array('helpers' => array('abc' => ''), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('abc'))
+     * @expect true when input '>', array('level' => 0, 'flags' => array(), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elsechain' => false, 'elselvl' => array()), array('test')
      */
     protected static function operator(string $operator, array &$context, array &$vars): bool|int|string|null
     {
@@ -241,7 +241,6 @@ class Validator
         $ended = false;
         if ($context['currentToken'][Token::POS_OP] === '/') {
             if (static::blockEnd($context, $vars, '#*')) {
-                $context['usedFeature']['inlpartial']++;
                 $tmpl = array_shift($context['inlinepartial']) . $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
                 $c = $context['stack'][count($context['stack']) - 4];
                 $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
@@ -339,7 +338,6 @@ class Validator
         if (count($vars) < 2) {
             $context['error'][] = "No argument after {{#{$vars[0][0]}}} !";
         }
-        $context['usedFeature'][$vars[0][0]]++;
     }
 
     /**
@@ -359,7 +357,6 @@ class Validator
             if (count($vars) > 1) {
                 $context['error'][] = "Custom helper not found: {$vars[0][0]} in " . Token::toString($context['currentToken']) . ' !';
             }
-            $context['usedFeature']['sec']++;
         }
         return true;
     }
@@ -380,7 +377,6 @@ class Validator
         if (count($vars) !== 2) {
             $context['error'][] = "#{$vars[0][0]} requires exactly one argument";
         }
-        $context['usedFeature'][$vars[0][0]]++;
         return true;
     }
 
@@ -402,7 +398,6 @@ class Validator
         if ($intKeys !== 2) {
             $context['error'][] = "#{$vars[0][0]} requires exactly one argument";
         }
-        $context['usedFeature'][$vars[0][0]]++;
         return true;
     }
 
@@ -412,14 +407,12 @@ class Validator
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $inverted the logic will be inverted
-     *
-     * @return integer Return number of used custom helpers
      */
     protected static function blockCustomHelper(array &$context, array $vars, bool $inverted = false)
     {
         if (is_string($vars[0][0])) {
             if (static::resolveHelper($context, $vars)) {
-                return ++$context['usedFeature']['helper'];
+                return true;
             }
         }
         return null;
@@ -430,12 +423,10 @@ class Validator
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
-     *
-     * @return integer Return number of inverted sections
      */
     protected static function invertedSection(array &$context, array $vars)
     {
-        return ++$context['usedFeature']['isec'];
+        return true;
     }
 
     /**
@@ -544,7 +535,6 @@ class Validator
     protected static function comment(array &$token, array &$context): bool
     {
         if ($token[Token::POS_OP] === '!') {
-            $context['usedFeature']['comment']++;
             return true;
         }
         return false;
@@ -603,17 +593,6 @@ class Validator
             return $context['error'][] = 'Do not support name=value in ' . Token::toString($token) . ', you should use it after a custom helper.';
         }
 
-        $context['usedFeature'][$raw ? 'raw' : 'enc']++;
-
-        foreach ($vars as $var) {
-            if (!isset($var[0]) || ($var[0] === 0)) {
-                if ($context['level'] == 0) {
-                    $context['usedFeature']['rootthis']++;
-                }
-                $context['usedFeature']['this']++;
-            }
-        }
-
         if (!isset($vars[0][0])) {
             return array($raw, $vars);
         }
@@ -636,8 +615,6 @@ class Validator
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
-     *
-     * @return integer Return 1 or larger number when else token detected
      */
     protected static function doElse(array &$context, array $vars)
     {
@@ -653,7 +630,7 @@ class Validator
             $context['elsechain'] = true;
         }
 
-        return ++$context['usedFeature']['else'];
+        return true;
     }
 
     /**
@@ -668,7 +645,6 @@ class Validator
             if (count($vars) < 2) {
                 $context['error'][] = "No argument after {{log}} !";
             }
-            $context['usedFeature']['log']++;
         }
     }
 
@@ -686,7 +662,6 @@ class Validator
             } elseif (count($vars) < 3) {
                 $context['error'][] = "{{lookup}} requires 2 arguments !";
             }
-            $context['usedFeature']['lookup']++;
         }
     }
 
@@ -702,7 +677,6 @@ class Validator
     public static function helper(array &$context, array $vars, bool $checkSubexp = false): bool
     {
         if (static::resolveHelper($context, $vars)) {
-            $context['usedFeature']['helper']++;
             return true;
         }
 

@@ -29,7 +29,6 @@ class Partial
     public static function read(array &$context, string $name): void
     {
         $isPB = ($name === '@partial-block');
-        $context['usedFeature']['partial']++;
 
         if (isset($context['usedPartial'][$name])) {
             return;

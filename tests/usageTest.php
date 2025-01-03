@@ -18,28 +18,8 @@ class usageTest extends TestCase
     public static function compileProvider(): array
     {
         $default = array(
-            'rootthis' => 0,
-            'enc' => 0,
-            'raw' => 0,
-            'sec' => 0,
-            'isec' => 0,
-            'if' => 0,
-            'else' => 0,
-            'unless' => 0,
-            'each' => 0,
-            'this' => 0,
-            'parent' => 0,
-            'with' => 0,
-            'comment' => 0,
-            'partial' => 0,
             'dynpartial' => 0,
-            'inlpartial' => 0,
-            'helper' => 0,
-            'subexp' => 0,
-            'rawblock' => 0,
             'pblock' => 0,
-            'lookup' => 0,
-            'log' => 0,
         );
 
         $compileCases = array(
@@ -53,97 +33,67 @@ class usageTest extends TestCase
 
              array(
                  'template' => 'abc{{def}}',
-                 'expected' => array(
-                     'enc' => 1
-                 ),
+                 'expected' => array(),
              ),
 
              array(
                  'template' => 'abc{{{def}}}',
-                 'expected' => array(
-                     'raw' => 1
-                 ),
+                 'expected' => array(),
              ),
 
              array(
                  'template' => 'abc{{&def}}',
-                 'expected' => array(
-                     'raw' => 1
-                 ),
+                 'expected' => array(),
              ),
 
              array(
                  'template' => 'abc{{this}}',
-                 'expected' => array(
-                     'enc' => 1,
-                     'this' => 1,
-                     'rootthis' => 1,
-                 ),
+                 'expected' => array(),
              ),
 
              array(
                  'template' => '{{#if abc}}OK!{{/if}}',
-                 'expected' => array(
-                     'if' => 1
-                 ),
+                 'expected' => array(),
              ),
 
              array(
                  'template' => '{{#unless abc}}OK!{{/unless}}',
-                 'expected' => array(
-                     'unless' => 1
-                 ),
+                 'expected' => array(),
              ),
 
              array(
                  'template' => '{{#with abc}}OK!{{/with}}',
-                 'expected' => array(
-                     'with' => 1
-                 ),
+                 'expected' => array(),
              ),
 
              array(
                  'template' => '{{#abc}}OK!{{/abc}}',
-                 'expected' => array(
-                     'sec' => 1
-                 ),
+                 'expected' => array(),
              ),
 
              array(
                  'template' => '{{^abc}}OK!{{/abc}}',
-                 'expected' => array(
-                     'isec' => 1
-                 ),
+                 'expected' => array(),
              ),
 
              array(
                  'template' => '{{#each abc}}OK!{{/each}}',
-                 'expected' => array(
-                     'each' => 1
-                 ),
+                 'expected' => array(),
              ),
 
              array(
                  'template' => '{{! test}}OK!{{! done}}',
-                 'expected' => array(
-                     'comment' => 2
-                 ),
+                 'expected' => array(),
              ),
 
              array(
                  'template' => '{{../OK}}',
-                 'expected' => array(
-                     'parent' => 1,
-                     'enc' => 1,
-                 ),
+                 'expected' => array(),
              ),
 
              array(
                  'template' => '{{&../../OK}}',
-                 'expected' => array(
-                     'parent' => 1,
-                     'raw' => 1,
-                 ),
+                 'expected' => array(),
              ),
 
              array(
@@ -155,11 +105,7 @@ class usageTest extends TestCase
                         }
                     )
                 ),
-                 'expected' => array(
-                     'parent' => 2,
-                     'enc' => 1,
-                     'raw' => 1,
-                 ),
+                 'expected' => array(),
              ),
 
              array(
@@ -171,11 +117,7 @@ class usageTest extends TestCase
                         }
                     )
                 ),
-                 'expected' => array(
-                     'parent' => 2,
-                     'enc' => 2,
-                     'helper' => 1,
-                 ),
+                 'expected' => array(),
              ),
 
              array(
@@ -187,12 +129,7 @@ class usageTest extends TestCase
                         }
                     )
                 ),
-                 'expected' => array(
-                     'rootthis' => 2,
-                     'this' => 2,
-                     'enc' => 1,
-                     'helper' => 1,
-                 ),
+                 'expected' => array(),
              ),
 
              array(
@@ -204,12 +141,7 @@ class usageTest extends TestCase
                         }
                     )
                 ),
-                 'expected' => array(
-                     'parent' => 1,
-                     'enc' => 1,
-                     'helper' => 2,
-                     'subexp' => 1,
-                 ),
+                 'expected' => array(),
              ),
 
              array(
@@ -221,14 +153,7 @@ class usageTest extends TestCase
                         }
                     )
                 ),
-                 'expected' => array(
-                     'parent' => 1,
-                     'rootthis' => 1,
-                     'this' => 1,
-                     'enc' => 1,
-                     'helper' => 2,
-                     'subexp' => 1,
-                 ),
+                 'expected' => array(),
              ),
 
              array(
@@ -240,14 +165,7 @@ class usageTest extends TestCase
                         }
                     )
                 ),
-                 'expected' => array(
-                     'parent' => 1,
-                     'rootthis' => 1,
-                     'this' => 1,
-                     'enc' => 1,
-                     'helper' => 3,
-                     'subexp' => 2,
-                 ),
+                 'expected' => array(),
              ),
 
              array(
@@ -260,22 +178,13 @@ class usageTest extends TestCase
                         }
                     )
                 ),
-                 'expected' => array(
-                     'parent' => 1,
-                     'enc' => 1,
-                     'if' => 1,
-                     'helper' => 2,
-                     'subexp' => 1,
-                 ),
+                 'expected' => array(),
              ),
 
              array(
                  'id' => '196',
                  'template' => '{{log "this is a test"}}',
-                 'expected' => array(
-                     'log' => 1,
-                     'enc' => 1,
-                 ),
+                 'expected' => array(),
              ),
         );
 

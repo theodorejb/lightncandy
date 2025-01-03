@@ -63,18 +63,18 @@ class Parser
      * @return array<integer,string> Return variable name array
      *
      * @expect array() when input 'this', array('flags' => array()), 0
-     * @expect array(1) when input '..', array('flags' => array(), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(1) when input '../', array('flags' => array(), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(1) when input '../.', array('flags' => array(), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(1) when input '../this', array('flags' => array(), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(1, 'a') when input '../a', array('flags' => array(), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(2, 'a', 'b') when input '../../a.b', array('flags' => array(), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(2, 'a', 'b') when input '../../[a].b', array('flags' => array(), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(0, 'id') when input 'this.id', array('flags' => array(), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(0, 'id') when input './id', array('flags' => array(), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(\LightnCandy\Parser::LITERAL, '\'a.b\'') when input '"a.b"', array('flags' => array(), 'usedFeature' => array('parent' => 0)), 1
-     * @expect array(\LightnCandy\Parser::LITERAL, '123') when input '123', array('flags' => array(), 'usedFeature' => array('parent' => 0)), 1
-     * @expect array(\LightnCandy\Parser::LITERAL, 'null') when input 'null', array('flags' => array(), 'usedFeature' => array('parent' => 0)), 1
+     * @expect array(1) when input '..', array('flags' => array()), 0
+     * @expect array(1) when input '../', array('flags' => array()), 0
+     * @expect array(1) when input '../.', array('flags' => array()), 0
+     * @expect array(1) when input '../this', array('flags' => array()), 0
+     * @expect array(1, 'a') when input '../a', array('flags' => array()), 0
+     * @expect array(2, 'a', 'b') when input '../../a.b', array('flags' => array()), 0
+     * @expect array(2, 'a', 'b') when input '../../[a].b', array('flags' => array()), 0
+     * @expect array(0, 'id') when input 'this.id', array('flags' => array()), 0
+     * @expect array(0, 'id') when input './id', array('flags' => array()), 0
+     * @expect array(\LightnCandy\Parser::LITERAL, '\'a.b\'') when input '"a.b"', array('flags' => array()), 1
+     * @expect array(\LightnCandy\Parser::LITERAL, '123') when input '123', array('flags' => array()), 1
+     * @expect array(\LightnCandy\Parser::LITERAL, 'null') when input 'null', array('flags' => array()), 1
      */
     protected static function getExpression(string $v, array &$context, int|string $pos): array
     {
@@ -119,7 +119,6 @@ class Parser
 
         if ($levels) {
             $ret[] = $levels;
-            $context['usedFeature']['parent'] ++;
         }
 
         if (preg_match('/\\]/', $v)) {
@@ -172,19 +171,19 @@ class Parser
      * @expect array(false, array(array('a'), array('q=[b c'))) when input array(0,0,0,0,0,0,0,'a [q=[b c]'), array('flags' => array('noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), 'q' => array('b'), array('c'))) when input array(0,0,0,0,0,0,0,'a [q]=b c'), array('flags' => array('noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), 'q' => array(-1, '\'b c\''))) when input array(0,0,0,0,0,0,0,'a q="b c"'), array('flags' => array('noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array(-2, array(array('foo'), array('bar')), '(foo bar)'))) when input array(0,0,0,0,0,0,0,'(foo bar)'), array('flags' => array('noesc' => 0), 'ops' => array('separator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
+     * @expect array(false, array(array(-2, array(array('foo'), array('bar')), '(foo bar)'))) when input array(0,0,0,0,0,0,0,'(foo bar)'), array('flags' => array('noesc' => 0), 'ops' => array('separator' => ''), 'rawblock' => false)
      * @expect array(false, array(array('foo'), array("'=='"), array('bar'))) when input array(0,0,0,0,0,0,0,"foo '==' bar"), array('flags' => array('noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array(-2, array(array('foo'), array('bar')), '( foo bar)'))) when input array(0,0,0,0,0,0,0,'( foo bar)'), array('flags' => array('noesc' => 0), 'ops' => array('separator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
+     * @expect array(false, array(array(-2, array(array('foo'), array('bar')), '( foo bar)'))) when input array(0,0,0,0,0,0,0,'( foo bar)'), array('flags' => array('noesc' => 0), 'ops' => array('separator' => ''), 'rawblock' => false)
      * @expect array(false, array(array('a'), array(-1, '\' b c\''))) when input array(0,0,0,0,0,0,0,'a " b c"'), array('flags' => array('noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), 'q' => array(-1, '\' b c\''))) when input array(0,0,0,0,0,0,0,'a q=" b c"'), array('flags' => array('noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('foo'), array(-1, "' =='"), array('bar'))) when input array(0,0,0,0,0,0,0,"foo \' ==\' bar"), array('flags' => array('noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), array(' b c'))) when input array(0,0,0,0,0,0,0,'a [ b c]'), array('flags' => array('noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), 'q' => array(-1, "' d e'"))) when input array(0,0,0,0,0,0,0,"a q=\' d e\'"), array('flags' => array('noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array('q' => array(-2, array(array('foo'), array('bar')), '( foo bar)'))) when input array(0,0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('noesc' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('separator' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','foo'), array('flags' => array('noesc' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('separator' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','"foo"'), array('flags' => array('noesc' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('separator' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','[foo] '), array('flags' => array('noesc' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('separator' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','\\\'foo\\\''), array('flags' => array('noesc' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('separator' => 0), 'rawblock' => false)
+     * @expect array(false, array('q' => array(-2, array(array('foo'), array('bar')), '( foo bar)'))) when input array(0,0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('noesc' => 0), 'ops' => array('separator' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','foo'), array('flags' => array('noesc' => 0), 'ops' => array('separator' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','"foo"'), array('flags' => array('noesc' => 0), 'ops' => array('separator' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','[foo] '), array('flags' => array('noesc' => 0), 'ops' => array('separator' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('foo'))) when input array(0,0,0,0,0,0,'>','\\\'foo\\\''), array('flags' => array('noesc' => 0), 'ops' => array('separator' => 0), 'rawblock' => false)
      */
     public static function parse(array &$token, array &$context): array
     {
@@ -239,11 +238,10 @@ class Parser
      *
      * @return array<boolean|integer|array> Return parsed result
      *
-     * @expect array(\LightnCandy\Parser::SUBEXP, array(array('a'), array('b')), '(a b)') when input '(a b)', array('usedFeature' => array('subexp' => 0), 'flags' => array())
+     * @expect array(\LightnCandy\Parser::SUBEXP, array(array('a'), array('b')), '(a b)') when input '(a b)', array('flags' => array())
      */
     public static function subexpression(string $expression, array &$context): array
     {
-        $context['usedFeature']['subexp']++;
         $vars = static::analyze(substr($expression, 1, -1), $context);
         $avars = static::advancedVariable($vars, $context, $expression);
         if (isset($avars[0][0])) {
