@@ -10,22 +10,18 @@ final class Context
     /**
      * Create a context from options
      *
-     * @param array<string,array|string|int> $options input options
-     *
      * @return array<string,array|string|int> Context from options
      */
-    public static function create(array $options): array
+    public static function create(Options $options): array
     {
-        $flags = $options['flags'] ?? 0;
-
         $context = array(
             'flags' => array(
-                'noesc' => $flags & Flags::FLAG_NOESCAPE,
-                'noind' => $flags & Flags::FLAG_PREVENTINDENT,
-                'debug' => $flags & Flags::FLAG_STRICT,
-                'partnc' => $flags & Flags::FLAG_PARTIALNEWCONTEXT,
-                'nostd' => $flags & Flags::FLAG_IGNORESTANDALONE,
-                'knohlp' => $flags & Flags::FLAG_KNOWNHELPERSONLY,
+                'noesc' => (int) $options->noEscape,
+                'noind' => (int) $options->preventIndent,
+                'debug' => (int) $options->strict,
+                'partnc' => (int) $options->explicitPartialContext,
+                'nostd' => (int) $options->ignoreStandalone,
+                'knohlp' => (int) $options->knownHelpersOnly,
             ),
             'level' => 0,
             'stack' => array(),
@@ -50,7 +46,7 @@ final class Context
             'usedHelpers' => [],
             'compile' => false,
             'parsed' => array(),
-            'partials' => (isset($options['partials']) && is_array($options['partials'])) ? $options['partials'] : array(),
+            'partials' => $options->partials,
             'partialblock' => array(),
             'inlinepartial' => array(),
             'helpers' => array(),
@@ -80,24 +76,20 @@ final class Context
      * update specific custom helper table from options
      *
      * @param array<string,array|string|int> $context prepared context
-     * @param array<string,array|string|int> $options input options
-     * @param string $tname helper table name
      *
      * @return array<string,array|string|int> context with generated helper table
      */
-    protected static function updateHelperTable(array &$context, array $options, string $tname = 'helpers'): array
+    protected static function updateHelperTable(array &$context, Options $options): array
     {
-        if (isset($options[$tname]) && is_array($options[$tname])) {
-            foreach ($options[$tname] as $name => $func) {
-                $tn = is_int($name) ? $func : $name;
-                if (is_callable($func)) {
-                    $context[$tname][$tn] = $func;
+        foreach ($options->helpers as $name => $func) {
+            $tn = is_int($name) ? $func : $name;
+            if (is_callable($func)) {
+                $context['helpers'][$tn] = $func;
+            } else {
+                if (is_array($func)) {
+                    $context['error'][] = "I found an array in helpers with key as $name, please fix it.";
                 } else {
-                    if (is_array($func)) {
-                        $context['error'][] = "I found an array in $tname with key as $name, please fix it.";
-                    } else {
-                        $context['error'][] = "You provide a custom helper named as '$tn' in options['$tname'], but the function $func() is not defined!";
-                    }
+                    $context['error'][] = "You provide a custom helper named as '$tn' in options['helpers'], but the function $func() is not defined!";
                 }
             }
         }

@@ -1,6 +1,7 @@
 <?php
 
 use LightnCandy\LightnCandy;
+use LightnCandy\Options;
 use LightnCandy\SafeString;
 use PHPUnit\Framework\TestCase;
 
@@ -11,7 +12,7 @@ class regressionTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider("issueProvider")]
     public function testIssues($issue)
     {
-        $templateSpec = LightnCandy::precompile($issue['template'], $issue['options'] ?? []);
+        $templateSpec = LightnCandy::precompile($issue['template'], $issue['options'] ?? new Options());
         $context = LightnCandy::getContext();
         $parsed = print_r(LightnCandy::$lastParsed, true);
         if (count($context['error'])) {
@@ -48,12 +49,12 @@ class regressionTest extends TestCase
             array(
                 'id' => 44,
                 'template' => '<div class="terms-text"> {{render "artists-terms"}} </div>',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'render' => function($view,$data = array()) {
                             return 'OK!';
-                         }
-                    )
+                        },
+                    ],
                 ),
                 'data' => array('tt' => 'bla bla bla'),
                 'expected' => '<div class="terms-text"> OK! </div>'
@@ -62,7 +63,6 @@ class regressionTest extends TestCase
             array(
                 'id' => 46,
                 'template' => '{{{this.id}}}, {{a.id}}',
-                'options' => array(),
                 'data' => array('id' => 'bla bla bla', 'a' => array('id' => 'OK!')),
                 'expected' => 'bla bla bla, OK!'
             ),
@@ -70,13 +70,13 @@ class regressionTest extends TestCase
             array(
                 'id' => 49,
                 'template' => '{{date_format}} 1, {{date_format2}} 2, {{date_format3}} 3, {{date_format4}} 4',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'date_format' => 'meetup_date_format',
                         'date_format2' => 'meetup_date_format2',
                         'date_format3' => 'meetup_date_format3',
-                        'date_format4' => 'meetup_date_format4'
-                    )
+                        'date_format4' => 'meetup_date_format4',
+                    ],
                 ),
                 'expected' => 'OKOK~1 1, OKOK~2 2, OKOK~3 3, OKOK~4 4'
             ),
@@ -84,10 +84,10 @@ class regressionTest extends TestCase
             array(
                 'id' => 52,
                 'template' => '{{{test_array tmp}}} should be happy!',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'test_array',
-                    )
+                    ],
                 ),
                 'data' => array('tmp' => array('A', 'B', 'C')),
                 'expected' => 'IS_ARRAY should be happy!'
@@ -96,8 +96,8 @@ class regressionTest extends TestCase
             array(
                 'id' => 62,
                 'template' => '{{{test_join @root.foo.bar}}} should be happy!',
-                'options' => array(
-                     'helpers' => array('test_join')
+                'options' => new Options(
+                    helpers: ['test_join'],
                 ),
                 'data' => array('foo' => array('A', 'B', 'bar' => array('C', 'D'))),
                 'expected' => 'C.D should be happy!',
@@ -106,11 +106,11 @@ class regressionTest extends TestCase
             array(
                 'id' => 64,
                 'template' => '{{#each foo}} Test! {{this}} {{/each}}{{> test1}} ! >>> {{>recursive}}',
-                'options' => array(
-                    'partials' => array(
+                'options' => new Options(
+                    partials: [
                         'test1' => "123\n",
                         'recursive' => "{{#if foo}}{{bar}} -> {{#with foo}}{{>recursive}}{{/with}}{{else}}END!{{/if}}\n",
-                    ),
+                    ],
                 ),
                 'data' => array(
                  'bar' => 1,
@@ -143,16 +143,16 @@ class regressionTest extends TestCase
             array(
                 'id' => 68,
                 'template' => '{{#myeach foo}} Test! {{this}} {{/myeach}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'myeach' => function ($context, $options) {
                             $ret = '';
                             foreach ($context as $cx) {
                                 $ret .= $options['fn']($cx);
                             }
                             return $ret;
-                        }
-                    )
+                        },
+                    ],
                 ),
                 'data' => array('foo' => array('A', 'B', 'bar' => array('C', 'D', 'E'))),
                 'expected' => ' Test! A  Test! B  Test! C,D,E ',
@@ -168,10 +168,10 @@ class regressionTest extends TestCase
             array(
                 'id' => 83,
                 'template' => '{{> tests/test1}}',
-                'options' => array(
-                    'partials' => array(
+                'options' => new Options(
+                    partials: [
                         'tests/test1' => "123\n",
-                    ),
+                    ],
                 ),
                 'expected' => "123\n"
             ),
@@ -179,12 +179,12 @@ class regressionTest extends TestCase
             array(
                 'id' => 85,
                 'template' => '{{helper 1 foo bar="q"}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'helper' => function ($arg1, $arg2, $options) {
                             return "ARG1:$arg1, ARG2:$arg2, HASH:{$options['hash']['bar']}";
-                        }
-                    )
+                        },
+                    ],
                 ),
                 'data' => array('foo' => 'BAR'),
                 'expected' => 'ARG1:1, ARG2:BAR, HASH:q',
@@ -193,12 +193,11 @@ class regressionTest extends TestCase
             array(
                 'id' => 88,
                 'template' => '{{>test2}}',
-                'options' => array(
-                    'flags' => 0,
-                    'partials' => array(
+                'options' => new Options(
+                    partials: [
                         'test2' => "a{{> test1}}b\n",
                         'test1' => "123\n",
-                    ),
+                    ],
                 ),
                 'expected' => "a123\nb\n",
             ),
@@ -213,21 +212,19 @@ class regressionTest extends TestCase
             array(
                 'id' => 109,
                 'template' => '{{#if "OK"}}it\'s great!{{/if}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_NOESCAPE,
-                ),
+                'options' => new Options(noEscape: true),
                 'expected' => 'it\'s great!',
             ),
 
             array(
                 'id' => 110,
                 'template' => 'ABC{{#block "YES!"}}DEF{{foo}}GHI{{/block}}JKL',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'block' => function ($name, $options) {
                             return "1-$name-2-" . $options['fn']() . '-3';
-                        }
-                    ),
+                        },
+                    ],
                 ),
                 'data' => array('foo' => 'bar'),
                 'expected' => 'ABC1-YES!-2-DEFbarGHI-3JKL',
@@ -236,9 +233,9 @@ class regressionTest extends TestCase
             array(
                 'id' => 109,
                 'template' => '{{foo}} {{> test}}',
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_NOESCAPE,
-                    'partials' => array('test' => '{{foo}}'),
+                'options' => new Options(
+                    noEscape: true,
+                    partials: ['test' => '{{foo}}'],
                 ),
                 'data' => array('foo' => '<'),
                 'expected' => '< <',
@@ -247,16 +244,16 @@ class regressionTest extends TestCase
             array(
                 'id' => 114,
                 'template' => '{{^myeach .}}OK:{{.}},{{else}}NOT GOOD{{/myeach}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'myeach' => function ($context, $options) {
                             $ret = '';
                             foreach ($context as $cx) {
                                 $ret .= $options['fn']($cx);
                             }
                             return $ret;
-                        }
-                    ),
+                        },
+                    ],
                 ),
                 'data' => array(1, 'foo', 3, 'bar'),
                 'expected' => 'NOT GOODNOT GOODNOT GOODNOT GOOD',
@@ -265,8 +262,8 @@ class regressionTest extends TestCase
             array(
                 'id' => 124,
                 'template' => '{{list foo bar abc=(lt 10 3) def=(lt 3 10)}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'lt' => function ($a, $b) {
                             return ($a > $b) ? new SafeString("$a>$b") : '';
                         },
@@ -287,8 +284,8 @@ class regressionTest extends TestCase
                                 }
                             }
                             return new SafeString($out);
-                        }
-                    ),
+                        },
+                    ],
                 ),
                 'data' => array('foo' => 'OK!', 'bar' => 'OK2', 'abc' => false, 'def' => 123),
                 'expected' => 'List:)OK! , )OK2 , ]abc=10>3 , ',
@@ -297,12 +294,12 @@ class regressionTest extends TestCase
             array(
                 'id' => 124,
                 'template' => '{{#if (equal \'OK\' cde)}}YES!{{/if}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'equal' => function ($a, $b) {
                             return $a === $b;
-                        }
-                    ),
+                        },
+                    ],
                 ),
                 'data' => array('cde' => 'OK'),
                 'expected' => 'YES!'
@@ -311,12 +308,12 @@ class regressionTest extends TestCase
             array(
                 'id' => 124,
                 'template' => '{{#if (equal true (equal \'OK\' cde))}}YES!{{/if}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'equal' => function ($a, $b) {
                             return $a === $b;
-                        }
-                    ),
+                        },
+                    ],
                 ),
                 'data' => array('cde' => 'OK'),
                 'expected' => 'YES!'
@@ -325,12 +322,12 @@ class regressionTest extends TestCase
             array(
                 'id' => 125,
                 'template' => '{{#if (equal true ( equal \'OK\' cde))}}YES!{{/if}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'equal' => function ($a, $b) {
                             return $a === $b;
-                        }
-                    ),
+                        },
+                    ],
                 ),
                 'data' => array('cde' => 'OK'),
                 'expected' => 'YES!'
@@ -339,12 +336,12 @@ class regressionTest extends TestCase
             array(
                 'id' => 125,
                 'template' => '{{#if (equal true (equal \' OK\' cde))}}YES!{{/if}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'equal' => function ($a, $b) {
                             return $a === $b;
-                        }
-                    ),
+                        },
+                    ],
                 ),
                 'data' => array('cde' => ' OK'),
                 'expected' => 'YES!'
@@ -353,12 +350,12 @@ class regressionTest extends TestCase
             array(
                 'id' => 125,
                 'template' => '{{#if (equal true (equal \' ==\' cde))}}YES!{{/if}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'equal' => function ($a, $b) {
                             return $a === $b;
-                        }
-                    ),
+                        },
+                    ],
                 ),
                 'data' => array('cde' => ' =='),
                 'expected' => 'YES!'
@@ -367,12 +364,12 @@ class regressionTest extends TestCase
             array(
                 'id' => 125,
                 'template' => '{{#if (equal true (equal " ==" cde))}}YES!{{/if}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'equal' => function ($a, $b) {
                             return $a === $b;
-                        }
-                    ),
+                        },
+                    ],
                 ),
                 'data' => array('cde' => ' =='),
                 'expected' => 'YES!'
@@ -381,13 +378,6 @@ class regressionTest extends TestCase
             array(
                 'id' => 125,
                 'template' => '{{[ abc]}}',
-                'options' => array(
-                    'helpers' => array(
-                        'equal' => function ($a, $b) {
-                            return $a === $b;
-                        }
-                    ),
-                ),
                 'data' => array(' abc' => 'YES!'),
                 'expected' => 'YES!'
             ),
@@ -395,20 +385,20 @@ class regressionTest extends TestCase
             array(
                 'id' => 125,
                 'template' => '{{list [ abc] " xyz" \' def\' "==" \'==\' "OK"}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'list' => function ($a, $b) {
                             $out = 'List:';
                             $args = func_get_args();
-                            $opts = array_pop($args);
+                            array_pop($args);
                             foreach ($args as $v) {
                                 if ($v) {
                                     $out .= ")$v , ";
                                 }
                             }
                             return $out;
-                        }
-                    ),
+                        },
+                    ],
                 ),
                 'data' => array(' abc' => 'YES!'),
                 'expected' => 'List:)YES! , ) xyz , ) def , )&#x3D;&#x3D; , )&#x3D;&#x3D; , )OK , ',
@@ -418,8 +408,8 @@ class regressionTest extends TestCase
                 'id' => 127,
                 'template' => '{{#each array}}#{{#if true}}{{name}}-{{../name}}-{{../../name}}-{{../../../name}}{{/if}}##{{#myif true}}{{name}}={{../name}}={{../../name}}={{../../../name}}{{/myif}}###{{#mywith true}}{{name}}~{{../name}}~{{../../name}}~{{../../../name}}{{/mywith}}{{/each}}',
                 'data' => array('name' => 'john', 'array' => array(1,2,3)),
-                'options' => array(
-                    'helpers' => array('myif', 'mywith'),
+                'options' => new Options(
+                    helpers: ['myif', 'mywith'],
                 ),
                 // PENDING ISSUE, check for https://github.com/wycats/handlebars.js/issues/1135
                 // 'expected' => '#--john-##==john=###~~john~#--john-##==john=###~~john~#--john-##==john=###~~john~',
@@ -437,15 +427,15 @@ class regressionTest extends TestCase
                 'id' => 132,
                 'template' => '{{list (keys .)}}',
                 'data' => array('foo' => 'bar', 'test' => 'ok'),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'keys' => function($arg) {
                             return array_keys($arg);
-                         },
+                        },
                         'list' => function($arg) {
                             return join(',', $arg);
-                         }
-                    ),
+                        },
+                    ],
                 ),
                 'expected' => 'foo,test',
             ),
@@ -454,15 +444,15 @@ class regressionTest extends TestCase
                 'id' => 133,
                 'template' => "{{list (keys\n .\n ) \n}}",
                 'data' => array('foo' => 'bar', 'test' => 'ok'),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'keys' => function($arg) {
                             return array_keys($arg);
-                         },
+                        },
                         'list' => function($arg) {
                             return join(',', $arg);
-                         }
-                    ),
+                        },
+                    ],
                 ),
                 'expected' => 'foo,test',
             ),
@@ -471,12 +461,12 @@ class regressionTest extends TestCase
                 'id' => 133,
                 'template' => "{{list\n .\n \n \n}}",
                 'data' => array('foo', 'bar', 'test'),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'list' => function($arg) {
                             return join(',', $arg);
-                         }
-                    ),
+                        },
+                    ],
                 ),
                 'expected' => 'foo,bar,test',
             ),
@@ -485,15 +475,15 @@ class regressionTest extends TestCase
                 'id' => 134,
                 'template' => "{{#if 1}}{{list (keys names)}}{{/if}}",
                 'data' => array('names' => array('foo' => 'bar', 'test' => 'ok')),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'keys' => function($arg) {
                             return array_keys($arg);
-                         },
+                        },
                         'list' => function($arg) {
                             return join(',', $arg);
-                         }
-                    ),
+                        },
+                    ],
                 ),
                 'expected' => 'foo,test',
             ),
@@ -502,12 +492,12 @@ class regressionTest extends TestCase
                 'id' => 138,
                 'template' => "{{#each (keys .)}}={{.}}{{/each}}",
                 'data' => array('foo' => 'bar', 'test' => 'ok', 'Haha'),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'keys' => function($arg) {
                             return array_keys($arg);
-                         }
-                    ),
+                        },
+                    ],
                 ),
                 'expected' => '=foo=test=0',
             ),
@@ -516,12 +506,12 @@ class regressionTest extends TestCase
                 'id' => 140,
                 'template' => "{{[a.good.helper] .}}",
                 'data' => array('ha', 'hey', 'ho'),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'a.good.helper' => function($arg) {
                             return join(',', $arg);
-                         }
-                    ),
+                        },
+                    ],
                 ),
                 'expected' => 'ha,hey,ho',
             ),
@@ -530,12 +520,12 @@ class regressionTest extends TestCase
                 'id' => 141,
                 'template' => "{{#with foo}}{{#getThis bar}}{{/getThis}}{{/with}}",
                 'data' => array('foo' => array('bar' => 'Good!')),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'getThis' => function($input, $options) {
                             return $input . '-' . $options['_this']['bar'];
-                         }
-                    ),
+                        },
+                    ],
                 ),
                 'expected' => 'Good!-Good!',
             ),
@@ -544,12 +534,12 @@ class regressionTest extends TestCase
                 'id' => 141,
                 'template' => "{{#with foo}}{{getThis bar}}{{/with}}",
                 'data' => array('foo' => array('bar' => 'Good!')),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'getThis' => function($input, $options) {
                             return $input . '-' . $options['_this']['bar'];
-                         }
-                    ),
+                        },
+                    ],
                 ),
                 'expected' => 'Good!-Good!',
             ),
@@ -558,12 +548,12 @@ class regressionTest extends TestCase
                 'id' => 143,
                 'template' => "{{testString foo bar=\" \"}}",
                 'data' => array('foo' => 'good!'),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'testString' => function($arg, $options) {
                             return $arg . '-' . $options['hash']['bar'];
-                         }
-                    ),
+                        },
+                    ],
                 ),
                 'expected' => 'good!- ',
             ),
@@ -572,12 +562,12 @@ class regressionTest extends TestCase
                 'id' => 143,
                 'template' => "{{testString foo bar=\"\"}}",
                 'data' => array('foo' => 'good!'),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'testString' => function($arg, $options) {
                             return $arg . '-' . $options['hash']['bar'];
-                         }
-                    ),
+                        },
+                    ],
                 ),
                 'expected' => 'good!-',
             ),
@@ -586,12 +576,12 @@ class regressionTest extends TestCase
                 'id' => 143,
                 'template' => "{{testString foo bar=' '}}",
                 'data' => array('foo' => 'good!'),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'testString' => function($arg, $options) {
                             return $arg . '-' . $options['hash']['bar'];
-                         }
-                    ),
+                        },
+                    ],
                 ),
                 'expected' => 'good!- ',
             ),
@@ -600,12 +590,12 @@ class regressionTest extends TestCase
                 'id' => 143,
                 'template' => "{{testString foo bar=''}}",
                 'data' => array('foo' => 'good!'),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'testString' => function($arg, $options) {
                             return $arg . '-' . $options['hash']['bar'];
-                         }
-                    ),
+                        },
+                    ],
                 ),
                 'expected' => 'good!-',
             ),
@@ -614,12 +604,12 @@ class regressionTest extends TestCase
                 'id' => 143,
                 'template' => "{{testString foo bar=\" \"}}",
                 'data' => array('foo' => 'good!'),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'testString' => function($arg1, $options) {
                             return $arg1 . '-' . $options['hash']['bar'];
-                         }
-                    ),
+                        },
+                    ],
                 ),
                 'expected' => 'good!- ',
             ),
@@ -628,8 +618,8 @@ class regressionTest extends TestCase
                 'id' => 147,
                 'template' => '{{> test/test3 foo="bar"}}',
                 'data' => array('test' => 'OK!', 'foo' => 'error'),
-                'options' => array(
-                    'partials' => array('test/test3' => '{{test}}, {{foo}}'),
+                'options' => new Options(
+                    partials: ['test/test3' => '{{test}}, {{foo}}'],
                 ),
                 'expected' => 'OK!, bar'
             ),
@@ -637,12 +627,12 @@ class regressionTest extends TestCase
             array(
                 'id' => 153,
                 'template' => '{{echo "test[]"}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'echo' => function ($in) {
                             return "-$in-";
-                        }
-                    )
+                        },
+                    ],
                 ),
                 'expected' => "-test[]-",
             ),
@@ -650,12 +640,12 @@ class regressionTest extends TestCase
             array(
                 'id' => 153,
                 'template' => '{{echo \'test[]\'}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'echo' => function ($in) {
                             return "-$in-";
-                        }
-                    )
+                        },
+                    ],
                 ),
                 'expected' => "-test[]-",
             ),
@@ -669,41 +659,41 @@ class regressionTest extends TestCase
             array(
                 'id' => 157,
                 'template' => '{{{du_mp text=(du_mp "123")}}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'du_mp' => function ($a) {
-                            return '>' . print_r(isset($a['hash']) ? $a['hash'] : $a, true);
-                        }
-                    )
+                            return '>' . print_r($a['hash'] ?? $a, true);
+                        },
+                    ],
                 ),
                 'expected' => <<<VAREND
->Array
-(
-    [text] => >123
-)
-
-VAREND
+                    >Array
+                    (
+                        [text] => >123
+                    )
+                    
+                    VAREND
             ),
 
             array(
                 'id' => 157,
                 'template' => '{{>test_js_partial}}',
-                'options' => array(
-                    'partials' => array(
+                'options' => new Options(
+                    partials: [
                         'test_js_partial' => <<<VAREND
-Test GA....
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){console.log('works!')};})();
-</script>
-VAREND
-                    )
+                            Test GA....
+                            <script>
+                            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){console.log('works!')};})();
+                            </script>
+                            VAREND,
+                    ],
                 ),
                 'expected' => <<<VAREND
-Test GA....
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){console.log('works!')};})();
-</script>
-VAREND
+                    Test GA....
+                    <script>
+                    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){console.log('works!')};})();
+                    </script>
+                    VAREND
             ),
 
             array(
@@ -724,10 +714,8 @@ VAREND
                 'id' => 171,
                 'template' => '{{#my_private_each .}}{{@index}}:{{.}},{{/my_private_each}}',
                 'data' => array('a', 'b', 'c'),
-                'options' => array(
-                    'helpers' => array(
-                        'my_private_each'
-                    )
+                'options' => new Options(
+                    helpers: ['my_private_each'],
                 ),
                 'expected' => '0:a,1:b,2:c,',
             ),
@@ -741,10 +729,10 @@ VAREND
             array(
                 'id' => 175,
                 'template' => 'c{{>test}}d',
-                'options' => array(
-                    'partials' => array(
+                'options' => new Options(
+                    partials: [
                         'test' => 'a{{!-- {{each}} haha {{/each}} --}}b',
-                    ),
+                    ],
                 ),
                 'expected' => 'cabd',
             ),
@@ -760,12 +748,12 @@ VAREND
                 'id' => 177,
                 'template' => '{{{{a}}}} {{{{b}}}} {{{{/b}}}} {{{{/a}}}}',
                 'data' => array('a' => true),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'a' => function($options) {
                             return $options['fn']();
-                        }
-                    )
+                        },
+                    ],
                 ),
                 'expected' => ' {{{{b}}}} {{{{/b}}}} ',
             ),
@@ -812,10 +800,10 @@ VAREND
                 'id' => 204,
                 'template' => '{{#> test name="A"}}B{{/test}}{{#> test name="C"}}D{{/test}}',
                 'data' => array('bar' => true),
-                'options' => array(
-                    'partials' => array(
+                'options' => new Options(
+                    partials: [
                         'test' => '{{name}}:{{> @partial-block}},',
-                    )
+                    ],
                 ),
                 'expected' => 'A:B,C:D,',
             ),
@@ -831,12 +819,12 @@ VAREND
                 'id' => 213,
                 'template' => '{{#if foo}}foo{{else if bar}}{{#moo moo}}moo{{/moo}}{{/if}}',
                 'data' => array('foo' => true),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'moo' => function($arg1) {
                             return ($arg1 === null);
-                         }
-                    )
+                        },
+                    ],
                 ),
                 'expected' => 'foo',
             ),
@@ -858,8 +846,8 @@ VAREND
             array(
                 'id' => 221,
                 'template' => 'a{{ouch}}b',
-                'options' => array(
-                    'helpers' => $test_helpers
+                'options' => new Options(
+                    helpers: $test_helpers,
                 ),
                 'expected' => 'aokb',
             ),
@@ -867,8 +855,8 @@ VAREND
             array(
                 'id' => 221,
                 'template' => 'a{{ouch}}b',
-                'options' => array(
-                    'helpers' => $test_helpers2
+                'options' => new Options(
+                    helpers: $test_helpers2,
                 ),
                 'expected' => 'awa!b',
             ),
@@ -876,8 +864,8 @@ VAREND
             array(
                 'id' => 221,
                 'template' => 'a{{ouch}}b',
-                'options' => array(
-                    'helpers' => $test_helpers3
+                'options' => new Options(
+                    helpers: $test_helpers3,
                 ),
                 'expected' => 'awa!b',
             ),
@@ -886,8 +874,8 @@ VAREND
                 'id' => 224,
                 'template' => '{{#> foo bar}}a,b,{{.}},{{!-- comment --}},d{{/foo}}',
                 'data' => array('bar' => 'BA!'),
-                'options' => array(
-                    'partials' => array('foo' => 'hello, {{> @partial-block}}')
+                'options' => new Options(
+                    partials: ['foo' => 'hello, {{> @partial-block}}'],
                 ),
                 'expected' => 'hello, a,b,BA!,,d',
             ),
@@ -896,8 +884,8 @@ VAREND
                 'id' => 224,
                 'template' => '{{#> foo bar}}{{#if .}}OK! {{.}}{{else}}no bar{{/if}}{{/foo}}',
                 'data' => array('bar' => 'BA!'),
-                'options' => array(
-                    'partials' => array('foo' => 'hello, {{> @partial-block}}')
+                'options' => new Options(
+                    partials: ['foo' => 'hello, {{> @partial-block}}'],
                 ),
                 'expected' => 'hello, OK! BA!',
             ),
@@ -905,12 +893,12 @@ VAREND
             array(
                 'id' => 227,
                 'template' => '{{#if moo}}A{{else if bar}}B{{else foo}}C{{/if}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'foo' => function($options) {
                             return $options['fn']();
-                         }
-                    )
+                        },
+                    ],
                 ),
                 'expected' => 'C'
             ),
@@ -940,12 +928,12 @@ VAREND
                 'id' => 233,
                 'template' => '{{#if foo}}FOO{{else}}BAR{{/if}}',
                 'data' => array(),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'if' => function($arg, $options) {
                             return $options['fn']();
-                         }
-                    )
+                        },
+                    ],
                 ),
                 'expected' => 'FOO'
             ),
@@ -954,12 +942,12 @@ VAREND
                 'id' => 234,
                 'template' => '{{> (lookup foo 2)}}',
                 'data' => array('foo' => array('a', 'b', 'c')),
-                'options' => array(
-                    'partials' => array(
+                'options' => new Options(
+                    partials: [
                         'a' => '1st',
                         'b' => '2nd',
-                        'c' => '3rd'
-                    )
+                        'c' => '3rd',
+                    ],
                 ),
                 'expected' => '3rd'
             ),
@@ -968,11 +956,11 @@ VAREND
                 'id' => 235,
                 'template' => '{{#> "myPartial"}}{{#> myOtherPartial}}{{ @root.foo}}{{/myOtherPartial}}{{/"myPartial"}}',
                 'data' => array('foo' => 'hello!'),
-                'options' => array(
-                    'partials' => array(
+                'options' => new Options(
+                    partials: [
                         'myPartial' => '<div>outer {{> @partial-block}}</div>',
-                        'myOtherPartial' => '<div>inner {{> @partial-block}}</div>'
-                    )
+                        'myOtherPartial' => '<div>inner {{> @partial-block}}</div>',
+                    ],
                 ),
                 'expected' => '<div>outer <div>inner hello!</div></div>',
             ),
@@ -980,12 +968,12 @@ VAREND
             array(
                 'id' => 236,
                 'template' => 'A{{#> foo}}B{{#> bar}}C{{>moo}}D{{/bar}}E{{/foo}}F',
-                'options' => array(
-                    'partials' => array(
+                'options' => new Options(
+                    partials: [
                         'foo' => 'FOO>{{> @partial-block}}<FOO',
                         'bar' => 'bar>{{> @partial-block}}<bar',
                         'moo' => 'MOO!',
-                    )
+                    ],
                 ),
                 'expected' => 'AFOO>Bbar>CMOO!D<barE<FOOF'
             ),
@@ -994,11 +982,11 @@ VAREND
                 'id' => 241,
                 'template' => '{{#>foo}}{{#*inline "bar"}}GOOD!{{#each .}}>{{.}}{{/each}}{{/inline}}{{/foo}}',
                 'data' => array('1', '3', '5'),
-                'options' => array(
-                    'partials' => array(
+                'options' => new Options(
+                    partials: [
                         'foo' => 'A{{#>bar}}BAD{{/bar}}B',
-                        'moo' => 'oh'
-                    )
+                        'moo' => 'oh',
+                    ],
                 ),
                 'expected' => 'AGOOD!>1>3>5B'
             ),
@@ -1021,11 +1009,11 @@ VAREND
                 'id' => 244,
                 'template' => '{{#>outer}}content{{/outer}}',
                 'data' => array('test' => 'OK'),
-                'options' => array(
-                    'partials' => array(
+                'options' => new Options(
+                    partials: [
                         'outer' => 'outer+{{#>nested}}~{{>@partial-block}}~{{/nested}}+outer-end',
-                        'nested' => 'nested={{>@partial-block}}=nested-end'
-                    )
+                        'nested' => 'nested={{>@partial-block}}=nested-end',
+                    ],
                 ),
                 'expected' => 'outer+nested=~content~=nested-end+outer-end'
             ),
@@ -1047,12 +1035,12 @@ VAREND
                     'nil',
                     array(3, 5)
                 )),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'foo' => function($arg1) {
                             return is_array($arg1) ? 'OK' : 'bad';
-                         }
-                    )
+                        },
+                    ],
                 ),
                 'expected' => 'OK'
             ),
@@ -1061,12 +1049,12 @@ VAREND
                 'id' => 253,
                 'template' => '{{foo.bar}}',
                 'data' => array('foo' => array('bar' => 'OK!')),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'foo' => function() {
                             return 'bad';
-                         }
-                    )
+                        },
+                    ],
                 ),
                 'expected' => 'OK!'
             ),
@@ -1082,8 +1070,6 @@ VAREND
                 'id' => 255,
                 'template' => '{{foo.length}}',
                 'data' => array('foo' => array(1, 2)),
-                'options' => array(
-                ),
                 'expected' => '2'
             ),
 
@@ -1097,12 +1083,12 @@ VAREND
             array(
                 'id' => 257,
                 'template' => '{{foo a=(foo a=(foo a="ok"))}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'foo' => function($opt) {
                             return $opt['hash']['a'];
-                        }
-                    )
+                        },
+                    ],
                 ),
                 'expected' => 'ok'
             ),
@@ -1124,15 +1110,15 @@ VAREND
             array(
                 'id' => 268,
                 'template' => '{{foo}}{{bar}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'foo' => function($opt) {
                             $opt['_this']['change'] = true;
                         },
                         'bar' => function($opt) {
                             return $opt['_this']['change'] ? 'ok' : 'bad';
-                        }
-                    )
+                        },
+                    ],
                 ),
                 'expected' => 'ok'
             ),
@@ -1154,12 +1140,12 @@ VAREND
             array(
                 'id' => 281,
                 'template' => '{{echo (echo "foo bar (moo).")}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'echo' => function($arg1) {
                             return "ECHO: $arg1";
-                        }
-                    )
+                        },
+                    ],
                 ),
                 'expected' => 'ECHO: ECHO: foo bar (moo).'
             ),
@@ -1167,8 +1153,8 @@ VAREND
             array(
                 'id' => 284,
                 'template' => '{{> foo}}',
-                'options' => array(
-                    'partials' => array('foo' => "12'34")
+                'options' => new Options(
+                    partials: ['foo' => "12'34"],
                 ),
                 'expected' => "12'34"
             ),
@@ -1177,12 +1163,12 @@ VAREND
                 'id' => 284,
                 'template' => '{{> (lookup foo 2)}}',
                 'data' => array('foo' => array('a', 'b', 'c')),
-                'options' => array(
-                    'partials' => array(
+                'options' => new Options(
+                    partials: [
                         'a' => '1st',
                         'b' => '2nd',
-                        'c' => "3'r'd"
-                    )
+                        'c' => "3'r'd",
+                    ],
                 ),
                 'expected' => "3'r'd"
             ),
@@ -1265,13 +1251,13 @@ VAREND
             [
                 'id' => 297,
                 'template' => '{{test "foo" prop="\" "}}',
-                'options' => [
-                    'helpers' => [
+                'options' => new Options(
+                    helpers: [
                         'test' => function ($arg1, $options) {
                             return "{$arg1} {$options['hash']['prop']}";
                         },
                     ],
-                ],
+                ),
                 'expected' => 'foo &quot; '
             ],
 
@@ -1290,13 +1276,13 @@ VAREND
             array(
                 'id' => 315,
                 'template' => '{{#each foo}}#{{@key}}({{@index}})={{.}}-{{moo}}-{{@irr}}{{/each}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'moo' => function($opts) {
                             $opts['data']['irr'] = '123';
                             return '321';
-                        }
-                    )
+                        },
+                    ],
                 ),
                 'data' => array(
                     'foo' => array(
@@ -1311,25 +1297,25 @@ VAREND
             [
                 'id' => 357,
                 'template' => '{{echo (echo "foobar(moo).")}}',
-                'options' => [
-                    'helpers' => [
+                'options' => new Options(
+                    helpers: [
                         'echo' => function ($arg1) {
                             return "ECHO: $arg1";
-                        }
-                    ]
-                ],
+                        },
+                    ],
+                ),
                 'expected' => 'ECHO: ECHO: foobar(moo).'
             ],
             [
                 'id' => 357,
                 'template' => '{{echo (echo "foobar(moo)." (echo "moobar(foo)"))}}',
-                'options' => [
-                    'helpers' => [
+                'options' => new Options(
+                    helpers: [
                         'echo' => function ($arg1) {
                             return "ECHO: $arg1";
-                        }
-                    ]
-                ],
+                        },
+                    ],
+                ),
                 'expected' => 'ECHO: ECHO: foobar(moo).'
             ],
 
@@ -1349,12 +1335,12 @@ VAREND
             array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'testNull' => function($arg1, $arg2) {
                             return (($arg1 === null) && ($arg2 === null)) ? 'YES!' : 'no';
-                        }
-                    )
+                        },
+                    ],
                 ),
                 'expected' => 'YES!'
             ),
@@ -1362,34 +1348,60 @@ VAREND
             array(
                 'template' => '{{> (pname foo) bar}}',
                 'data' => array('bar' => 'OK! SUBEXP+PARTIAL!', 'foo' => 'test/test3'),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'pname' => function($arg) {
                             return $arg;
-                         }
-                    ),
-                    'partials' => array('test/test3' => '{{.}}'),
+                        },
+                    ],
+                    partials: ['test/test3' => '{{.}}'],
                 ),
                 'expected' => 'OK! SUBEXP+PARTIAL!'
             ),
 
             array(
+                'template' => '{{> (partial_name_helper type)}}',
+                'data' => [
+                    'type' => 'dog',
+                    'name' => 'Lucky',
+                    'age' => 5,
+                ],
+                'options' => new Options(
+                    helpers: [
+                        'partial_name_helper' => function (string $type) {
+                            return match ($type) {
+                                'man', 'woman' => 'people',
+                                'dog', 'cat' => 'animal',
+                                default => 'default',
+                            };
+                        },
+                    ],
+                    partials: [
+                        'people' => 'This is {{name}}, he is {{age}} years old.',
+                        'animal' => 'This is {{name}}, it is {{age}} years old.',
+                        'default' => 'This is {{name}}.',
+                    ],
+                ),
+                'expected' => 'This is Lucky, it is 5 years old.'
+            ),
+
+            array(
                 'template' => '{{> testpartial newcontext mixed=foo}}',
                 'data' => array('foo' => 'OK!', 'newcontext' => array('bar' => 'test')),
-                'options' => array(
-                    'partials' => array('testpartial' => '{{bar}}-{{mixed}}'),
+                'options' => new Options(
+                    partials: ['testpartial' => '{{bar}}-{{mixed}}'],
                 ),
                 'expected' => 'test-OK!'
             ),
 
             array(
                 'template' => '{{[helper]}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'helper' => function () {
                             return 'DEF';
-                        }
-                    )
+                        },
+                    ],
                 ),
                 'data' => array(),
                 'expected' => 'DEF'
@@ -1397,12 +1409,12 @@ VAREND
 
             array(
                 'template' => '{{#[helper3]}}ABC{{/[helper3]}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'helper3' => function () {
                             return 'DEF';
-                        }
-                    )
+                        },
+                    ],
                 ),
                 'data' => array(),
                 'expected' => 'DEF'
@@ -1410,16 +1422,16 @@ VAREND
 
             array(
                 'template' => '{{hash abc=["def=123"]}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'hash' => function ($options) {
                             $ret = '';
                             foreach ($options['hash'] as $k => $v) {
                                 $ret .= "$k : $v,";
                             }
                             return $ret;
-                        }
-                    ),
+                        },
+                    ],
                 ),
                 'data' => array('"def=123"' => 'La!'),
                 'expected' => 'abc : La!,',
@@ -1427,16 +1439,16 @@ VAREND
 
             array(
                 'template' => '{{hash abc=[\'def=123\']}}',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'hash' => function ($options) {
                             $ret = '';
                             foreach ($options['hash'] as $k => $v) {
                                 $ret .= "$k : $v,";
                             }
                             return $ret;
-                        }
-                    ),
+                        },
+                    ],
                 ),
                 'data' => array("'def=123'" => 'La!'),
                 'expected' => 'abc : La!,',
@@ -1444,12 +1456,12 @@ VAREND
 
             array(
                 'template' => 'ABC{{#block "YES!"}}DEF{{foo}}GHI{{else}}NO~{{/block}}JKL',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'block' => function ($name, $options) {
                             return "1-$name-2-" . $options['fn']() . '-3';
-                        }
-                    ),
+                        },
+                    ],
                 ),
                 'data' => array('foo' => 'bar'),
                 'expected' => 'ABC1-YES!-2-DEFbarGHI-3JKL',
@@ -1457,8 +1469,8 @@ VAREND
 
             array(
                 'template' => '-{{getroot}}=',
-                'options' => array(
-                    'helpers' => array('getroot'),
+                'options' => new Options(
+                    helpers: ['getroot'],
                 ),
                 'data' => 'ROOT!',
                 'expected' => '-ROOT!=',
@@ -1472,12 +1484,12 @@ VAREND
 
             array(
                 'template' => 'ABC{{#block "YES!"}}TRUE{{else}}DEF{{foo}}GHI{{/block}}JKL',
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'block' => function ($name, $options) {
                             return "1-$name-2-" . $options['inverse']() . '-3';
-                        }
-                    ),
+                        },
+                    ],
                 ),
                 'data' => array('foo' => 'bar'),
                 'expected' => 'ABC1-YES!-2-DEFbarGHI-3JKL',
@@ -1492,10 +1504,8 @@ VAREND
             array(
                 'template' => '{{#each .}}->{{>tests/test3}}{{/each}}',
                 'data' => array('a', 'b', 'c'),
-                'options' => array(
-                    'partials' => array(
-                        'tests/test3' => 'New context:{{.}}'
-                    ),
+                'options' => new Options(
+                    partials: ['tests/test3' => 'New context:{{.}}'],
                 ),
                 'expected' => "->New context:a->New context:b->New context:c",
             ),
@@ -1503,10 +1513,8 @@ VAREND
             array(
                 'template' => '{{#each .}}->{{>tests/test3 ../foo}}{{/each}}',
                 'data' => array('a', 'foo' => array('d', 'e', 'f')),
-                'options' => array(
-                    'partials' => array(
-                        'tests/test3' => 'New context:{{.}}'
-                    ),
+                'options' => new Options(
+                    partials: ['tests/test3' => 'New context:{{.}}'],
                 ),
                 'expected' => "->New context:d,e,f->New context:d,e,f",
             ),
@@ -1530,22 +1538,20 @@ VAREND
 
             array(
                 'template' => '{{good_helper}}',
-                'options' => array(
-                    'helpers' => array('good_helper' => 'foo::bar'),
+                'options' => new Options(
+                    helpers: ['good_helper' => 'foo::bar'],
                 ),
                 'expected' => 'OK!',
             ),
 
             array(
                 'template' => '-{{.}}-',
-                'options' => array(),
                 'data' => 'abc',
                 'expected' => '-abc-',
             ),
 
             array(
                 'template' => '-{{this}}-',
-                'options' => array(),
                 'data' => 123,
                 'expected' => '-123-',
             ),
@@ -1569,8 +1575,8 @@ VAREND
 
             array(
                 'template' => '{{#myif foo}}YES{{else}}NO{{/myif}}',
-                'options' => array(
-                    'helpers' => array('myif'),
+                'options' => new Options(
+                    helpers: ['myif'],
                 ),
                 'expected' => 'NO',
             ),
@@ -1578,8 +1584,8 @@ VAREND
             array(
                 'template' => '{{#myif foo}}YES{{else}}NO{{/myif}}',
                 'data' => array('foo' => 1),
-                'options' => array(
-                    'helpers' => array('myif'),
+                'options' => new Options(
+                    helpers: ['myif'],
                 ),
                 'expected' => 'YES',
             ),
@@ -1587,8 +1593,8 @@ VAREND
             array(
                 'template' => '{{#mylogic 0 foo bar}}YES:{{.}}{{else}}NO:{{.}}{{/mylogic}}',
                 'data' => array('foo' => 'FOO', 'bar' => 'BAR'),
-                'options' => array(
-                    'helpers' => array('mylogic'),
+                'options' => new Options(
+                    helpers: ['mylogic'],
                 ),
                 'expected' => 'NO:BAR',
             ),
@@ -1596,8 +1602,8 @@ VAREND
             array(
                 'template' => '{{#mylogic true foo bar}}YES:{{.}}{{else}}NO:{{.}}{{/mylogic}}',
                 'data' => array('foo' => 'FOO', 'bar' => 'BAR'),
-                'options' => array(
-                    'helpers' => array('mylogic'),
+                'options' => new Options(
+                    helpers: ['mylogic'],
                 ),
                 'expected' => 'YES:FOO',
             ),
@@ -1605,8 +1611,8 @@ VAREND
             array(
                 'template' => '{{#mywith foo}}YA: {{name}}{{/mywith}}',
                 'data' => array('name' => 'OK?', 'foo' => array('name' => 'OK!')),
-                'options' => array(
-                    'helpers' => array('mywith'),
+                'options' => new Options(
+                    helpers: ['mywith'],
                 ),
                 'expected' => 'YA: OK!',
             ),
@@ -1614,8 +1620,8 @@ VAREND
             array(
                 'template' => '{{mydash \'abc\' "dev"}}',
                 'data' => array('a' => 'a', 'b' => 'b', 'c' => array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
-                'options' => array(
-                    'helpers' => array('mydash'),
+                'options' => new Options(
+                    helpers: ['mydash'],
                 ),
                 'expected' => 'abc-dev',
             ),
@@ -1623,8 +1629,8 @@ VAREND
             array(
                 'template' => '{{mydash \'a b c\' "d e f"}}',
                 'data' => array('a' => 'a', 'b' => 'b', 'c' => array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
-                'options' => array(
-                    'helpers' => array('mydash'),
+                'options' => new Options(
+                    helpers: ['mydash'],
                 ),
                 'expected' => 'a b c-d e f',
             ),
@@ -1632,8 +1638,8 @@ VAREND
             array(
                 'template' => '{{mydash "abc" (test_array 1)}}',
                 'data' => array('a' => 'a', 'b' => 'b', 'c' => array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
-                'options' => array(
-                    'helpers' => array('mydash', 'test_array'),
+                'options' => new Options(
+                    helpers: ['mydash', 'test_array'],
                 ),
                 'expected' => 'abc-NOT_ARRAY',
             ),
@@ -1641,8 +1647,8 @@ VAREND
             array(
                 'template' => '{{mydash "abc" (myjoin a b)}}',
                 'data' => array('a' => 'a', 'b' => 'b', 'c' => array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
-                'options' => array(
-                    'helpers' => array('mydash', 'myjoin'),
+                'options' => new Options(
+                    helpers: ['mydash', 'myjoin'],
                 ),
                 'expected' => 'abc-ab',
             ),
@@ -1661,25 +1667,25 @@ VAREND
 
             array(
                 'template' => <<<VAREND
-<ul>
- <li>1. {{helper1 name}}</li>
- <li>2. {{helper1 value}}</li>
- <li>3. {{myClass::helper2 name}}</li>
- <li>4. {{myClass::helper2 value}}</li>
- <li>5. {{he name}}</li>
- <li>6. {{he value}}</li>
- <li>7. {{h2 name}}</li>
- <li>8. {{h2 value}}</li>
- <li>9. {{link name}}</li>
- <li>10. {{link value}}</li>
- <li>11. {{alink url text}}</li>
- <li>12. {{{alink url text}}}</li>
-</ul>
-VAREND
+                    <ul>
+                     <li>1. {{helper1 name}}</li>
+                     <li>2. {{helper1 value}}</li>
+                     <li>3. {{myClass::helper2 name}}</li>
+                     <li>4. {{myClass::helper2 value}}</li>
+                     <li>5. {{he name}}</li>
+                     <li>6. {{he value}}</li>
+                     <li>7. {{h2 name}}</li>
+                     <li>8. {{h2 value}}</li>
+                     <li>9. {{link name}}</li>
+                     <li>10. {{link value}}</li>
+                     <li>11. {{alink url text}}</li>
+                     <li>12. {{{alink url text}}}</li>
+                    </ul>
+                    VAREND
                 ,
                 'data' => array('name' => 'John', 'value' => 10000, 'url' => 'http://yahoo.com', 'text' => 'You&Me!'),
-                'options' => array(
-                    'helpers' => array(
+                'options' => new Options(
+                    helpers: [
                         'helper1',
                         'myClass::helper2',
                         'he' => 'helper1',
@@ -1691,24 +1697,24 @@ VAREND
                             return "<a href=\"{$arg}\">click here</a>";
                         },
                         'alink',
-                    )
+                    ],
                 ),
                 'expected' => <<<VAREND
-<ul>
- <li>1. -John-</li>
- <li>2. -10000-</li>
- <li>3. &#x3D;John&#x3D;</li>
- <li>4. &#x3D;10000&#x3D;</li>
- <li>5. -John-</li>
- <li>6. -10000-</li>
- <li>7. &#x3D;John&#x3D;</li>
- <li>8. &#x3D;10000&#x3D;</li>
- <li>9. &lt;a href&#x3D;&quot;John&quot;&gt;click here&lt;/a&gt;</li>
- <li>10. &lt;a href&#x3D;&quot;10000&quot;&gt;click here&lt;/a&gt;</li>
- <li>11. &lt;a href&#x3D;&quot;http://yahoo.com&quot;&gt;You&amp;Me!&lt;/a&gt;</li>
- <li>12. <a href="http://yahoo.com">You&Me!</a></li>
-</ul>
-VAREND
+                    <ul>
+                     <li>1. -John-</li>
+                     <li>2. -10000-</li>
+                     <li>3. &#x3D;John&#x3D;</li>
+                     <li>4. &#x3D;10000&#x3D;</li>
+                     <li>5. -John-</li>
+                     <li>6. -10000-</li>
+                     <li>7. &#x3D;John&#x3D;</li>
+                     <li>8. &#x3D;10000&#x3D;</li>
+                     <li>9. &lt;a href&#x3D;&quot;John&quot;&gt;click here&lt;/a&gt;</li>
+                     <li>10. &lt;a href&#x3D;&quot;10000&quot;&gt;click here&lt;/a&gt;</li>
+                     <li>11. &lt;a href&#x3D;&quot;http://yahoo.com&quot;&gt;You&amp;Me!&lt;/a&gt;</li>
+                     <li>12. <a href="http://yahoo.com">You&Me!</a></li>
+                    </ul>
+                    VAREND
             ),
 
             array(
@@ -1736,17 +1742,17 @@ VAREND
 
             array(
                 'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
-                'options' => array(
-                    'partials' => array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
+                'options' => new Options(
+                    partials: ['test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"],
                 ),
                 'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n  1:A\n   2:B\n    3:C\n   4:D\n  5:E\nDONE\n",
             ),
 
             array(
                 'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_PREVENTINDENT,
-                    'partials' => array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
+                'options' => new Options(
+                    preventIndent: true,
+                    partials: array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
                 ),
                 'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n  1:A\n 2:B\n  3:C\n 4:D\n5:E\nDONE\n",
             ),
@@ -1754,16 +1760,14 @@ VAREND
             array(
                 'template' => "{{foo}}\n  {{bar}}\n",
                 'data' => array('foo' => 'ha', 'bar' => 'hey'),
-                'options' => array(
-                ),
                 'expected' => "ha\n  hey\n",
             ),
 
             array(
                 'template' => "{{>test}}\n",
                 'data' => array('foo' => 'ha', 'bar' => 'hey'),
-                'options' => array(
-                    'partials' => array('test' => "{{foo}}\n  {{bar}}\n"),
+                'options' => new Options(
+                    partials: ['test' => "{{foo}}\n  {{bar}}\n"],
                 ),
                 'expected' => "ha\n  hey\n",
             ),
@@ -1771,9 +1775,9 @@ VAREND
             array(
                 'template' => " {{>test}}\n",
                 'data' => array('foo' => 'ha', 'bar' => 'hey'),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_PREVENTINDENT,
-                    'partials' => array('test' => "{{foo}}\n  {{bar}}\n"),
+                'options' => new Options(
+                    preventIndent: true,
+                    partials: ['test' => "{{foo}}\n  {{bar}}\n"],
                 ),
                 'expected' => " ha\n  hey\n",
             ),
@@ -1781,9 +1785,9 @@ VAREND
             array(
                 'template' => "\n {{>test}}\n",
                 'data' => array('foo' => 'ha', 'bar' => 'hey'),
-                'options' => array(
-                    'flags' => LightnCandy::FLAG_PREVENTINDENT,
-                    'partials' => array('test' => "{{foo}}\n  {{bar}}\n"),
+                'options' => new Options(
+                    preventIndent: true,
+                    partials: ['test' => "{{foo}}\n  {{bar}}\n"],
                 ),
                 'expected' => "\n ha\n  hey\n",
             ),
@@ -1797,18 +1801,16 @@ VAREND
             array(
                 'template' => "ST:\n{{#foo}}\n {{>test1}}\n{{/foo}}\nOK\n",
                 'data' => array('foo' => array(1, 2)),
-                'options' => array(
-                    'partials' => array('test1' => "1:A\n 2:B({{@index}})\n"),
+                'options' => new Options(
+                    partials: ['test1' => "1:A\n 2:B({{@index}})\n"],
                 ),
                 'expected' => "ST:\n 1:A\n  2:B(0)\n 1:A\n  2:B(1)\nOK\n",
             ),
 
             array(
                 'template' => ">{{helper1 \"===\"}}<",
-                'options' => array(
-                    'helpers' => array(
-                        'helper1',
-                    )
+                'options' => new Options(
+                    helpers: ['helper1'],
                 ),
                 'expected' => ">-&#x3D;&#x3D;&#x3D;-<",
             ),
@@ -1816,7 +1818,7 @@ VAREND
             array(
                 'template' => "{{foo}}",
                 'data' => array('foo' => 'A&B " \''),
-                'options' => array('flags' => LightnCandy::FLAG_NOESCAPE),
+                'options' => new Options(noEscape: true),
                 'expected' => "A&B \" '",
             ),
 
@@ -1849,4 +1851,3 @@ VAREND
         }, $issues);
     }
 }
-

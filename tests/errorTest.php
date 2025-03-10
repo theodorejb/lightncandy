@@ -1,6 +1,7 @@
 <?php
 
 use LightnCandy\LightnCandy;
+use LightnCandy\Options;
 use PHPUnit\Framework\TestCase;
 
 require_once('tests/helpers_for_test.php');
@@ -40,7 +41,7 @@ class errorTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider("renderErrorProvider")]
     public function testRenderingException($test)
     {
-        $php = LightnCandy::precompile($test['template'], $test['options'] ?? []);
+        $php = LightnCandy::precompile($test['template'], $test['options'] ?? new Options());
         $renderer = LightnCandy::template($php);
         try {
             $renderer($test['data'] ?? null);
@@ -55,12 +56,12 @@ class errorTest extends TestCase
         $errorCases = [
             [
                 'template' => "{{#> testPartial}}\n  {{#> innerPartial}}\n   {{> @partial-block}}\n  {{/innerPartial}}\n{{/testPartial}}",
-                'options' => [
-                    'partials' => [
+                'options' => new Options(
+                    partials: [
                         'testPartial' => 'testPartial => {{> @partial-block}} <=',
                         'innerPartial' => 'innerPartial -> {{> @partial-block}} <-',
                     ],
-                ],
+                ),
                 'expected' => "Runtime: the partial @partial-block could not be found",
             ],
             [
@@ -69,28 +70,28 @@ class errorTest extends TestCase
             ],
             [
                 'template' => '{{foo}}',
-                'options' => ['flags' => LightnCandy::FLAG_STRICT],
+                'options' => new Options(strict: true),
                 'expected' => 'Runtime: [foo] does not exist',
             ],
             [
                 'template' => '{{#foo}}OK{{/foo}}',
-                'options' => ['flags' => LightnCandy::FLAG_STRICT],
+                'options' => new Options(strict: true),
                 'expected' => 'Runtime: [foo] does not exist',
             ],
             [
                 'template' => '{{{foo}}}',
-                'options' => ['flags' => LightnCandy::FLAG_STRICT],
+                'options' => new Options(strict: true),
                 'expected' => 'Runtime: [foo] does not exist',
             ],
             [
                 'template' => '{{foo}}',
-                'options' => [
-                    'helpers' => [
+                'options' => new Options(
+                    helpers: [
                         'foo' => function () {
                             throw new Exception('Expect the unexpected');
-                        }
+                        },
                     ],
-                ],
+                ),
                 'expected' => 'Runtime: call custom helper \'foo\' error: Expect the unexpected',
             ],
         ];
@@ -283,9 +284,11 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{helper}}',
-                'options' => array('helpers' => array(
-                    'helper' => array('bad input'),
-                )),
+                'options' => new Options(
+                    helpers: [
+                        'helper' => array('bad input'),
+                    ]
+                ),
                 'expected' => 'I found an array in helpers with key as helper, please fix it.',
             ),
             array(
@@ -293,7 +296,7 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{typeof hello}}',
-                'options' => ['flags' => LightnCandy::FLAG_KNOWNHELPERSONLY],
+                'options' => new Options(knownHelpersOnly: true),
                 'expected' => 'Missing helper: "typeof"',
             ),
             array(
@@ -367,20 +370,22 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{abc}}',
-                'options' => array('helpers' => array('abc')),
+                'options' => new Options(
+                    helpers: ['abc'],
+                ),
                 'expected' => "You provide a custom helper named as 'abc' in options['helpers'], but the function abc() is not defined!",
             ),
             array(
                 'template' => '{{test_join (foo bar)}}',
-                'options' => array(
-                    'helpers' => array('test_join'),
+                'options' => new Options(
+                    helpers: ['test_join'],
                 ),
                 'expected' => 'Missing helper: "foo"',
             ),
             array(
                 'template' => '{{1 + 2}}',
-                'options' => array(
-                    'helpers' => array('test_join'),
+                'options' => new Options(
+                    helpers: ['test_join'],
                 ),
                 'expected' => "Wrong variable naming as '+' in {{1 + 2}} ! You should wrap ! \" # % & ' * + , ; < = > { | } ~ into [ ]",
             ),
@@ -404,12 +409,12 @@ class errorTest extends TestCase
             ),
             array(
                 'template' => '{{foo (foo (foo 1 2) 3))}}',
-                'options' => array(
-                     'helpers' => array(
-                         'foo' => function () {
-                             return;
-                         }
-                     )
+                'options' => new Options(
+                    helpers: [
+                        'foo' => function () {
+                            return;
+                        },
+                    ],
                 ),
                 'expected' => 'Unexpected \')\' in expression \'foo (foo (foo 1 2) 3))\' !!',
             ),
@@ -445,7 +450,7 @@ class errorTest extends TestCase
 
         return array_map(function ($i) {
             if (!isset($i['options'])) {
-                $i['options'] = [];
+                $i['options'] = new Options();
             }
             if (isset($i['expected']) && is_string($i['expected'])) {
                 $i['expected'] = [$i['expected']];

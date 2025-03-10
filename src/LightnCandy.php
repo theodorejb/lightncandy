@@ -2,7 +2,7 @@
 
 namespace LightnCandy;
 
-class LightnCandy extends Flags
+final class LightnCandy
 {
     protected static array $lastContext;
     public static array $lastParsed;
@@ -10,7 +10,7 @@ class LightnCandy extends Flags
     /**
      * Compiles a template so it can be executed immediately.
      */
-    public static function compile(string $template, array $options = []): \Closure
+    public static function compile(string $template, Options $options = new Options()): \Closure
     {
         return self::template(self::precompile($template, $options));
     }
@@ -18,7 +18,7 @@ class LightnCandy extends Flags
     /**
      * Precompiles a handlebars template into PHP code which can be executed later.
      */
-    public static function precompile(string $template, array $options = []): string
+    public static function precompile(string $template, Options $options = new Options()): string
     {
         $context = Context::create($options);
         static::handleError($context);

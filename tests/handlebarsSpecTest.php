@@ -1,6 +1,7 @@
 <?php
 
 use LightnCandy\LightnCandy;
+use LightnCandy\Options;
 use PHPUnit\Framework\TestCase;
 
 $tested = 0;
@@ -59,7 +60,6 @@ class HandlebarsSpecTest extends TestCase
     public function testSpecs($spec)
     {
         global $tested;
-        $test_flags = [0];
 
         recursive_unset($spec['data'], '!sparsearray');
         data_helpers_fix($spec);
@@ -179,107 +179,114 @@ class HandlebarsSpecTest extends TestCase
             $spec['expected'] = '';
         }
 
-        foreach ($test_flags as $f) {
-            // setup helpers
-            $tested++;
-            $helpers = array();
-            $helpersList = '';
-            foreach (is_array($spec['helpers'] ?? null) ? $spec['helpers'] : [] as $name => $func) {
-                if (!isset($func['php'])) {
-                    $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no PHP helper code provided for this case.");
-                }
-                $hname = preg_replace('/\\.|\\//', '_', "custom_helper_{$spec['no']}_{$tested}_$name");
-                $helpers[$name] = $hname;
-                $helper = preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
-                        patch_this(
-                            preg_replace('/\\$block\\/\\*\\[\'(.+?)\'\\]\\*\\/->(.+?)\\(/', '$block[\'$2\'](',
-                                patch_safestring(
-                                    preg_replace('/function/', "function $hname", $func['php'], 1)
-                                )
-                            )
+        // setup helpers
+        $tested++;
+        $helpers = array();
+        $helpersList = '';
+        foreach (is_array($spec['helpers'] ?? null) ? $spec['helpers'] : [] as $name => $func) {
+            if (!isset($func['php'])) {
+                $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no PHP helper code provided for this case.");
+            }
+            $hname = preg_replace('/\\.|\\//', '_', "custom_helper_{$spec['no']}_{$tested}_$name");
+            $helpers[$name] = $hname;
+            $helper = preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
+                patch_this(
+                    preg_replace('/\\$block\\/\\*\\[\'(.+?)\'\\]\\*\\/->(.+?)\\(/', '$block[\'$2\'](',
+                        patch_safestring(
+                            preg_replace('/function/', "function $hname", $func['php'], 1)
                         )
-                    );
-                if (($spec['it'] === 'helper block with complex lookup expression') && ($name === 'goodbyes')) {
-                    $helper = preg_replace('/\\[\'fn\'\\]\\(\\)/', '[\'fn\'](array())', $helper);
-                }
-                $helpersList .= "$helper\n";
-                eval($helper);
+                    )
+                )
+            );
+            if (($spec['it'] === 'helper block with complex lookup expression') && ($name === 'goodbyes')) {
+                $helper = preg_replace('/\\[\'fn\'\\]\\(\\)/', '[\'fn\'](array())', $helper);
             }
-
-            try {
-                $partials = [];
-
-                // Do not use array_merge() here because it destroys numeric key
-                if (isset($spec['partials'])) {
-                    foreach ($spec['partials'] as $k => $v) {
-                        $partials[$k] = $v;
-                    }
-                };
-
-                if (isset($spec['compileOptions']['strict'])) {
-                    if ($spec['compileOptions']['strict']) {
-                        $f = $f | LightnCandy::FLAG_STRICT;
-                    }
-                }
-
-                if (isset($spec['compileOptions']['preventIndent'])) {
-                    if ($spec['compileOptions']['preventIndent']) {
-                        $f = $f | LightnCandy::FLAG_PREVENTINDENT;
-                    }
-                }
-
-                if (isset($spec['compileOptions']['explicitPartialContext'])) {
-                    if ($spec['compileOptions']['explicitPartialContext']) {
-                        $f = $f | LightnCandy::FLAG_PARTIALNEWCONTEXT;
-                    }
-                }
-
-                if (isset($spec['compileOptions']['ignoreStandalone'])) {
-                    if ($spec['compileOptions']['ignoreStandalone']) {
-                        $f = $f | LightnCandy::FLAG_IGNORESTANDALONE;
-                    }
-                }
-
-                if (isset($spec['compileOptions']['knownHelpersOnly'])) {
-                    if ($spec['compileOptions']['knownHelpersOnly']) {
-                        $f = $f | LightnCandy::FLAG_KNOWNHELPERSONLY;
-                    }
-                }
-
-                $php = LightnCandy::precompile($spec['template'], array(
-                    'flags' => $f,
-                    'helpers' => $helpers,
-                    'partials' => $partials,
-                ));
-            } catch (Exception $e) {
-                if (isset($spec['exception'])) {
-                    $this->assertEquals(true, true);
-                    continue;
-                }
-                $this->fail("Compile error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\n" . $e->getMessage());
-            }
-            $renderer = LightnCandy::template($php);
-
-            try {
-                $ropt = array();
-                if (is_array($spec['runtimeOptions']['data'] ?? null)) {
-                    $ropt['data'] = $spec['runtimeOptions']['data'];
-                }
-                $result = $renderer($spec['data'], $ropt);
-            } catch (Exception $e) {
-                if (isset($spec['exception'])) {
-                    $this->assertEquals(true, true);
-                    continue;
-                }
-                $this->fail("Rendering Error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\nPHP code:\n$php\n\n" . $e->getMessage());
-            }
-
-            if (isset($spec['exception'])) {
-                $this->fail("Should Fail: [{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\nPHP code:\n$php\n\nResult: $result");
-            }
-
-            $this->assertEquals($spec['expected'], $result, "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\nHELPERS:$helpersList");
+            $helpersList .= "$helper\n";
+            eval($helper);
         }
+
+        try {
+            $partials = [];
+            $knownHelpersOnly = false;
+            $strict = false;
+            $preventIndent = false;
+            $ignoreStandalone = false;
+            $explicitPartialContext = false;
+
+            // Do not use array_merge() here because it destroys numeric key
+            if (isset($spec['partials'])) {
+                foreach ($spec['partials'] as $k => $v) {
+                    $partials[$k] = $v;
+                }
+            };
+
+            if (isset($spec['compileOptions']['strict'])) {
+                if ($spec['compileOptions']['strict']) {
+                    $strict = true;
+                }
+            }
+
+            if (isset($spec['compileOptions']['preventIndent'])) {
+                if ($spec['compileOptions']['preventIndent']) {
+                    $preventIndent = true;
+                }
+            }
+
+            if (isset($spec['compileOptions']['explicitPartialContext'])) {
+                if ($spec['compileOptions']['explicitPartialContext']) {
+                    $explicitPartialContext = true;
+                }
+            }
+
+            if (isset($spec['compileOptions']['ignoreStandalone'])) {
+                if ($spec['compileOptions']['ignoreStandalone']) {
+                    $ignoreStandalone = true;
+                }
+            }
+
+            if (isset($spec['compileOptions']['knownHelpersOnly'])) {
+                if ($spec['compileOptions']['knownHelpersOnly']) {
+                    $knownHelpersOnly = true;
+                }
+            }
+
+            $php = LightnCandy::precompile($spec['template'], new Options(
+                knownHelpersOnly: $knownHelpersOnly,
+                strict: $strict,
+                preventIndent: $preventIndent,
+                ignoreStandalone: $ignoreStandalone,
+                explicitPartialContext: $explicitPartialContext,
+                helpers: $helpers,
+                partials: $partials,
+            ));
+        } catch (Exception $e) {
+            if (isset($spec['exception'])) {
+                $this->assertEquals(true, true);
+                return;
+            }
+            $this->fail("Compile error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\n" . $e->getMessage());
+        }
+        $renderer = LightnCandy::template($php);
+
+        try {
+            $ropt = array();
+            if (is_array($spec['runtimeOptions']['data'] ?? null)) {
+                $ropt['data'] = $spec['runtimeOptions']['data'];
+            }
+            $result = $renderer($spec['data'], $ropt);
+        } catch (Exception $e) {
+            if (isset($spec['exception'])) {
+                $this->assertEquals(true, true);
+                return;
+            }
+            $this->fail("Rendering Error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\nPHP code:\n$php\n\n" . $e->getMessage());
+        }
+
+        if (isset($spec['exception'])) {
+            $this->fail("Should Fail: [{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\nPHP code:\n$php\n\nResult: $result");
+        }
+
+        $this->assertEquals($spec['expected'], $result, "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\nHELPERS:$helpersList");
     }
 
     public static function jsonSpecProvider()
