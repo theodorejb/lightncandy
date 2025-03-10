@@ -7,9 +7,9 @@ class Context
     /**
      * Create a context from options
      *
-     * @param array<string,array|string|integer> $options input options
+     * @param array<string,array|string|int> $options input options
      *
-     * @return array<string,array|string|integer> Context from options
+     * @return array<string,array|string|int> Context from options
      */
     public static function create(array $options): array
     {
@@ -76,11 +76,11 @@ class Context
     /**
      * update specific custom helper table from options
      *
-     * @param array<string,array|string|integer> $context prepared context
-     * @param array<string,array|string|integer> $options input options
+     * @param array<string,array|string|int> $context prepared context
+     * @param array<string,array|string|int> $options input options
      * @param string $tname helper table name
      *
-     * @return array<string,array|string|integer> context with generated helper table
+     * @return array<string,array|string|int> context with generated helper table
      *
      * @expect array() when input array(), array()
      * @expect array('error' => array('You provide a custom helper named as \'abc\' in options[\'helpers\'], but the function abc() is not defined!'), 'flags' => array()) when input array('error' => array(), 'flags' => array()), array('helpers' => array('abc'))
@@ -109,8 +109,8 @@ class Context
     /**
      * Merge a context into another
      *
-     * @param array<string,array|string|integer> $context master context
-     * @param array<string,array|string|integer> $tmp another context will be overwritten into master context
+     * @param array<string,array|string|int> $context master context
+     * @param array<string,array|string|int> $tmp another context will be overwritten into master context
      */
     public static function merge(array &$context, array $tmp): void
     {

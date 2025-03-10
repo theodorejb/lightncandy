@@ -42,7 +42,7 @@ class LightnCandy extends Flags
     /**
      * Handle exists error and return error status.
      *
-     * @param array<string,array|string|integer> $context Current context of compiler progress.
+     * @param array<string,array|string|int> $context Current context of compiler progress.
      *
      * @throws \Exception
      */
@@ -58,7 +58,7 @@ class LightnCandy extends Flags
     /**
      * Get last compiler context.
      *
-     * @return array<string,array|string|integer> Context data
+     * @return array<string,array|string|int> Context data
      */
     public static function getContext(): array
     {

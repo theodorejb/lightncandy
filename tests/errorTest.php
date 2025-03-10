@@ -61,11 +61,11 @@ class errorTest extends TestCase
                         'innerPartial' => 'innerPartial -> {{> @partial-block}} <-',
                     ],
                 ],
-                'expected' => "The partial @partial-block could not be found",
+                'expected' => "Runtime: the partial @partial-block could not be found",
             ],
             [
                 'template' => '{{> @partial-block}}',
-                'expected' => "The partial @partial-block could not be found",
+                'expected' => "Runtime: the partial @partial-block could not be found",
             ],
             [
                 'template' => '{{foo}}',

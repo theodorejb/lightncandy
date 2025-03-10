@@ -12,7 +12,7 @@ class Runtime
      *
      * @param string $v expression
      * @param string $f runtime function name
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|int> $cx render time context
      */
     public static function debug(string $v, string $f, array $cx)
     {
@@ -31,7 +31,7 @@ class Runtime
     /**
      * Throw exception for missing expression. Only used in strict mode.
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|int> $cx render time context
      */
     public static function miss(array $cx, string $v): void
     {
@@ -41,7 +41,7 @@ class Runtime
     /**
      * For {{log}} .
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|int> $cx render time context
      */
     public static function lo(array $cx, array $v): string
     {
@@ -52,11 +52,11 @@ class Runtime
     /**
      * For {{#if}} and {{#unless}}.
      *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param array<array|string|integer>|string|integer|null $v value to be tested
-     * @param boolean $zero include zero as true
+     * @param array<string,array|string|int> $cx render time context
+     * @param array<array|string|int>|string|int|null $v value to be tested
+     * @param bool $zero include zero as true
      *
-     * @return boolean Return true when the value is not null nor false.
+     * @return bool Return true when the value is not null nor false.
      *
      * @expect false when input array(), null, false
      * @expect false when input array(), 0, false
@@ -78,10 +78,10 @@ class Runtime
     /**
      * For {{^var}} .
      *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param array<array|string|integer>|string|integer|null $v value to be tested
+     * @param array<string,array|string|int> $cx render time context
+     * @param array<array|string|int>|string|int|null $v value to be tested
      *
-     * @return boolean Return true when the value is not null nor false.
+     * @return bool Return true when the value is not null nor false.
      *
      * @expect true when input array(), null
      * @expect false when input array(), 0
@@ -99,7 +99,7 @@ class Runtime
      * For {{var}} .
      *
      * @param array $cx render time context
-     * @param array<array|string|integer>|string|integer|null $var value to be htmlencoded
+     * @param array<array|string|int>|string|int|null $var value to be htmlencoded
      *
      * @expect 'a' when input array('flags' => array()), 'a'
      * @expect 'a&amp;b' when input array('flags' => array()), 'a&b'
@@ -119,7 +119,7 @@ class Runtime
      * For {{var}} , do html encode just like handlebars.js .
      *
      * @param array $cx render time context for lightncandy
-     * @param array<array|string|integer>|string|integer|null $var value to be htmlencoded
+     * @param array<array|string|int>|string|int|null $var value to be htmlencoded
      *
      * @return string The htmlencoded value of the specified variable
      *
@@ -140,11 +140,11 @@ class Runtime
     /**
      * Get string value
      *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param array<array|string|integer>|string|integer|null $v value to be output
-     * @param integer $ex 1 to return untouched value, default is 0
+     * @param array<string,array|string|int> $cx render time context
+     * @param array<array|string|int>|string|int|null $v value to be output
+     * @param int $ex 1 to return untouched value, default is 0
      *
-     * @return array<array|string|integer>|string|integer|null The raw value of the specified variable
+     * @return array<array|string|int>|string|int|null The raw value of the specified variable
      *
      * @expect 'true' when input array('flags' => array()), true
      * @expect 'false' when input array('flags' => array()), false
@@ -187,11 +187,11 @@ class Runtime
     /**
      * For {{#var}} or {{#each}} .
      *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param array<array|string|integer>|string|integer|null $v value for the section
+     * @param array<string,array|string|int> $cx render time context
+     * @param array<array|string|int>|string|int|null $v value for the section
      * @param array<string>|null $bp block parameters
-     * @param array<array|string|integer>|string|integer|null $in input data with current scope
-     * @param boolean $each true when rendering #each
+     * @param array<array|string|int>|string|int|null $in input data with current scope
+     * @param bool $each true when rendering #each
      * @param \Closure $cb callback function to render child context
      * @param \Closure|null $else callback function to render child context when {{else}}
      *
@@ -323,9 +323,9 @@ class Runtime
     /**
      * For {{#with}} .
      *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param array<array|string|integer>|string|integer|null $v value to be the new context
-     * @param array<array|string|integer>|\stdClass|null $in input data with current scope
+     * @param array<string,array|string|int> $cx render time context
+     * @param array<array|string|int>|string|int|null $v value to be the new context
+     * @param array<array|string|int>|\stdClass|null $in input data with current scope
      * @param array<string>|null $bp block parameters
      * @param \Closure $cb callback function to render child context
      * @param \Closure|null $else callback function to render child context when {{else}}
@@ -356,11 +356,11 @@ class Runtime
     /**
      * Get merged context.
      *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param array<array|string|integer>|string|integer|null $a the context to be merged
-     * @param array<array|string|integer>|string|integer|null $b the new context to overwrite
+     * @param array<string,array|string|int> $cx render time context
+     * @param array<array|string|int>|string|int|null $a the context to be merged
+     * @param array<array|string|int>|string|int|null $b the new context to overwrite
      *
-     * @return array<array|string|integer>|string|integer the merged context object
+     * @return array<array|string|int>|string|int the merged context object
      *
      */
     public static function m(array $cx, $a, $b)
@@ -385,20 +385,20 @@ class Runtime
     /**
      * For {{> partial}} .
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|int> $cx render time context
      * @param string $p partial name
-     * @param array<array|string|integer>|string|integer|null $v value to be the new context
+     * @param array<array|string|int>|string|int|null $v value to be the new context
      *
      */
     public static function p(array $cx, string $p, $v, int $pid, $sp = ''): string
     {
-        $pp = ($p === '@partial-block') ? "$p" . ($pid > 0 ? $pid : $cx['partialid']) : $p;
+        $pp = ($p === '@partial-block') ? $p . ($pid > 0 ? $pid : $cx['partialid']) : $p;
 
         if (!isset($cx['partials'][$pp])) {
-            throw new \Exception("The partial $p could not be found");
+            throw new \Exception("Runtime: the partial $p could not be found");
         }
 
-        $cx['partialid'] = ($p === '@partial-block') ? (($pid > 0) ? $pid : (($cx['partialid'] > 0) ? $cx['partialid'] - 1 : 0)) : $pid;
+        $cx['partialid'] = ($p === '@partial-block') ? ($pid > 0 ? $pid : ($cx['partialid'] > 0 ? $cx['partialid'] - 1 : 0)) : $pid;
 
         return call_user_func($cx['partials'][$pp], $cx, static::m($cx, $v[0][0], $v[1]), $sp);
     }
@@ -406,7 +406,7 @@ class Runtime
     /**
      * For {{#* inlinepartial}} .
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|int> $cx render time context
      * @param string $p partial name
      * @param \Closure $code the compiled partial code
      *
@@ -423,7 +423,7 @@ class Runtime
      * @param string $ch the name of custom helper to be executed
      * @param array<array|string|int> $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
-     * @param array<string,array|string|integer> $_this current rendering context for the helper
+     * @param array<string,array|string|int> $_this current rendering context for the helper
      */
     public static function hbch(array &$cx, string $ch, array $vars, string $op, mixed &$_this): mixed
     {
@@ -447,11 +447,11 @@ class Runtime
     /**
      * For block custom helpers.
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|int> $cx render time context
      * @param string $ch the name of custom helper to be executed
-     * @param array<array|string|integer> $vars variables for the helper
-     * @param array<string,array|string|integer> $_this current rendering context for the helper
-     * @param boolean $inverted the logic will be inverted
+     * @param array<array|string|int> $vars variables for the helper
+     * @param array<string,array|string|int> $_this current rendering context for the helper
+     * @param bool $inverted the logic will be inverted
      * @param \Closure|null $cb callback function to render child context
      * @param \Closure|null $else callback function to render child context when {{else}}
      */
@@ -526,10 +526,10 @@ class Runtime
     /**
      * Execute custom helper with prepared options
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|int> $cx render time context
      * @param string $ch the name of custom helper to be executed
      * @param array<array|string|int> $vars variables for the helper
-     * @param array<string,array|string|integer> $options the options object
+     * @param array<string,array|string|int> $options the options object
      */
     public static function exch(array $cx, string $ch, array $vars, array &$options): mixed
     {

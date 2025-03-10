@@ -285,15 +285,14 @@ class HandlebarsSpecTest extends TestCase
     public static function jsonSpecProvider()
     {
         $ret = array();
-        $allowed = ['basic', 'blocks', 'builtins', 'data', 'helpers', 'partials', 'strict', 'subexpressions', 'whitespace-control'];
 
         // stringParams and trackIds mode were removed from Handlebars in 2015:
         // https://github.com/handlebars-lang/handlebars.js/pull/1148
-        $banned = ['parser', 'tokenizer', 'string-params', 'track-ids'];
+        $skip = ['parser', 'regressions', 'tokenizer', 'string-params', 'track-ids'];
 
         foreach (glob('vendor/jbboehr/handlebars-spec/spec/*.json') as $file) {
             $name = basename($file, '.json');
-            if (!in_array($name, $allowed) || in_array($name, $banned)) {
+            if (in_array($name, $skip)) {
                 continue;
             }
             $i=0;

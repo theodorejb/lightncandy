@@ -7,7 +7,7 @@ class Validator
     /**
      * Verify template
      *
-     * @param array<string,array|string|integer> $context Current context
+     * @param array<string,array|string|int> $context Current context
      * @param string $template handlebars template
      */
     public static function verify(array &$context, string $template): void
@@ -52,7 +52,7 @@ class Validator
     /**
      * push left string of current token and clear it
      *
-     * @param array<string,array|string|integer> $context Current context
+     * @param array<string,array|string|int> $context Current context
      */
     protected static function pushLeft(array &$context): void
     {
@@ -64,7 +64,7 @@ class Validator
     /**
      * push a string into the partial stacks
      *
-     * @param array<string,array|string|integer> $context Current context
+     * @param array<string,array|string|int> $context Current context
      * @param string $append a string to be appended int partial stacks
      */
     protected static function pushPartial(array &$context, string $append): void
@@ -79,7 +79,7 @@ class Validator
     /**
      * push a token into the stack when it is not empty string
      *
-     * @param array<string,array|string|integer> $context Current context
+     * @param array<string,array|string|int> $context Current context
      * @param array|string $token a parsed token or a string
      */
     protected static function pushToken(array &$context, array|string $token)
@@ -110,9 +110,9 @@ class Validator
     /**
      * push current token into the section stack
      *
-     * @param array<string,array|string|integer> $context Current context
+     * @param array<string,array|string|int> $context Current context
      * @param string $operation operation string
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<bool|int|string|array> $vars parsed arguments list
      */
     protected static function pushStack(array &$context, string $operation, array $vars): void
     {
@@ -127,9 +127,9 @@ class Validator
      * Verify delimiters and operators
      *
      * @param string[] $token detected handlebars {{ }} token
-     * @param array<string,array|string|integer> $context current compile context
+     * @param array<string,array|string|int> $context current compile context
      *
-     * @return boolean Return true when invalid
+     * @return bool Return true when invalid
      *
      * @expect false when input array_fill(0, 11, ''), array()
      * @expect false when input array(0, 0, 0, 0, 0, '{{', '#', '...', '}}'), array()
@@ -155,8 +155,8 @@ class Validator
      * Verify operators
      *
      * @param string $operator the operator string
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      *
      * @expect null when input '', array(), array()
      * @expect 2 when input '^', array('level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'elselvl' => array(), 'flags' => array(), 'elsechain' => false), array(array('foo'))
@@ -231,10 +231,10 @@ class Validator
     /**
      * validate inline partial begin token
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      *
-     * @return boolean Return true when inline partial ends
+     * @return bool Return true when inline partial ends
      */
     protected static function inlinePartial(array &$context, array $vars): bool
     {
@@ -257,10 +257,10 @@ class Validator
     /**
      * validate partial block token
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      *
-     * @return boolean Return true when partial block ends
+     * @return bool Return true when partial block ends
      */
     protected static function partialBlock(array &$context, array $vars): bool
     {
@@ -300,7 +300,7 @@ class Validator
     /**
      * handle else chain
      *
-     * @param array<string,array|string|integer> $context current compile context
+     * @param array<string,array|string|int> $context current compile context
      */
     protected static function doElseChain(array &$context): void
     {
@@ -314,10 +314,10 @@ class Validator
     /**
      * validate block begin token
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      *
-     * @return boolean Return true always
+     * @return bool Return true always
      */
     protected static function blockBegin(array &$context, array $vars)
     {
@@ -337,8 +337,8 @@ class Validator
     /**
      * validate builtin helpers
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      */
     protected static function builtin(array &$context, array $vars): void
     {
@@ -350,11 +350,11 @@ class Validator
     /**
      * validate section token
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
-     * @param boolean $isEach the section is #each
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
+     * @param bool $isEach the section is #each
      *
-     * @return boolean Return true always
+     * @return bool Return true always
      */
     protected static function section(array &$context, array $vars, bool $isEach = false)
     {
@@ -371,10 +371,10 @@ class Validator
     /**
      * validate with token
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      *
-     * @return boolean Return true always
+     * @return bool Return true always
      */
     protected static function with(array &$context, array $vars)
     {
@@ -390,8 +390,8 @@ class Validator
     /**
      * validate if, unless, or with token
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      */
     protected static function requireOneArgument(array &$context, array $vars): true
     {
@@ -411,9 +411,9 @@ class Validator
     /**
      * validate block custom helper token
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
-     * @param boolean $inverted the logic will be inverted
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
+     * @param bool $inverted the logic will be inverted
      */
     protected static function blockCustomHelper(array &$context, array $vars, bool $inverted = false)
     {
@@ -428,8 +428,8 @@ class Validator
     /**
      * validate inverted section
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      */
     protected static function invertedSection(array &$context, array $vars)
     {
@@ -439,11 +439,11 @@ class Validator
     /**
      * Return compiled PHP code for a handlebars block end token
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      * @param string|null $match should also match to this operator
      *
-     * @return boolean|integer Return true when required block ended, or Token::POS_BACKFILL when backfill happened.
+     * @return bool|int Return true when required block ended, or Token::POS_BACKFILL when backfill happened.
      */
     protected static function blockEnd(array &$context, array &$vars, ?string $match = null)
     {
@@ -494,9 +494,9 @@ class Validator
      * handle raw block
      *
      * @param string[] $token detected handlebars {{ }} token
-     * @param array<string,array|string|integer> $context current compile context
+     * @param array<string,array|string|int> $context current compile context
      *
-     * @return boolean Return true when in rawblock mode
+     * @return bool Return true when in rawblock mode
      */
     protected static function rawblock(array &$token, array &$context): bool
     {
@@ -535,9 +535,9 @@ class Validator
      * handle comment
      *
      * @param string[] $token detected handlebars {{ }} token
-     * @param array<string,array|string|integer> $context current compile context
+     * @param array<string,array|string|int> $context current compile context
      *
-     * @return boolean Return true when is comment
+     * @return bool Return true when is comment
      */
     protected static function comment(array &$token, array &$context): bool
     {
@@ -551,9 +551,9 @@ class Validator
      * Collect handlebars usage information, detect template error.
      *
      * @param string[] $token detected handlebars {{ }} token
-     * @param array<string,array|string|integer> $context current compile context
+     * @param array<string,array|string|int> $context current compile context
      *
-     * @return string|array<string,array|string|integer>|null $token string when rawblock; array when valid token require to be compiled, null when skip the token.
+     * @return string|array<string,array|string|int>|null $token string when rawblock; array when valid token require to be compiled, null when skip the token.
      */
     protected static function token(array &$token, array &$context): string|array|null
     {
@@ -620,8 +620,8 @@ class Validator
     /**
      * Return 1 or larger number when else token detected
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      */
     protected static function doElse(array &$context, array $vars)
     {
@@ -643,8 +643,8 @@ class Validator
     /**
      * Validate {{log ...}}
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      */
     public static function log(array &$context, array $vars): void
     {
@@ -658,8 +658,8 @@ class Validator
     /**
      * Validate {{lookup ...}}
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      */
     public static function lookup(array &$context, array $vars): void
     {
@@ -675,11 +675,11 @@ class Validator
     /**
      * Return true when the name is listed in helper table
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
-     * @param boolean $checkSubexp true when check for subexpression
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
+     * @param bool $checkSubexp true when check for subexpression
      *
-     * @return boolean Return true when it is custom helper
+     * @return bool Return true when it is custom helper
      */
     public static function helper(array &$context, array $vars, bool $checkSubexp = false): bool
     {
@@ -704,8 +704,8 @@ class Validator
     /**
      * use helperresolver to resolve helper, return true when helper founded
      *
-     * @param array<string,array|string|integer> $context Current context of compiler progress.
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context Current context of compiler progress.
+     * @param array<bool|int|string|array> $vars parsed arguments list
      */
     public static function resolveHelper(array &$context, array &$vars): bool
     {
@@ -722,8 +722,8 @@ class Validator
     /**
      * Return true when this token is block custom helper
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      */
     protected static function isBlockHelper(array $context, array $vars): bool
     {
@@ -741,8 +741,8 @@ class Validator
     /**
      * validate inline partial
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      */
     protected static function inline(array &$context, array $vars)
     {
@@ -758,10 +758,10 @@ class Validator
     /**
      * validate partial
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      *
-     * @return integer|boolean Return 1 or larger number for runtime partial, return true for other case
+     * @return int|bool Return 1 or larger number for runtime partial, return true for other case
      */
     protected static function partial(array &$context, array $vars)
     {
@@ -780,8 +780,8 @@ class Validator
      * Modify $token when spacing rules matched.
      *
      * @param array<string> $token detected handlebars {{ }} token
-     * @param array<string,array|string|integer> $context current compile context
-     * @param boolean $nost do not do standalone logic
+     * @param array<string,array|string|int> $context current compile context
+     * @param bool $nost do not do standalone logic
      */
     protected static function spacing(array &$token, array &$context, bool $nost = false): ?string
     {

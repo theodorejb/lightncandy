@@ -13,7 +13,7 @@ class Parser
     /**
      * Get partial block id and fix the variable list
      *
-     * @param array<boolean|integer|string|array> $vars parsed token
+     * @param array<bool|int|string|array> $vars parsed token
      */
     public static function getPartialBlock(array &$vars): int
     {
@@ -28,7 +28,7 @@ class Parser
     /**
      * Get block params and fix the variable list
      *
-     * @param array<boolean|integer|string|array> $vars parsed token
+     * @param array<bool|int|string|array> $vars parsed token
      */
     public static function getBlockParams(array &$vars): array
     {
@@ -44,10 +44,10 @@ class Parser
      * Return array presentation for a literal
      *
      * @param string $name variable name.
-     * @param boolean $asis keep the name as is or not
-     * @param boolean $quote add single quote or not
+     * @param bool $asis keep the name as is or not
+     * @param bool $quote add single quote or not
      *
-     * @return array<integer|string> Return variable name array
+     * @return array<int|string> Return variable name array
      */
     protected static function getLiteral(string $name, bool $asis, bool $quote = false): array
     {
@@ -58,9 +58,9 @@ class Parser
      * Return array presentation for an expression
      *
      * @param string $v analyzed expression names.
-     * @param array<string,array|string|integer> $context Current compile content.
+     * @param array<string,array|string|int> $context Current compile content.
      *
-     * @return array<integer,string> Return variable name array
+     * @return array<int,string> Return variable name array
      *
      * @expect array() when input 'this', array('flags' => array()), 0
      * @expect array(1) when input '..', array('flags' => array()), 0
@@ -95,7 +95,7 @@ class Parser
             return static::getLiteral($matched[1], $asis, true);
         }
 
-        // handle boolean, null and undefined
+        // handle bool, null and undefined
         if (preg_match('/^(true|false|null|undefined)$/', $v)) {
             return static::getLiteral($v, $asis);
         }
@@ -155,9 +155,9 @@ class Parser
      * Parse the token and return parsed result.
      *
      * @param array<string> $token preg_match results
-     * @param array<string,array|string|integer> $context current compile context
+     * @param array<string,array|string|int> $context current compile context
      *
-     * @return array<boolean|integer|array> Return parsed result
+     * @return array<bool|int|array> Return parsed result
      *
      * @expect array(false, array(array())) when input array(0,0,0,0,0,0,0,''), array('flags' => array('noesc' => 0), 'rawblock' => false)
      * @expect array(true, array(array())) when input array(0,0,0,'{{',0,'{',0,''), array('flags' => array('noesc' => 0), 'rawblock' => false)
@@ -210,8 +210,8 @@ class Parser
     /**
      * Get partial name from "foo" or [foo] or \'foo\'
      *
-     * @param array<boolean|integer|array> $vars parsed token
-     * @param integer $pos position of partial name
+     * @param array<bool|int|array> $vars parsed token
+     * @param int $pos position of partial name
      *
      * @return array<string>|null Return one element partial name array
      *
@@ -234,9 +234,9 @@ class Parser
      * Parse a subexpression then return parsed result.
      *
      * @param string $expression the full string of a sub expression
-     * @param array<string,array|string|integer> $context current compile context
+     * @param array<string,array|string|int> $context current compile context
      *
-     * @return array<boolean|integer|array> Return parsed result
+     * @return array<bool|int|array> Return parsed result
      *
      * @expect array(\LightnCandy\Parser::SUBEXP, array(array('a'), array('b')), '(a b)') when input '(a b)', array('flags' => array())
      */
@@ -255,9 +255,9 @@ class Parser
     /**
      * Check a parsed result is a subexpression or not
      *
-     * @param array<string|integer|array>|string $var
+     * @param array<string|int|array>|string $var
      *
-     * @return boolean return true when input is a subexpression
+     * @return bool return true when input is a subexpression
      *
      * @expect false when input 0
      * @expect false when input array()
@@ -274,11 +274,11 @@ class Parser
     /**
      * Analyze parsed token for advanced variables.
      *
-     * @param array<boolean|integer|array> $vars parsed token
-     * @param array<string,array|string|integer> $context current compile context
+     * @param array<bool|int|array> $vars parsed token
+     * @param array<string,array|string|int> $context current compile context
      * @param string $token original token
      *
-     * @return array<boolean|integer|array> Return parsed result
+     * @return array<bool|int|array> Return parsed result
      *
      * @expect array(array()) when input array('this'), array('flags' => array()), 0
      * @expect array(array('a')) when input array('a'), array('flags' => array()), 0
@@ -351,7 +351,7 @@ class Parser
     /**
      * Detect quote characters in a string
      *
-     * @return array<string,integer>|null Expected ending string when there is a quote character
+     * @return array<string,int>|null Expected ending string when there is a quote character
      */
     protected static function detectQuote(string $string): ?array
     {
@@ -397,9 +397,9 @@ class Parser
      * Analyze a token string and return parsed result.
      *
      * @param string $token preg_match results
-     * @param array<string,array|string|integer> $context current compile context
+     * @param array<string,array|string|int> $context current compile context
      *
-     * @return array<boolean|integer|array> Return parsed result
+     * @return array<bool|int|array> Return parsed result
      *
      * @expect array('foo', 'bar') when input 'foo bar', array('flags' => array())
      * @expect array('foo', "'bar'") when input "foo 'bar'", array('flags' => array())

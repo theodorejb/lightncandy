@@ -9,7 +9,7 @@ class Compiler extends Validator
     /**
      * Compile template into PHP code
      *
-     * @param array<string,array|string|integer> $context Current context
+     * @param array<string,array|string|int> $context Current context
      * @param string $template handlebars template
      */
     public static function compileTemplate(array &$context, string $template): string
@@ -48,7 +48,7 @@ class Compiler extends Validator
     /**
      * Compile Handlebars template to PHP function.
      *
-     * @param array<string,array|string|integer> $context Current context
+     * @param array<string,array|string|int> $context Current context
      * @param string $code generated PHP code
      */
     public static function composePHPRender(array $context, string $code): string
@@ -87,7 +87,7 @@ class Compiler extends Validator
     /**
      * Get function name for standalone or none standalone template.
      *
-     * @param array<string,array|string|integer> $context Current context of compiler progress.
+     * @param array<string,array|string|int> $context Current context of compiler progress.
      * @param string $name base function name
      * @param string $tag original handlebars tag for debug
      *
@@ -112,7 +112,7 @@ class Compiler extends Validator
     /**
      * Get string presentation of variables
      *
-     * @param array<string,array|string|integer> $context current compile context
+     * @param array<string,array|string|int> $context current compile context
      * @param array<array> $vn variable name array.
      *
      * @return array<string|array> variable names
@@ -137,8 +137,8 @@ class Compiler extends Validator
     /**
      * Get string presentation of a sub expression
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
      *
      * @return array<string> code representing passed expression
      */
@@ -152,8 +152,8 @@ class Compiler extends Validator
     /**
      * Get string presentation of a subexpression or a variable
      *
-     * @param array<array|string|integer> $context current compile context
-     * @param array<array|string|integer> $var variable parsed path
+     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|int> $var variable parsed path
      *
      * @return array<string> variable names
      */
@@ -165,8 +165,8 @@ class Compiler extends Validator
     /**
      * Get string presentation of a variable
      *
-     * @param array<array|string|integer> $var variable parsed path
-     * @param array<array|string|integer> $context current compile context
+     * @param array<array|string|int> $var variable parsed path
+     * @param array<array|string|int> $context current compile context
      * @param array<string>|null $lookup extra lookup string as valid PHP variable name
      *
      * @return array<string> variable names
@@ -248,8 +248,8 @@ class Compiler extends Validator
     /**
      * Return compiled PHP code for a handlebars token
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<string,array|boolean> $info parsed information
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<string,array|bool> $info parsed information
      */
     protected static function compileToken(array &$context, array $info): string
     {
@@ -341,7 +341,7 @@ class Compiler extends Validator
      *
      * @param array $context current compile context
      * @param array $vars parsed arguments list
-     * @param boolean $inverted the logic will be inverted
+     * @param bool $inverted the logic will be inverted
      */
     protected static function blockCustomHelper(array &$context, array $vars, bool $inverted = false): string
     {
@@ -427,7 +427,7 @@ class Compiler extends Validator
      *
      * @param array $context current compile context
      * @param array $vars parsed arguments list
-     * @param boolean $isEach the section is #each
+     * @param bool $isEach the section is #each
      */
     protected static function section(array &$context, array $vars, bool $isEach = false): string
     {
@@ -466,9 +466,9 @@ class Compiler extends Validator
     /**
      * Return compiled PHP code for a handlebars custom helper token
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
-     * @param boolean $raw is this {{{ token or not
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
+     * @param bool $raw is this {{{ token or not
      */
     protected static function customHelper(array &$context, array $vars, bool $raw): string
     {
@@ -516,9 +516,9 @@ class Compiler extends Validator
     /**
      * Return compiled PHP code for a handlebars log token
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
-     * @param boolean $raw is this {{{ token or not
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
+     * @param bool $raw is this {{{ token or not
      */
     protected static function compileLog(array &$context, array &$vars, bool $raw): string
     {
@@ -531,10 +531,10 @@ class Compiler extends Validator
     /**
      * Return compiled PHP code for a handlebars lookup token
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
-     * @param boolean $raw is this {{{ token or not
-     * @param boolean $nosep true to compile without separator
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
+     * @param bool $raw is this {{{ token or not
+     * @param bool $nosep true to compile without separator
      */
     protected static function compileLookup(array &$context, array &$vars, bool $raw, bool $nosep = false): string
     {
@@ -549,10 +549,10 @@ class Compiler extends Validator
     /**
      * Return compiled PHP code for template output
      *
-     * @param array<string,array|string|integer> $context current compile context
+     * @param array<string,array|string|int> $context current compile context
      * @param string $variable PHP code for the variable
      * @param string $expression normalized handlebars expression
-     * @param boolean $raw is this {{{ token or not
+     * @param bool $raw is this {{{ token or not
      */
     protected static function compileOutput(array &$context, string $variable, string $expression, bool $raw): string
     {
@@ -563,9 +563,9 @@ class Compiler extends Validator
     /**
      * Return compiled PHP code for a handlebars variable token
      *
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
-     * @param boolean $raw is this {{{ token or not
+     * @param array<string,array|string|int> $context current compile context
+     * @param array<bool|int|string|array> $vars parsed arguments list
+     * @param bool $raw is this {{{ token or not
      */
     protected static function compileVariable(array &$context, array &$vars, bool $raw): string
     {
@@ -574,7 +574,7 @@ class Compiler extends Validator
     }
 
     /**
-     * @param array<string,array|string|integer> $context current context
+     * @param array<string,array|string|int> $context current context
      */
     protected static function markUsedHelper(array &$context, string $name): void
     {

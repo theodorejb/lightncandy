@@ -7,7 +7,7 @@ class Expression
     /**
      * return 'true' or 'false' string.
      *
-     * @param integer $v value
+     * @param int $v value
      *
      * @return string 'true' when the value larger then 0
      *
@@ -60,8 +60,8 @@ class Expression
     /**
      * Analyze an expression
      *
-     * @param array<string,array|string|integer> $context Current context
-     * @param array<array|string|integer> $var variable parsed path
+     * @param array<string,array|string|int> $context Current context
+     * @param array<array|string|int> $var variable parsed path
      *
      * @return array{int, bool, array} analyzed result
      *
@@ -94,9 +94,9 @@ class Expression
     /**
      * get normalized handlebars expression for a variable
      *
-     * @param integer $levels trace N levels top parent scope
-     * @param boolean $spvar is the path start with @ or not
-     * @param array<string|integer> $var variable parsed path
+     * @param int $levels trace N levels top parent scope
+     * @param bool $spvar is the path start with @ or not
+     * @param array<string|int> $var variable parsed path
      *
      * @return string normalized expression for debug display
      *

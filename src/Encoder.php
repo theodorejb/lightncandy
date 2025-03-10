@@ -7,8 +7,8 @@ class Encoder
     /**
      * Get html encoded string
      *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param array<array|string|integer>|string|integer|null $var value to be htmlencoded
+     * @param array<string,array|string|int> $cx render time context
+     * @param array<array|string|int>|string|int|null $var value to be htmlencoded
      *
      * @return string The htmlencoded value of the specified variable
      *
@@ -24,8 +24,8 @@ class Encoder
     /**
      * LightnCandy runtime method for {{var}} , and deal with single quote to same as handlebars.js .
      *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param array<array|string|integer>|string|integer|null $var value to be htmlencoded
+     * @param array<string,array|string|int> $cx render time context
+     * @param array<array|string|int>|string|int|null $var value to be htmlencoded
      *
      * @return string The htmlencoded value of the specified variable
      *

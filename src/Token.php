@@ -25,7 +25,7 @@ class Token
     /**
      * Setup delimiter by default or provided string
      *
-     * @param array<string,array|string|integer> $context Current context
+     * @param array<string,array|string|int> $context Current context
      */
     public static function setDelimiter(array &$context): void
     {

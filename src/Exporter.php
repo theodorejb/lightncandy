@@ -7,7 +7,7 @@ class Exporter
     /**
      * Get PHP code string from a closure of function as string
      *
-     * @param array<string,array|string|integer> $context current compile context
+     * @param array<string,array|string|int> $context current compile context
      *
      * @expect 'function($a) {return;}' when input array('flags' => array()),  function ($a) {return;}
      * @expect 'function($a) {return;}' when input array('flags' => array()),   function ($a) {return;}
@@ -23,7 +23,7 @@ class Exporter
     /**
      * Export required custom helper functions
      *
-     * @param array<string,array|string|integer> $context current compile context
+     * @param array<string,array|string|int> $context current compile context
      */
     public static function helpers(array $context): string
     {

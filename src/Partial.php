@@ -23,7 +23,7 @@ class Partial
     /**
      * Read partial file content as string and store in context
      *
-     * @param array<string,array|string|integer> $context Current context of compiler progress.
+     * @param array<string,array|string|int> $context Current context of compiler progress.
      * @param string $name partial name
      */
     public static function read(array &$context, string $name): void
@@ -50,7 +50,7 @@ class Partial
     /**
      * resolve partial, return the partial content
      *
-     * @param array<string,array|string|integer> $context Current context of compiler progress.
+     * @param array<string,array|string|int> $context Current context of compiler progress.
      * @param string $name partial name
      *
      * @return string|null $content partial content
@@ -69,7 +69,7 @@ class Partial
     /**
      * compile partial as closure, stored in context
      *
-     * @param array<string,array|string|integer> $context Current context of compiler progress.
+     * @param array<string,array|string|int> $context Current context of compiler progress.
      * @param string $name partial name
      *
      * @return string|null $code compiled PHP code when success
@@ -88,7 +88,7 @@ class Partial
     /**
      * compile a template into a closure function
      *
-     * @param array<string,array|string|integer> $context Current context of compiler progress.
+     * @param array<string,array|string|int> $context Current context of compiler progress.
      * @param string $template template string
      * @param string $name partial name
      */
