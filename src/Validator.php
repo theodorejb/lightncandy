@@ -2,6 +2,9 @@
 
 namespace LightnCandy;
 
+/**
+ * @internal
+ */
 class Validator
 {
     /**
@@ -130,10 +133,6 @@ class Validator
      * @param array<string,array|string|int> $context current compile context
      *
      * @return bool Return true when invalid
-     *
-     * @expect false when input array_fill(0, 11, ''), array()
-     * @expect false when input array(0, 0, 0, 0, 0, '{{', '#', '...', '}}'), array()
-     * @expect true when input array(0, 0, 0, 0, 0, '{', '#', '...', '}'), array()
      */
     protected static function delimiter(array $token, array &$context): bool
     {
@@ -157,18 +156,6 @@ class Validator
      * @param string $operator the operator string
      * @param array<string,array|string|int> $context current compile context
      * @param array<bool|int|string|array> $vars parsed arguments list
-     *
-     * @expect null when input '', array(), array()
-     * @expect 2 when input '^', array('level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'elselvl' => array(), 'flags' => array(), 'elsechain' => false), array(array('foo'))
-     * @expect true when input '/', array('stack' => array('[with]', '#'), 'level' => 1, 'currentToken' => array(0,0,0,0,0,0,0,'with'), 'flags' => array()), array(array())
-     * @expect 4 when input '#', array('level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('x'))
-     * @expect 5 when input '#', array('level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('if'))
-     * @expect 6 when input '#', array('level' => 0, 'flags' => array(), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elsechain' => false, 'elselvl' => array()), array(array('with'))
-     * @expect 7 when input '#', array('level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('each'))
-     * @expect 8 when input '#', array('level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('unless'))
-     * @expect 9 when input '#', array('helpers' => array('abc' => ''), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('abc'))
-     * @expect 11 when input '#', array('helpers' => array('abc' => ''), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array(), 'elsechain' => false, 'elselvl' => array()), array(array('abc'))
-     * @expect true when input '>', array('level' => 0, 'flags' => array(), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elsechain' => false, 'elselvl' => array()), array('test')
      */
     protected static function operator(string $operator, array &$context, array &$vars): bool|int|string|null
     {

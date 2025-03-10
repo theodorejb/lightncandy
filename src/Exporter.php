@@ -2,17 +2,17 @@
 
 namespace LightnCandy;
 
-class Exporter
+/**
+ * @internal
+ */
+final class Exporter
 {
     /**
      * Get PHP code string from a closure of function as string
      *
      * @param array<string,array|string|int> $context current compile context
-     *
-     * @expect 'function($a) {return;}' when input array('flags' => array()),  function ($a) {return;}
-     * @expect 'function($a) {return;}' when input array('flags' => array()),   function ($a) {return;}
      */
-    protected static function closure(array $context, \Closure $closure): string
+    public static function closure(array $context, \Closure $closure): string
     {
         $ref = new \ReflectionFunction($closure);
         $meta = static::getMeta($ref);

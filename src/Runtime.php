@@ -3,9 +3,9 @@
 namespace LightnCandy;
 
 /**
- * LightnCandy class for compiled PHP runtime.
+ * @internal
  */
-class Runtime
+final class Runtime
 {
     /**
      * Output debug info.
@@ -57,18 +57,6 @@ class Runtime
      * @param bool $zero include zero as true
      *
      * @return bool Return true when the value is not null nor false.
-     *
-     * @expect false when input array(), null, false
-     * @expect false when input array(), 0, false
-     * @expect true when input array(), 0, true
-     * @expect false when input array(), false, false
-     * @expect true when input array(), true, false
-     * @expect true when input array(), 1, false
-     * @expect false when input array(), '', false
-     * @expect true when input array(), '0', false
-     * @expect false when input array(), array(), false
-     * @expect true when input array(), array(''), false
-     * @expect true when input array(), array(0), false
      */
     public static function ifvar(array $cx, mixed $v, bool $zero): bool
     {
@@ -82,17 +70,10 @@ class Runtime
      * @param array<array|string|int>|string|int|null $v value to be tested
      *
      * @return bool Return true when the value is not null nor false.
-     *
-     * @expect true when input array(), null
-     * @expect false when input array(), 0
-     * @expect true when input array(), false
-     * @expect false when input array(), 'false'
-     * @expect true when input array(), array()
-     * @expect false when input array(), array('1')
      */
     public static function isec(array $cx, mixed $v): bool
     {
-        return ($v === null) || ($v === false) || (is_array($v) && (count($v) === 0));
+        return $v === null || $v === false || (is_array($v) && count($v) === 0);
     }
 
     /**
@@ -100,11 +81,6 @@ class Runtime
      *
      * @param array $cx render time context
      * @param array<array|string|int>|string|int|null $var value to be htmlencoded
-     *
-     * @expect 'a' when input array('flags' => array()), 'a'
-     * @expect 'a&amp;b' when input array('flags' => array()), 'a&b'
-     * @expect 'a&#039;b' when input array('flags' => array()), 'a\'b'
-     * @expect 'a&b' when input [], new \LightnCandy\SafeString('a&b')
      */
     public static function enc(array $cx, $var): string
     {
@@ -122,11 +98,6 @@ class Runtime
      * @param array<array|string|int>|string|int|null $var value to be htmlencoded
      *
      * @return string The htmlencoded value of the specified variable
-     *
-     * @expect 'a' when input array('flags' => array()), 'a'
-     * @expect 'a&amp;b' when input array('flags' => array()), 'a&b'
-     * @expect 'a&#x27;b' when input array('flags' => array()), 'a\'b'
-     * @expect '&#x60;a&#x27;b' when input array('flags' => array()), '`a\'b'
      */
     public static function encq(array $cx, $var): string
     {
@@ -145,15 +116,6 @@ class Runtime
      * @param int $ex 1 to return untouched value, default is 0
      *
      * @return array<array|string|int>|string|int|null The raw value of the specified variable
-     *
-     * @expect 'true' when input array('flags' => array()), true
-     * @expect 'false' when input array('flags' => array()), false
-     * @expect false when input array('flags' => array()), false, true
-     * @expect 'a,b' when input array('flags' => array()), array('a', 'b')
-     * @expect '[object Object]' when input array('flags' => array()), array('a', 'c' => 'b')
-     * @expect '[object Object]' when input array('flags' => array()), array('c' => 'b')
-     * @expect 'a,true' when input array('flags' => array()), array('a', true)
-     * @expect 'a,false' when input array('flags' => array()), array('a',false)
      */
     public static function raw(array $cx, $v, int $ex = 0)
     {
@@ -194,31 +156,6 @@ class Runtime
      * @param bool $each true when rendering #each
      * @param \Closure $cb callback function to render child context
      * @param \Closure|null $else callback function to render child context when {{else}}
-     *
-     * @expect '' when input array('flags' => array()), false, null, false, false, function () {return 'A';}
-     * @expect '' when input array('flags' => array()), null, null, null, false, function () {return 'A';}
-     * @expect 'A' when input array('flags' => array()), true, null, true, false, function () {return 'A';}
-     * @expect 'A' when input array('flags' => array()), 0, null, 0, false, function () {return 'A';}
-     * @expect '-a=' when input array('scopes' => array(), 'flags' => array()), array('a'), null, array('a'), false, function ($c, $i) {return "-$i=";}
-     * @expect '-a=-b=' when input array('scopes' => array(), 'flags' => array()), array('a','b'), null, array('a','b'), false, function ($c, $i) {return "-$i=";}
-     * @expect '' when input array('scopes' => array(), 'flags' => array()), 'abc', null, 'abc', true, function ($c, $i) {return "-$i=";}
-     * @expect '-b=' when input array('scopes' => array(), 'flags' => array()), array('a' => 'b'), null, array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
-     * @expect 'b' when input array('flags' => array()), 'b', null, 'b', false, function ($c, $i) {return print_r($i, true);}
-     * @expect '1' when input array('flags' => array()), 1, null, 1, false, function ($c, $i) {return print_r($i, true);}
-     * @expect '0' when input array('flags' => array()), 0, null, 0, false, function ($c, $i) {return print_r($i, true);}
-     * @expect '{"b":"c"}' when input array('flags' => array()), array('b' => 'c'), null, array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
-     * @expect 'inv' when input array('flags' => array()), array(), null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array()), array(), null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array()), false, null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array()), false, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array()), '', null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'cb' when input array('flags' => array()), '', null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array()), 0, null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'cb' when input array('flags' => array()), 0, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array()), new stdClass, null, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'cb' when input array('flags' => array()), new stdClass, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect '268' when input array('scopes' => array(), 'flags' => array(), 'sp_vars'=>array('root' => 0)), array(1,3,4), null, 0, false, function ($c, $i) {return $i * 2;}
-     * @expect '038' when input array('scopes' => array(), 'flags' => array(), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), null, 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
      */
     public static function sec(array $cx, mixed $v, ?array $bp, mixed $in, bool $each, \Closure $cb, ?\Closure $else = null): string
     {
@@ -329,11 +266,6 @@ class Runtime
      * @param array<string>|null $bp block parameters
      * @param \Closure $cb callback function to render child context
      * @param \Closure|null $else callback function to render child context when {{else}}
-     *
-     * @expect '' when input array(), false, null, new \stdClass(), function () {return 'A';}
-     * @expect '' when input array(), null, null, null, function () {return 'A';}
-     * @expect '{"a":"b"}' when input array(), array('a'=>'b'), null, array('a'=>'c'), function ($c, $i) {return json_encode($i);}
-     * @expect '-b=' when input array(), 'b', null, array('a'=>'b'), function ($c, $i) {return "-$i=";}
      */
     public static function wi(array $cx, mixed $v, ?array $bp, array|\stdClass|null $in, \Closure $cb, ?\Closure $else = null): string
     {

@@ -26,10 +26,6 @@ class SafeString
 
     /**
      * Strip extended comments {{!-- .... --}}
-     *
-     * @expect 'abc' when input 'abc'
-     * @expect 'abc{{!}}cde' when input 'abc{{!}}cde'
-     * @expect 'abc{{! }}cde' when input 'abc{{!----}}cde'
      */
     public static function stripExtendedComments(string $template): string
     {
@@ -40,12 +36,6 @@ class SafeString
      * Escape template
      *
      * @param string $template handlebars template string
-     *
-     * @return string Escaped template
-     *
-     * @expect 'abc' when input 'abc'
-     * @expect 'a\\\\bc' when input 'a\bc'
-     * @expect 'a\\\'bc' when input 'a\'bc'
      */
     public static function escapeTemplate(string $template): string
     {

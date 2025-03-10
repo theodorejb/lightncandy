@@ -27,11 +27,16 @@
             "LightnCandy\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "LightnCandy\\Test\\": "tests/"
+        }
+    },
     "scripts": {
         "analyze": "phpstan analyze src --level 1",
-        "test": [
-            "php build/gen_test.php",
-            "vendor/bin/phpunit tests"
-        ]
+        "test": "vendor/bin/phpunit tests"
+    },
+    "config": {
+        "sort-packages": true
     }
 }

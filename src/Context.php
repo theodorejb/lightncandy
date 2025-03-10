@@ -2,7 +2,10 @@
 
 namespace LightnCandy;
 
-class Context
+/**
+ * @internal
+ */
+final class Context
 {
     /**
      * Create a context from options
@@ -81,11 +84,6 @@ class Context
      * @param string $tname helper table name
      *
      * @return array<string,array|string|int> context with generated helper table
-     *
-     * @expect array() when input array(), array()
-     * @expect array('error' => array('You provide a custom helper named as \'abc\' in options[\'helpers\'], but the function abc() is not defined!'), 'flags' => array()) when input array('error' => array(), 'flags' => array()), array('helpers' => array('abc'))
-     * @expect array('flags' => array(), 'helpers' => array('\\LightnCandy\\Runtime::raw' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array(), 'helpers' => array()), array('helpers' => array('\\LightnCandy\\Runtime::raw'))
-     * @expect array('flags' => array(), 'helpers' => array('test' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array(), 'helpers' => array()), array('helpers' => array('test' => '\\LightnCandy\\Runtime::raw'))
      */
     protected static function updateHelperTable(array &$context, array $options, string $tname = 'helpers'): array
     {

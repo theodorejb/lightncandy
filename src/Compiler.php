@@ -2,7 +2,10 @@
 
 namespace LightnCandy;
 
-class Compiler extends Validator
+/**
+ * @internal
+ */
+final class Compiler extends Validator
 {
     public static array $lastParsed;
 
@@ -85,17 +88,11 @@ class Compiler extends Validator
     }
 
     /**
-     * Get function name for standalone or none standalone template.
+     * Get function name for standalone or non-standalone template.
      *
      * @param array<string,array|string|int> $context Current context of compiler progress.
      * @param string $name base function name
      * @param string $tag original handlebars tag for debug
-     *
-     * @return string compiled Function name
-     *
-     * @expect 'LR::test(' when input array('flags' => array('debug' => 0)), 'test', ''
-     * @expect 'LR::test2(' when input array('flags' => array('debug' => 0)), 'test2', ''
-     * @expect 'LR::debug(\'abc\', \'test\', ' when input array('flags' => array('debug' => 1)), 'test', 'abc'
      */
     protected static function getFuncName(array &$context, string $name, string $tag): string
     {
@@ -170,24 +167,6 @@ class Compiler extends Validator
      * @param array<string>|null $lookup extra lookup string as valid PHP variable name
      *
      * @return array<string> variable names
-     *
-     * @expect ['$in', 'this'] when input array('flags'=>array('debug'=>0)), array(null)
-     * @expect ['$in[\'true\'] ?? null', '[true]'] when input array('flags'=>array('debug'=>0)), array('true')
-     * @expect ['$in[\'false\'] ?? null', '[false]'] when input array('flags'=>array('debug'=>0)), array('false')
-     * @expect ['true', 'true'] when input array('flags'=>array('debug'=>0)), array(-1, 'true')
-     * @expect ['false', 'false'] when input array('flags'=>array('debug'=>0)), array(-1, 'false')
-     * @expect ['$in[\'2\'] ?? null', '[2]'] when input array('flags'=>array('debug'=>0)), array('2')
-     * @expect ['2', '2'] when input array('flags'=>array('debug'=>0)), array(-1, '2')
-     * @expect ["\$cx['sp_vars']['index'] ?? null", '@[index]'] when input array('flags'=>array('debug'=>0)), array('@index')
-     * @expect ["\$cx['sp_vars']['key'] ?? null", '@[key]'] when input array('flags'=>array('debug'=>0)), array('@key')
-     * @expect ["\$cx['sp_vars']['first'] ?? null", '@[first]'] when input array('flags'=>array('debug'=>0)), array('@first')
-     * @expect ["\$cx['sp_vars']['last'] ?? null", '@[last]'] when input array('flags'=>array('debug'=>0)), array('@last')
-     * @expect ['$in[\'"a"\'] ?? null', '["a"]'] when input array('flags'=>array('debug'=>0)), array('"a"')
-     * @expect ['"a"', '"a"'] when input array('flags'=>array('debug'=>0)), array(-1, '"a"')
-     * @expect ['$in[\'a\'] ?? null', '[a]'] when input array('flags'=>array('debug'=>0)), array('a')
-     * @expect ['$cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] ?? null', '../[a]'] when input array('flags'=>array('debug'=>0)), array(1,'a')
-     * @expect ['$cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] ?? null', '../../../[a]'] when input array('flags'=>array('debug'=>0)), array(3,'a')
-     * @expect ['$in[\'id\'] ?? null', 'this.[id]'] when input array('flags'=>array('debug'=>0)), array(null, 'id')
      */
     protected static function getVariableName(array &$context, array $var, ?array $lookup = null): array
     {

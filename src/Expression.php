@@ -2,35 +2,23 @@
 
 namespace LightnCandy;
 
-class Expression
+/**
+ * @internal
+ */
+final class Expression
 {
     /**
-     * return 'true' or 'false' string.
-     *
-     * @param int $v value
-     *
-     * @return string 'true' when the value larger then 0
-     *
-     * @expect 'true' when input 1
-     * @expect 'true' when input 999
-     * @expect 'false' when input 0
-     * @expect 'false' when input -1
+     * Returns 'true' when the value is greater than 0, otherwise 'false'.
      */
-    public static function boolString(int $v): string
+    public static function boolString(int $value): string
     {
-        return ($v > 0) ? 'true' : 'false';
+        return $value > 0 ? 'true' : 'false';
     }
 
     /**
      * Get string presentation for a string list
      *
      * @param array<string> $list an array of strings.
-     *
-     * @return string PHP list string
-     *
-     * @expect '' when input array()
-     * @expect "'a'" when input array('a')
-     * @expect "'a','b','c'" when input array('a', 'b', 'c')
      */
     public static function listString(array $list): string
     {
@@ -43,12 +31,6 @@ class Expression
      * Get string presentation for an array
      *
      * @param array<string> $list an array of variable names.
-     *
-     * @return string PHP array names string
-     *
-     * @expect '' when input array()
-     * @expect "['a']" when input array('a')
-     * @expect "['a']['b']['c']" when input array('a', 'b', 'c')
      */
     public static function arrayString(array $list): string
     {
@@ -64,9 +46,6 @@ class Expression
      * @param array<array|string|int> $var variable parsed path
      *
      * @return array{int, bool, array} analyzed result
-     *
-     * @expect array(0, false, array('foo')) when input array('flags' => array()), array(0, 'foo')
-     * @expect array(1, false, array('foo')) when input array('flags' => array()), array(1, 'foo')
      */
     public static function analyze(array $context, array $var): array
     {
@@ -92,20 +71,13 @@ class Expression
     }
 
     /**
-     * get normalized handlebars expression for a variable
+     * Get normalized handlebars expression for a variable.
      *
      * @param int $levels trace N levels top parent scope
      * @param bool $spvar is the path start with @ or not
      * @param array<string|int> $var variable parsed path
      *
      * @return string normalized expression for debug display
-     *
-     * @expect '[a].[b]' when input 0, false, array('a', 'b')
-     * @expect '@[root]' when input 0, true, array('root')
-     * @expect 'this.[id]' when input 0, false, array(null, 'id')
-     * @expect '@[root].[a].[b]' when input 0, true, array('root', 'a', 'b')
-     * @expect '../../[a].[b]' when input 2, false, array('a', 'b')
-     * @expect '../[a\'b]' when input 1, false, array('a\'b')
      */
     public static function toString(int $levels, bool $spvar, array $var): string
     {

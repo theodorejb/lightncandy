@@ -2,40 +2,32 @@
 
 namespace LightnCandy;
 
-class Encoder
+/**
+ * @internal
+ */
+final class Encoder
 {
     /**
-     * Get html encoded string
+     * Get the HTML encoded value of the specified variable.
      *
      * @param array<string,array|string|int> $cx render time context
-     * @param array<array|string|int>|string|int|null $var value to be htmlencoded
-     *
-     * @return string The htmlencoded value of the specified variable
-     *
-     * @expect 'a' when input array('flags' => array()), 'a'
-     * @expect 'a&amp;b' when input array('flags' => array()), 'a&b'
-     * @expect 'a&#039;b' when input array('flags' => array()), 'a\'b'
+     * @param array<array|string|int>|string|int|bool|null $var value to be htmlencoded
      */
-    public static function enc(array $cx, $var): string
+    public static function enc(array $cx, array|string|int|bool|null $var): string
     {
         return htmlspecialchars(Runtime::raw($cx, $var), ENT_QUOTES, 'UTF-8');
     }
 
     /**
-     * LightnCandy runtime method for {{var}} , and deal with single quote to same as handlebars.js .
+     * Runtime method for {{var}}, and deal with single quote the same as Handlebars.js.
      *
      * @param array<string,array|string|int> $cx render time context
-     * @param array<array|string|int>|string|int|null $var value to be htmlencoded
+     * @param array<array|string|int>|string|int|bool|null $var value to be htmlencoded
      *
      * @return string The htmlencoded value of the specified variable
-     *
-     * @expect 'a' when input array('flags' => array()), 'a'
-     * @expect 'a&amp;b' when input array('flags' => array()), 'a&b'
-     * @expect 'a&#x27;b' when input array('flags' => array()), 'a\'b'
-     * @expect '&#x60;a&#x27;b' when input array('flags' => array()), '`a\'b'
      */
-    public static function encq(array $cx, $var)
+    public static function encq(array $cx, array|string|int|bool|null $var)
     {
-        return str_replace(array('=', '`', '&#039;'), array('&#x3D;', '&#x60;', '&#x27;'), htmlspecialchars(Runtime::raw($cx, $var), ENT_QUOTES, 'UTF-8'));
+        return str_replace(array('=', '`', '&#039;'), array('&#x3D;', '&#x60;', '&#x27;'), self::enc($cx, $var));
     }
 }

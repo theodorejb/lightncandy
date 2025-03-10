@@ -2,7 +2,10 @@
 
 namespace LightnCandy;
 
-class Token
+/**
+ * @internal
+ */
+final class Token
 {
     // RegExps
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
@@ -42,16 +45,10 @@ class Token
     }
 
     /**
-     * return token string
+     * Return whole token string
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param string[]|null $merge list of token strings to be merged
-     *
-     * @return string Return whole token
-     *
-     * @expect 'c' when input array(0, 'a', 'b', 'c', 'd', 'e')
-     * @expect 'cd' when input array(0, 'a', 'b', 'c', 'd', 'e', 'f')
-     * @expect 'qd' when input array(0, 'a', 'b', 'c', 'd', 'e', 'f'), array(3 => 'q')
      */
     public static function toString(array $token, ?array $merge = null): string
     {
