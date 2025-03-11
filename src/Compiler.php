@@ -59,6 +59,7 @@ final class Compiler extends Validator
         $flagPartNC = Expression::boolString($context['flags']['partnc']);
         $flagKnownHlp = Expression::boolString($context['flags']['knohlp']);
         $runtime = Runtime::class;
+        $helperOptions = HelperOptions::class;
         $safeStringClass = SafeString::class;
         $helpers = Exporter::helpers($context);
         $partials = implode(",\n", $context['partialCode']);
@@ -67,6 +68,7 @@ final class Compiler extends Validator
         return <<<VAREND
             use {$runtime} as LR;
             use {$safeStringClass};
+            use {$helperOptions};
             return function (\$in = null, array \$options = []) {
                 \$helpers = $helpers;
                 \$partials = [$partials];

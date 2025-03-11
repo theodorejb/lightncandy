@@ -25,10 +25,6 @@ function patch_safestring($code) {
     return preg_replace('/ SafeString(\s*\(.*?\))?/', ' ' . $classname . '$1', $code);
 }
 
-function patch_this($code) {
-    return preg_replace('/\\$options->scope/', '$options[\'_this\']', $code);
-}
-
 function data_helpers_fix(array &$spec) {
     if (isset($spec['data']) && is_array($spec['data'])) {
         foreach ($spec['data'] as $key => $value) {
@@ -172,10 +168,7 @@ class HandlebarsSpecTest extends TestCase
 
         // FIX SPEC
         if ($spec['it'] === 'should take presednece over parent block params') {
-            $spec['helpers']['goodbyes']['php'] = 'function($options) { static $value; if($value === null) { $value = 1; } return $options->fn(array("value" => "bar"), array("blockParams" => ($options["fn.blockParams"] === 1) ? array($value++, $value++) : null));}';
-        }
-        if (($spec['it'] === 'should handle undefined and null') && ($spec['expected'] === 'true true object')) {
-            $spec['expected'] = 'true true array';
+            $spec['helpers']['goodbyes']['php'] = 'function($options) { static $value; if($value === null) { $value = 1; } return $options->fn(array("value" => "bar"), array("blockParams" => ($options->blockParams === 1) ? array($value++, $value++) : null));}';
         }
         if ($spec['it'] === 'depthed block functions without context argument' && $spec['expected'] === 'inner') {
             $spec['expected'] = '';
@@ -191,17 +184,14 @@ class HandlebarsSpecTest extends TestCase
             }
             $hname = preg_replace('/\\.|\\//', '_', "custom_helper_{$spec['no']}_{$tested}_$name");
             $helpers[$name] = $hname;
-            $helper = preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
-                patch_this(
-                    preg_replace('/\\$block\\/\\*\\[\'(.+?)\'\\]\\*\\/->(.+?)\\(/', '$block[\'$2\'](',
-                        patch_safestring(
-                            preg_replace('/function/', "function $hname", $func['php'], 1)
-                        )
-                    )
-                )
+            $helper = patch_safestring(
+                preg_replace('/function/', "function $hname", $func['php'], 1)
             );
+            $helper = str_replace('$options[\'data\']', '$options->data', $helper);
+            $helper = str_replace('$options[\'hash\']', '$options->hash', $helper);
+            $helper = str_replace('$arguments[count($arguments)-1][\'name\'];', '$arguments[count($arguments)-1]->name;', $helper);
             if (($spec['it'] === 'helper block with complex lookup expression') && ($name === 'goodbyes')) {
-                $helper = preg_replace('/\\[\'fn\'\\]\\(\\)/', '[\'fn\'](array())', $helper);
+                $helper = str_replace('$options->fn();', '$options->fn([]);', $helper);
             }
             $helpersList .= "$helper\n";
             eval($helper);

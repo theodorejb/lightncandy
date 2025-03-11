@@ -3,6 +3,7 @@
 namespace DevTheorem\Handlebars\Test;
 
 use DevTheorem\Handlebars\Handlebars;
+use DevTheorem\Handlebars\HelperOptions;
 use DevTheorem\Handlebars\Options;
 use DevTheorem\Handlebars\SafeString;
 use PHPUnit\Framework\TestCase;
@@ -41,31 +42,31 @@ class RegressionTest extends TestCase
             'god' => function () {return 'yo';},
         ];
 
-        $myIf = function ($conditional, $options) {
+        $myIf = function ($conditional, HelperOptions $options) {
             if ($conditional) {
-                return $options['fn']();
+                return $options->fn();
             } else {
-                return $options['inverse']();
+                return $options->inverse();
             }
         };
 
-        $myWith = function ($context, $options) {
-            return $options['fn']($context);
+        $myWith = function ($context, HelperOptions $options) {
+            return $options->fn($context);
         };
 
-        $myEach = function ($context, $options) {
+        $myEach = function ($context, HelperOptions $options) {
             $ret = '';
             foreach ($context as $cx) {
-                $ret .= $options['fn']($cx);
+                $ret .= $options->fn($cx);
             }
             return $ret;
         };
 
-        $myLogic = function ($input, $yes, $no, $options) {
+        $myLogic = function ($input, $yes, $no, HelperOptions $options) {
             if ($input === true) {
-                return $options['fn']($yes);
+                return $options->fn($yes);
             } else {
-                return $options['inverse']($no);
+                return $options->inverse($no);
             }
         };
 
@@ -222,8 +223,8 @@ class RegressionTest extends TestCase
                 'template' => '{{helper 1 foo bar="q"}}',
                 'options' => new Options(
                     helpers: [
-                        'helper' => function ($arg1, $arg2, $options) {
-                            return "ARG1:$arg1, ARG2:$arg2, HASH:{$options['hash']['bar']}";
+                        'helper' => function ($arg1, $arg2, HelperOptions $options) {
+                            return "ARG1:$arg1, ARG2:$arg2, HASH:{$options->hash['bar']}";
                         },
                     ],
                 ),
@@ -262,8 +263,8 @@ class RegressionTest extends TestCase
                 'template' => 'ABC{{#block "YES!"}}DEF{{foo}}GHI{{/block}}JKL',
                 'options' => new Options(
                     helpers: [
-                        'block' => function ($name, $options) {
-                            return "1-$name-2-" . $options['fn']() . '-3';
+                        'block' => function ($name, HelperOptions $options) {
+                            return "1-$name-2-" . $options->fn() . '-3';
                         },
                     ],
                 ),
@@ -300,9 +301,9 @@ class RegressionTest extends TestCase
                         'lt' => function ($a, $b) {
                             return ($a > $b) ? new SafeString("$a>$b") : '';
                         },
-                        'list' => function () {
+                        'list' => function (...$args) {
                             $out = 'List:';
-                            $args = func_get_args();
+                            /** @var HelperOptions $opts */
                             $opts = array_pop($args);
 
                             foreach ($args as $v) {
@@ -311,7 +312,7 @@ class RegressionTest extends TestCase
                                 }
                             }
 
-                            foreach ($opts['hash'] as $k => $v) {
+                            foreach ($opts->hash as $k => $v) {
                                 if ($v) {
                                     $out .= "]$k=$v , ";
                                 }
@@ -555,8 +556,8 @@ class RegressionTest extends TestCase
                 'data' => array('foo' => array('bar' => 'Good!')),
                 'options' => new Options(
                     helpers: [
-                        'getThis' => function($input, $options) {
-                            return $input . '-' . $options['_this']['bar'];
+                        'getThis' => function($input, HelperOptions $options) {
+                            return $input . '-' . $options->scope['bar'];
                         },
                     ],
                 ),
@@ -569,8 +570,8 @@ class RegressionTest extends TestCase
                 'data' => array('foo' => array('bar' => 'Good!')),
                 'options' => new Options(
                     helpers: [
-                        'getThis' => function($input, $options) {
-                            return $input . '-' . $options['_this']['bar'];
+                        'getThis' => function($input, HelperOptions $options) {
+                            return $input . '-' . $options->scope['bar'];
                         },
                     ],
                 ),
@@ -583,8 +584,8 @@ class RegressionTest extends TestCase
                 'data' => array('foo' => 'good!'),
                 'options' => new Options(
                     helpers: [
-                        'testString' => function($arg, $options) {
-                            return $arg . '-' . $options['hash']['bar'];
+                        'testString' => function($arg, HelperOptions $options) {
+                            return $arg . '-' . $options->hash['bar'];
                         },
                     ],
                 ),
@@ -597,8 +598,8 @@ class RegressionTest extends TestCase
                 'data' => array('foo' => 'good!'),
                 'options' => new Options(
                     helpers: [
-                        'testString' => function($arg, $options) {
-                            return $arg . '-' . $options['hash']['bar'];
+                        'testString' => function($arg, HelperOptions $options) {
+                            return $arg . '-' . $options->hash['bar'];
                         },
                     ],
                 ),
@@ -611,8 +612,8 @@ class RegressionTest extends TestCase
                 'data' => array('foo' => 'good!'),
                 'options' => new Options(
                     helpers: [
-                        'testString' => function($arg, $options) {
-                            return $arg . '-' . $options['hash']['bar'];
+                        'testString' => function($arg, HelperOptions $options) {
+                            return $arg . '-' . $options->hash['bar'];
                         },
                     ],
                 ),
@@ -625,8 +626,8 @@ class RegressionTest extends TestCase
                 'data' => array('foo' => 'good!'),
                 'options' => new Options(
                     helpers: [
-                        'testString' => function($arg, $options) {
-                            return $arg . '-' . $options['hash']['bar'];
+                        'testString' => function($arg, HelperOptions $options) {
+                            return $arg . '-' . $options->hash['bar'];
                         },
                     ],
                 ),
@@ -639,8 +640,8 @@ class RegressionTest extends TestCase
                 'data' => array('foo' => 'good!'),
                 'options' => new Options(
                     helpers: [
-                        'testString' => function($arg1, $options) {
-                            return $arg1 . '-' . $options['hash']['bar'];
+                        'testString' => function($arg1, HelperOptions $options) {
+                            return $arg1 . '-' . $options->hash['bar'];
                         },
                     ],
                 ),
@@ -694,8 +695,8 @@ class RegressionTest extends TestCase
                 'template' => '{{{du_mp text=(du_mp "123")}}}',
                 'options' => new Options(
                     helpers: [
-                        'du_mp' => function ($a) {
-                            return '>' . print_r($a['hash'] ?? $a, true);
+                        'du_mp' => function (HelperOptions | string $a) {
+                            return '>' . print_r($a->hash ?? $a, true);
                         },
                     ],
                 ),
@@ -749,12 +750,12 @@ class RegressionTest extends TestCase
                 'data' => array('a', 'b', 'c'),
                 'options' => new Options(
                     helpers: [
-                        'my_private_each' => function ($context, $options) {
-                            $data = $options['data'];
+                        'my_private_each' => function ($context, HelperOptions $options) {
+                            $data = $options->data;
                             $out = '';
                             foreach ($context as $idx => $cx) {
                                 $data['index'] = $idx;
-                                $out .= $options['fn']($cx, array('data' => $data));
+                                $out .= $options->fn($cx, ['data' => $data]);
                             }
                             return $out;
                         },
@@ -793,8 +794,8 @@ class RegressionTest extends TestCase
                 'data' => array('a' => true),
                 'options' => new Options(
                     helpers: [
-                        'a' => function($options) {
-                            return $options['fn']();
+                        'a' => function(HelperOptions $options) {
+                            return $options->fn();
                         },
                     ],
                 ),
@@ -938,8 +939,8 @@ class RegressionTest extends TestCase
                 'template' => '{{#if moo}}A{{else if bar}}B{{else foo}}C{{/if}}',
                 'options' => new Options(
                     helpers: [
-                        'foo' => function($options) {
-                            return $options['fn']();
+                        'foo' => function(HelperOptions$options) {
+                            return $options->fn();
                         },
                     ],
                 ),
@@ -973,8 +974,8 @@ class RegressionTest extends TestCase
                 'data' => array(),
                 'options' => new Options(
                     helpers: [
-                        'if' => function($arg, $options) {
-                            return $options['fn']();
+                        'if' => function($arg, HelperOptions $options) {
+                            return $options->fn();
                         },
                     ],
                 ),
@@ -1128,8 +1129,8 @@ class RegressionTest extends TestCase
                 'template' => '{{foo a=(foo a=(foo a="ok"))}}',
                 'options' => new Options(
                     helpers: [
-                        'foo' => function($opt) {
-                            return $opt['hash']['a'];
+                        'foo' => function(HelperOptions $opt) {
+                            return $opt->hash['a'];
                         },
                     ],
                 ),
@@ -1155,11 +1156,11 @@ class RegressionTest extends TestCase
                 'template' => '{{foo}}{{bar}}',
                 'options' => new Options(
                     helpers: [
-                        'foo' => function($opt) {
-                            $opt['_this']['change'] = true;
+                        'foo' => function(HelperOptions $opt) {
+                            $opt->scope['change'] = true;
                         },
-                        'bar' => function($opt) {
-                            return $opt['_this']['change'] ? 'ok' : 'bad';
+                        'bar' => function(HelperOptions $opt) {
+                            return $opt->scope['change'] ? 'ok' : 'bad';
                         },
                     ],
                 ),
@@ -1296,8 +1297,8 @@ class RegressionTest extends TestCase
                 'template' => '{{test "foo" prop="\" "}}',
                 'options' => new Options(
                     helpers: [
-                        'test' => function ($arg1, $options) {
-                            return "{$arg1} {$options['hash']['prop']}";
+                        'test' => function ($arg1, HelperOptions $options) {
+                            return "{$arg1} {$options->hash['prop']}";
                         },
                     ],
                 ),
@@ -1321,8 +1322,8 @@ class RegressionTest extends TestCase
                 'template' => '{{#each foo}}#{{@key}}({{@index}})={{.}}-{{moo}}-{{@irr}}{{/each}}',
                 'options' => new Options(
                     helpers: [
-                        'moo' => function($opts) {
-                            $opts['data']['irr'] = '123';
+                        'moo' => function(HelperOptions $opts) {
+                            $opts->data['irr'] = '123';
                             return '321';
                         },
                     ],
@@ -1467,9 +1468,9 @@ class RegressionTest extends TestCase
                 'template' => '{{hash abc=["def=123"]}}',
                 'options' => new Options(
                     helpers: [
-                        'hash' => function ($options) {
+                        'hash' => function (HelperOptions $options) {
                             $ret = '';
-                            foreach ($options['hash'] as $k => $v) {
+                            foreach ($options->hash as $k => $v) {
                                 $ret .= "$k : $v,";
                             }
                             return $ret;
@@ -1484,9 +1485,9 @@ class RegressionTest extends TestCase
                 'template' => '{{hash abc=[\'def=123\']}}',
                 'options' => new Options(
                     helpers: [
-                        'hash' => function ($options) {
+                        'hash' => function (HelperOptions $options) {
                             $ret = '';
-                            foreach ($options['hash'] as $k => $v) {
+                            foreach ($options->hash as $k => $v) {
                                 $ret .= "$k : $v,";
                             }
                             return $ret;
@@ -1501,8 +1502,8 @@ class RegressionTest extends TestCase
                 'template' => 'ABC{{#block "YES!"}}DEF{{foo}}GHI{{else}}NO~{{/block}}JKL',
                 'options' => new Options(
                     helpers: [
-                        'block' => function ($name, $options) {
-                            return "1-$name-2-" . $options['fn']() . '-3';
+                        'block' => function ($name, HelperOptions $options) {
+                            return "1-$name-2-" . $options->fn() . '-3';
                         },
                     ],
                 ),
@@ -1514,8 +1515,8 @@ class RegressionTest extends TestCase
                 'template' => '-{{getroot}}=',
                 'options' => new Options(
                     helpers: [
-                        'getroot' => function ($options) {
-                            return $options['data']['root'];
+                        'getroot' => function (HelperOptions $options) {
+                            return $options->data['root'];
                         },
                     ],
                 ),
@@ -1533,8 +1534,8 @@ class RegressionTest extends TestCase
                 'template' => 'ABC{{#block "YES!"}}TRUE{{else}}DEF{{foo}}GHI{{/block}}JKL',
                 'options' => new Options(
                     helpers: [
-                        'block' => function ($name, $options) {
-                            return "1-$name-2-" . $options['inverse']() . '-3';
+                        'block' => function ($name, HelperOptions $options) {
+                            return "1-$name-2-" . $options->inverse() . '-3';
                         },
                     ],
                 ),

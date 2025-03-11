@@ -23,9 +23,7 @@ final class Runtime
             $params[] = &$P[$i];
         }
         $runtime = self::class;
-        $r = call_user_func_array(($cx['funcs'][$f] ?? "{$runtime}::$f"), $params);
-
-        return $r;
+        return call_user_func_array("$runtime::$f", $params);
     }
 
     /**
@@ -363,15 +361,15 @@ final class Runtime
             return $cx['blparam'][0][$ch];
         }
 
-        $options = array(
-            'name' => $ch,
-            'hash' => $vars[1],
-            'contexts' => count($cx['scopes']) ? $cx['scopes'] : array(null),
-            'fn.blockParams' => 0,
-            '_this' => &$_this
+        $options = new HelperOptions(
+            name: $ch,
+            hash: $vars[1],
+            fn: function () { return ''; },
+            inverse: function () { return ''; },
+            blockParams: 0,
+            scope: $_this,
+            data: $cx['sp_vars'],
         );
-
-        $options['data'] = &$cx['sp_vars'];
 
         return static::exch($cx, $ch, $vars, $options);
     }
@@ -389,32 +387,26 @@ final class Runtime
      */
     public static function hbbch(array &$cx, string $ch, array $vars, mixed &$_this, bool $inverted, ?\Closure $cb, ?\Closure $else = null): mixed
     {
-        $options = array(
-            'name' => $ch,
-            'hash' => $vars[1],
-            'contexts' => count($cx['scopes']) ? $cx['scopes'] : array(null),
-            'fn.blockParams' => 0,
-            '_this' => &$_this,
-        );
-
-        $options['data'] = &$cx['sp_vars'];
+        $blockParams = 0;
+        $data = &$cx['sp_vars'];
 
         if (isset($vars[2])) {
-            $options['fn.blockParams'] = count($vars[2]);
+            $blockParams = count($vars[2]);
         }
 
-        // $invert the logic
+        // invert the logic
         if ($inverted) {
             $tmp = $else;
             $else = $cb;
             $cb = $tmp;
         }
 
-        $options['fn'] = function ($context = '_NO_INPUT_HERE_', $data = null) use ($cx, &$_this, $cb, $vars) {
+        $fn = function ($context = null, $data = null) use ($cx, $_this, $cb, $vars) {
             $old_spvar = $cx['sp_vars'];
             if (isset($data['data'])) {
-                $cx['sp_vars'] = array_merge(array('root' => $old_spvar['root']), $data['data'], array('_parent' => $old_spvar));
+                $cx['sp_vars'] = array_merge(['root' => $old_spvar['root']], $data['data'], ['_parent' => $old_spvar]);
             }
+
             $ex = false;
             if (isset($data['blockParams']) && isset($vars[2])) {
                 $ex = array_combine($vars[2], array_slice($data['blockParams'], 0, count($vars[2])));
@@ -422,13 +414,15 @@ final class Runtime
             } elseif (isset($cx['blparam'][0])) {
                 $ex = $cx['blparam'][0];
             }
-            if (($context === '_NO_INPUT_HERE_') || ($context === $_this)) {
+
+            if ($context === null) {
                 $ret = $cb($cx, is_array($ex) ? static::m($cx, $_this, $ex) : $_this);
             } else {
                 $cx['scopes'][] = $_this;
                 $ret = $cb($cx, is_array($ex) ? static::m($cx, $context, $ex) : $context);
                 array_pop($cx['scopes']);
             }
+
             if (isset($data['data'])) {
                 $cx['sp_vars'] = $old_spvar;
             }
@@ -436,8 +430,8 @@ final class Runtime
         };
 
         if ($else) {
-            $options['inverse'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $_this, $else) {
-                if ($context === '_NO_INPUT_HERE_') {
+            $inverse = function ($context = null) use ($cx, $_this, $else) {
+                if ($context === null) {
                     $ret = $else($cx, $_this);
                 } else {
                     $cx['scopes'][] = $_this;
@@ -447,10 +441,20 @@ final class Runtime
                 return $ret;
             };
         } else {
-            $options['inverse'] = function () {
+            $inverse = function () {
                 return '';
             };
         }
+
+        $options = new HelperOptions(
+            name: $ch,
+            hash: $vars[1],
+            fn: $fn,
+            inverse: $inverse,
+            blockParams: $blockParams,
+            scope: $_this,
+            data: $data,
+        );
 
         return static::exch($cx, $ch, $vars, $options);
     }
@@ -461,15 +465,14 @@ final class Runtime
      * @param array<string,array|string|int> $cx render time context
      * @param string $ch the name of custom helper to be executed
      * @param array<array|string|int> $vars variables for the helper
-     * @param array<string,array|string|int> $options the options object
      */
-    public static function exch(array $cx, string $ch, array $vars, array &$options): mixed
+    public static function exch(array $cx, string $ch, array $vars, HelperOptions $options): mixed
     {
         $args = $vars[0];
-        $args[] = &$options;
+        $args[] = $options;
 
         try {
-            return call_user_func_array($cx['helpers'][$ch], $args);
+            return ($cx['helpers'][$ch])(...$args);
         } catch (\Throwable $e) {
             throw new \Exception("Runtime: call custom helper '$ch' error: " . $e->getMessage());
         }
