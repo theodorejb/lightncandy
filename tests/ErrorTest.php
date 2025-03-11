@@ -1,12 +1,12 @@
 <?php
 
+namespace LightnCandy\Test;
+
 use LightnCandy\LightnCandy;
 use LightnCandy\Options;
 use PHPUnit\Framework\TestCase;
 
-require_once('tests/helpers_for_test.php');
-
-class errorTest extends TestCase
+class ErrorTest extends TestCase
 {
     public function testException()
     {
@@ -30,7 +30,7 @@ class errorTest extends TestCase
 
         $contents = array_map(function ($l) {
             $l = rtrim($l);
-            preg_match('/GMT\] (.+)/', $l, $m);
+            preg_match('/GMT] (.+)/', $l, $m);
             return $m[1] ?? $l;
         }, file($tmpFile));
 
@@ -88,7 +88,7 @@ class errorTest extends TestCase
                 'options' => new Options(
                     helpers: [
                         'foo' => function () {
-                            throw new Exception('Expect the unexpected');
+                            throw new \Exception('Expect the unexpected');
                         },
                     ],
                 ),
@@ -378,15 +378,16 @@ class errorTest extends TestCase
             array(
                 'template' => '{{test_join (foo bar)}}',
                 'options' => new Options(
-                    helpers: ['test_join'],
+                    helpers: [
+                        'test_join' => function ($input) {
+                            return join('.', $input);
+                        },
+                    ],
                 ),
                 'expected' => 'Missing helper: "foo"',
             ),
             array(
                 'template' => '{{1 + 2}}',
-                'options' => new Options(
-                    helpers: ['test_join'],
-                ),
                 'expected' => "Wrong variable naming as '+' in {{1 + 2}} ! You should wrap ! \" # % & ' * + , ; < = > { | } ~ into [ ]",
             ),
             array(

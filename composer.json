@@ -24,7 +24,7 @@
     },
     "autoload": {
         "psr-4": {
-            "LightnCandy\\": "src"
+            "LightnCandy\\": "src/"
         }
     },
     "autoload-dev": {
@@ -33,7 +33,7 @@
         }
     },
     "scripts": {
-        "analyze": "phpstan analyze src --level 1",
+        "analyze": "phpstan analyze src tests --level 1",
         "test": "vendor/bin/phpunit tests"
     },
     "config": {

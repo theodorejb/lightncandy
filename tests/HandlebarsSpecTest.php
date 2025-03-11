@@ -41,6 +41,9 @@ function data_helpers_fix(array &$spec) {
     }
 }
 
+/**
+ * Used by vendor/jbboehr/handlebars-spec/spec/data.json
+ */
 class Utils {
     static public function createFrame($data) {
         if (is_array($data)) {
@@ -70,7 +73,7 @@ class HandlebarsSpecTest extends TestCase
                ($spec['it'] === 'should override partials down the entire stack') ||
                ($spec['it'] === 'should define inline partials for block')
            ) {
-            $spec['data'] = new stdClass;
+            $spec['data'] = new \stdClass;
         }
 
         //// Skip bad specs
@@ -259,7 +262,7 @@ class HandlebarsSpecTest extends TestCase
                 helpers: $helpers,
                 partials: $partials,
             ));
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             if (isset($spec['exception'])) {
                 $this->assertEquals(true, true);
                 return;
@@ -274,7 +277,7 @@ class HandlebarsSpecTest extends TestCase
                 $ropt['data'] = $spec['runtimeOptions']['data'];
             }
             $result = $renderer($spec['data'], $ropt);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             if (isset($spec['exception'])) {
                 $this->assertEquals(true, true);
                 return;

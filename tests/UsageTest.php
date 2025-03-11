@@ -1,12 +1,12 @@
 <?php
 
+namespace LightnCandy\Test;
+
 use LightnCandy\LightnCandy;
 use LightnCandy\Options;
 use PHPUnit\Framework\TestCase;
 
-require_once('tests/helpers_for_test.php');
-
-class usageTest extends TestCase
+class UsageTest extends TestCase
 {
     #[\PHPUnit\Framework\Attributes\DataProvider("compileProvider")]
     public function testUsedFeature($test)
