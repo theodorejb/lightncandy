@@ -1,10 +1,10 @@
 <?php
 
-namespace LightnCandy\Test;
+namespace DevTheorem\Handlebars\Test;
 
-use LightnCandy\LightnCandy;
-use LightnCandy\Options;
-use LightnCandy\SafeString;
+use DevTheorem\Handlebars\Handlebars;
+use DevTheorem\Handlebars\Options;
+use DevTheorem\Handlebars\SafeString;
 use PHPUnit\Framework\TestCase;
 
 class RegressionTest extends TestCase
@@ -12,15 +12,15 @@ class RegressionTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider("issueProvider")]
     public function testIssues($issue)
     {
-        $templateSpec = LightnCandy::precompile($issue['template'], $issue['options'] ?? new Options());
-        $context = LightnCandy::getContext();
-        $parsed = print_r(LightnCandy::$lastParsed, true);
+        $templateSpec = Handlebars::precompile($issue['template'], $issue['options'] ?? new Options());
+        $context = Handlebars::getContext();
+        $parsed = print_r(Handlebars::$lastParsed, true);
         if (count($context['error'])) {
             $this->fail('Compile failed due to: ' . print_r($context['error'], true) . "\nPARSED: $parsed");
         }
 
         try {
-            $template = LightnCandy::template($templateSpec);
+            $template = Handlebars::template($templateSpec);
             $result = $template($issue['data'] ?? null);
             $this->assertEquals($issue['expected'], $result, "PHP CODE:\n$templateSpec");
         } catch (\Throwable $e) {

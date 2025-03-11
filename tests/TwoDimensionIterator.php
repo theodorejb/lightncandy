@@ -1,6 +1,6 @@
 <?php
 
-namespace LightnCandy\Test;
+namespace DevTheorem\Handlebars\Test;
 
 class TwoDimensionIterator implements \Iterator
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace LightnCandy\Test;
+namespace DevTheorem\Handlebars\Test;
 
-use LightnCandy\Token;
+use DevTheorem\Handlebars\Token;
 use PHPUnit\Framework\TestCase;
 
 class TokenTest extends TestCase

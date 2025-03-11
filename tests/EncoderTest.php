@@ -1,8 +1,8 @@
 <?php
 
-namespace LightnCandy\Test;
+namespace DevTheorem\Handlebars\Test;
 
-use LightnCandy\Encoder;
+use DevTheorem\Handlebars\Encoder;
 use PHPUnit\Framework\TestCase;
 
 class EncoderTest extends TestCase

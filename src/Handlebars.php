@@ -1,8 +1,8 @@
 <?php
 
-namespace LightnCandy;
+namespace DevTheorem\Handlebars;
 
-final class LightnCandy
+final class Handlebars
 {
     protected static array $lastContext;
     public static array $lastParsed;

@@ -1,8 +1,8 @@
 <?php
 
-namespace LightnCandy\Test;
+namespace DevTheorem\Handlebars\Test;
 
-use LightnCandy\Runtime;
+use DevTheorem\Handlebars\Runtime;
 use PHPUnit\Framework\TestCase;
 
 class RuntimeTest extends TestCase

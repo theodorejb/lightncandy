@@ -1,8 +1,8 @@
 <?php
 
-namespace LightnCandy\Test;
+namespace DevTheorem\Handlebars\Test;
 
-use LightnCandy\SafeString;
+use DevTheorem\Handlebars\SafeString;
 use PHPUnit\Framework\TestCase;
 
 class SafeStringTest extends TestCase

@@ -1,8 +1,8 @@
 <?php
 
-namespace LightnCandy\Test;
+namespace DevTheorem\Handlebars\Test;
 
-use LightnCandy\Exporter;
+use DevTheorem\Handlebars\Exporter;
 use PHPUnit\Framework\TestCase;
 
 class ExporterTest extends TestCase

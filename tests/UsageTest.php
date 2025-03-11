@@ -1,9 +1,9 @@
 <?php
 
-namespace LightnCandy\Test;
+namespace DevTheorem\Handlebars\Test;
 
-use LightnCandy\LightnCandy;
-use LightnCandy\Options;
+use DevTheorem\Handlebars\Handlebars;
+use DevTheorem\Handlebars\Options;
 use PHPUnit\Framework\TestCase;
 
 class UsageTest extends TestCase
@@ -11,8 +11,8 @@ class UsageTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider("compileProvider")]
     public function testUsedFeature($test)
     {
-        LightnCandy::precompile($test['template'], $test['options'] ?? new Options());
-        $context = LightnCandy::getContext();
+        Handlebars::precompile($test['template'], $test['options'] ?? new Options());
+        $context = Handlebars::getContext();
         $this->assertEquals($test['expected'], $context['usedFeature']);
     }
 

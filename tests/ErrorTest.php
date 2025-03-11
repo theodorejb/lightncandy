@@ -1,9 +1,9 @@
 <?php
 
-namespace LightnCandy\Test;
+namespace DevTheorem\Handlebars\Test;
 
-use LightnCandy\LightnCandy;
-use LightnCandy\Options;
+use DevTheorem\Handlebars\Handlebars;
+use DevTheorem\Handlebars\Options;
 use PHPUnit\Framework\TestCase;
 
 class ErrorTest extends TestCase
@@ -11,7 +11,7 @@ class ErrorTest extends TestCase
     public function testException()
     {
         try {
-          $php = LightnCandy::precompile('{{{foo}}');
+          $php = Handlebars::precompile('{{{foo}}');
         } catch (\Exception $E) {
             $this->assertEquals('Bad token {{{foo}} ! Do you mean {{foo}} or {{{foo}}}?', $E->getMessage());
         }
@@ -19,7 +19,7 @@ class ErrorTest extends TestCase
 
     public function testLog()
     {
-        $template = LightnCandy::compile('{{log foo}}');
+        $template = Handlebars::compile('{{log foo}}');
 
         date_default_timezone_set('GMT');
         $tmpDir = sys_get_temp_dir();
@@ -41,8 +41,8 @@ class ErrorTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider("renderErrorProvider")]
     public function testRenderingException($test)
     {
-        $php = LightnCandy::precompile($test['template'], $test['options'] ?? new Options());
-        $renderer = LightnCandy::template($php);
+        $php = Handlebars::precompile($test['template'], $test['options'] ?? new Options());
+        $renderer = Handlebars::template($php);
         try {
             $renderer($test['data'] ?? null);
             $this->fail("Expected to throw exception: {$test['expected']}. CODE: $php");
@@ -104,13 +104,13 @@ class ErrorTest extends TestCase
     {
         if (!isset($test['expected'])) {
             // should compile without error
-            LightnCandy::precompile($test['template'], $test['options']);
+            Handlebars::precompile($test['template'], $test['options']);
             $this->assertTrue(true);
             return;
         }
 
         try {
-            LightnCandy::precompile($test['template'], $test['options']);
+            Handlebars::precompile($test['template'], $test['options']);
             $this->fail("Expected to throw exception: {$test['expected']}");
         } catch (\Exception $e) {
             $this->assertEquals($test['expected'], explode("\n", $e->getMessage()));

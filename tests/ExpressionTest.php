@@ -1,8 +1,8 @@
 <?php
 
-namespace LightnCandy\Test;
+namespace DevTheorem\Handlebars\Test;
 
-use LightnCandy\Expression;
+use DevTheorem\Handlebars\Expression;
 use PHPUnit\Framework\TestCase;
 
 class ExpressionTest extends TestCase

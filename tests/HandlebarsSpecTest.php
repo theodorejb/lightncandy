@@ -1,7 +1,7 @@
 <?php
 
-use LightnCandy\LightnCandy;
-use LightnCandy\Options;
+use DevTheorem\Handlebars\Handlebars;
+use DevTheorem\Handlebars\Options;
 use PHPUnit\Framework\TestCase;
 
 $tested = 0;
@@ -21,8 +21,7 @@ function recursive_unset(&$array, $unwanted_key): void {
 }
 
 function patch_safestring($code) {
-    $classname = '\\LightnCandy\\SafeString';
-    $code = preg_replace('/ \\\\Handlebars\\\\SafeString(\s*\(.*?\))?/', ' ' . $classname . '$1', $code);
+    $classname = '\\DevTheorem\\Handlebars\\SafeString';
     return preg_replace('/ SafeString(\s*\(.*?\))?/', ' ' . $classname . '$1', $code);
 }
 
@@ -253,7 +252,7 @@ class HandlebarsSpecTest extends TestCase
                 }
             }
 
-            $php = LightnCandy::precompile($spec['template'], new Options(
+            $php = Handlebars::precompile($spec['template'], new Options(
                 knownHelpersOnly: $knownHelpersOnly,
                 strict: $strict,
                 preventIndent: $preventIndent,
@@ -269,7 +268,7 @@ class HandlebarsSpecTest extends TestCase
             }
             $this->fail("Compile error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']}\n" . $e->getMessage());
         }
-        $renderer = LightnCandy::template($php);
+        $renderer = Handlebars::template($php);
 
         try {
             $ropt = array();

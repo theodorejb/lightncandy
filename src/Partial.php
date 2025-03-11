@@ -1,6 +1,6 @@
 <?php
 
-namespace LightnCandy;
+namespace DevTheorem\Handlebars;
 
 class Partial
 {

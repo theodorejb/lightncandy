@@ -1,6 +1,6 @@
 <?php
 
-namespace LightnCandy;
+namespace DevTheorem\Handlebars;
 
 /**
  * @internal
@@ -94,7 +94,7 @@ final class Runtime
     /**
      * For {{var}} , do html encode just like handlebars.js .
      *
-     * @param array $cx render time context for lightncandy
+     * @param array $cx render time context
      * @param array<array|string|int>|string|int|null $var value to be htmlencoded
      *
      * @return string The htmlencoded value of the specified variable

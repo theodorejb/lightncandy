@@ -1,8 +1,13 @@
 {
-    "name": "zordius/lightncandy",
-    "description": "An extremely fast PHP implementation of handlebars ( http://handlebarsjs.com/ ) and mustache ( http://mustache.github.io/ ).",
-    "homepage": "https://github.com/zordius/lightncandy",
-    "keywords": ["handlebars", "mustache", "PHP", "template", "logicless"],
+    "name": "devtheorem/php-handlebars",
+    "description": "An extremely fast PHP implementation of Handlebars.",
+    "keywords": [
+        "Handlebars",
+        "PHP",
+        "template",
+        "render",
+        "compile"
+    ],
     "license": "MIT",
     "authors": [
         {
@@ -24,12 +29,12 @@
     },
     "autoload": {
         "psr-4": {
-            "LightnCandy\\": "src/"
+            "DevTheorem\\Handlebars\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "LightnCandy\\Test\\": "tests/"
+            "DevTheorem\\Handlebars\\Test\\": "tests/"
         }
     },
     "scripts": {
