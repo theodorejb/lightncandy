@@ -8,10 +8,10 @@ namespace DevTheorem\Handlebars;
 final class Parser
 {
     // Compile time error handling flags
-    const BLOCKPARAM = 9999;
-    const PARTIALBLOCK = 9998;
-    const LITERAL = -1;
-    const SUBEXP = -2;
+    public const BLOCKPARAM = 9999;
+    public const PARTIALBLOCK = 9998;
+    public const LITERAL = -1;
+    public const SUBEXP = -2;
 
     /**
      * Get partial block id and fix the variable list
@@ -54,7 +54,7 @@ final class Parser
      */
     protected static function getLiteral(string $name, bool $asis, bool $quote = false): array
     {
-        return $asis ? array($name) : array(static::LITERAL, $quote ? "'$name'" : $name);
+        return $asis ? [$name] : [static::LITERAL, $quote ? "'$name'" : $name];
     }
 
     /**
@@ -89,7 +89,7 @@ final class Parser
             return static::getLiteral($v, $asis);
         }
 
-        $ret = array();
+        $ret = [];
         $levels = 0;
 
         // handle ..
@@ -167,7 +167,7 @@ final class Parser
             }
         }
 
-        return array(($token[Token::POS_BEGINRAW] === '{') || ($token[Token::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $avars);
+        return [($token[Token::POS_BEGINRAW] === '{') || ($token[Token::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $avars];
     }
 
     /**
@@ -183,7 +183,7 @@ final class Parser
         if (!isset($vars[$pos])) {
             return null;
         }
-        return preg_match(SafeString::IS_SUBEXP_SEARCH, $vars[$pos]) ? null : array(preg_replace('/^("(.+)")|(\\[(.+)\\])|(\\\\\'(.+)\\\\\')$/', '$2$4$6', $vars[$pos]));
+        return preg_match(SafeString::IS_SUBEXP_SEARCH, $vars[$pos]) ? null : [preg_replace('/^("(.+)")|(\\[(.+)\\])|(\\\\\'(.+)\\\\\')$/', '$2$4$6', $vars[$pos])];
     }
 
     /**
@@ -203,7 +203,7 @@ final class Parser
                 $context['error'][] = 'Missing helper: "' . $avars[0][0] . '"';
             }
         }
-        return array(static::SUBEXP, $avars, $expression);
+        return [static::SUBEXP, $avars, $expression];
     }
 
     /**
@@ -227,7 +227,7 @@ final class Parser
      */
     protected static function advancedVariable(array $vars, array &$context, string $token): array
     {
-        $ret = array();
+        $ret = [];
         $i = 0;
         foreach ($vars as $idx => $var) {
             // handle (...)
@@ -295,37 +295,37 @@ final class Parser
     {
         // begin with '(' without ending ')'
         if (preg_match('/^\([^)]*$/', $string)) {
-            return array(')', 1);
+            return [')', 1];
         }
 
         // begin with '"' without ending '"'
         if (preg_match('/^"[^"]*$/', $string)) {
-            return array('"', 0);
+            return ['"', 0];
         }
 
         // begin with \' without ending '
         if (preg_match('/^\\\\\'[^\']*$/', $string)) {
-            return array('\'', 0);
+            return ['\'', 0];
         }
 
         // '="' exists without ending '"'
         if (preg_match('/^[^"]*="[^"]*$/', $string)) {
-            return array('"', 0);
+            return ['"', 0];
         }
 
         // '[' exists without ending ']'
         if (preg_match('/^([^"\'].+)?\[[^]]*$/', $string)) {
-            return array(']', 0);
+            return [']', 0];
         }
 
         // =\' exists without ending '
         if (preg_match('/^[^\']*=\\\\\'[^\']*$/', $string)) {
-            return array('\'', 0);
+            return ['\'', 0];
         }
 
         // continue to next match when =( exists without ending )
         if (preg_match('/.+(\(+)[^)]*$/', $string, $m)) {
-            return array(')', strlen($m[1]));
+            return [')', strlen($m[1])];
         }
 
         return null;
@@ -345,7 +345,7 @@ final class Parser
         $count = preg_match_all('/(\s*)([^"\s]*"(\\\\\\\\.|[^"])*"|[^\'\s]*\'(\\\\\\\\.|[^\'])*\'|\S+)/', $token, $matches);
         // Parse arguments and deal with "..." or [...] or (...) or \'...\' or |...|
         if ($count > 0) {
-            $vars = array();
+            $vars = [];
             $prev = '';
             $expect = 0;
             $quote = 0;
@@ -409,7 +409,7 @@ final class Parser
                 if (($t === 'as') && (count($vars) > 0)) {
                     $prev = '';
                     $expect = '|';
-                    $stack=1;
+                    $stack = 1;
                     continue;
                 }
 

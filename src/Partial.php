@@ -99,8 +99,8 @@ class Partial
         }
 
         $tmpContext = $context;
-        $tmpContext['inlinepartial'] = array();
-        $tmpContext['partialblock'] = array();
+        $tmpContext['inlinepartial'] = [];
+        $tmpContext['partialblock'] = [];
         $tmpContext['partialStack'][] = $name;
 
         $code = Compiler::compileTemplate($tmpContext, str_replace('function', static::$TMP_JS_FUNCTION_STR, $template));

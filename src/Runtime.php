@@ -18,8 +18,8 @@ final class Runtime
     {
         // Build array of reference for call_user_func_array
         $P = func_get_args();
-        $params = array();
-        for ($i=2;$i<count($P);$i++) {
+        $params = [];
+        for ($i = 2; $i < count($P); $i++) {
             $params[] = &$P[$i];
         }
         $runtime = self::class;
@@ -83,7 +83,7 @@ final class Runtime
     public static function enc(array $cx, $var): string
     {
         if ($var instanceof SafeString) {
-            return (string)$var;
+            return (string) $var;
         }
 
         return Encoder::enc($cx, $var);
@@ -100,7 +100,7 @@ final class Runtime
     public static function encq(array $cx, $var): string
     {
         if ($var instanceof SafeString) {
-            return (string)$var;
+            return (string) $var;
         }
 
         return Encoder::encq($cx, $var);
@@ -133,7 +133,7 @@ final class Runtime
             if (count(array_diff_key($v, array_keys(array_keys($v)))) > 0) {
                 return '[object Object]';
             } else {
-                $ret = array();
+                $ret = [];
                 foreach ($v as $vv) {
                     $ret[] = static::raw($cx, $vv);
                 }
@@ -185,13 +185,13 @@ final class Runtime
                     $isObj = (count(array_diff_key($v, array_keys($keys))) > 0);
                 }
             }
-            $ret = array();
+            $ret = [];
             if ($push) {
                 $cx['scopes'][] = $in;
             }
             $i = 0;
             $old_spvar = $cx['sp_vars'] ?? [];
-            $cx['sp_vars'] = array_merge(array('root' => $old_spvar['root'] ?? null), $old_spvar, array('_parent' => $old_spvar));
+            $cx['sp_vars'] = array_merge(['root' => $old_spvar['root'] ?? null], $old_spvar, ['_parent' => $old_spvar]);
             if (!$isTrav) {
                 $last = count($keys) - 1;
             }
@@ -204,10 +204,10 @@ final class Runtime
                 $cx['sp_vars']['index'] = $isSparceArray ? $index : $i;
                 $i++;
                 if (isset($bp[0])) {
-                    $raw = static::m($cx, $raw, array($bp[0] => $raw));
+                    $raw = static::m($cx, $raw, [$bp[0] => $raw]);
                 }
                 if (isset($bp[1])) {
-                    $raw = static::m($cx, $raw, array($bp[1] => $index));
+                    $raw = static::m($cx, $raw, [$bp[1] => $index]);
                 }
                 $ret[] = $cb($cx, $raw);
             }
@@ -216,8 +216,8 @@ final class Runtime
             } else {
                 unset($cx['sp_vars']['last']);
             }
-            unset($cx['sp_vars']['index']);
-            unset($cx['sp_vars']['first']);
+            unset($cx['sp_vars']['index'], $cx['sp_vars']['first']);
+
             if ($push) {
                 array_pop($cx['scopes']);
             }
@@ -268,7 +268,7 @@ final class Runtime
     public static function wi(array $cx, mixed $v, ?array $bp, array|\stdClass|null $in, \Closure $cb, ?\Closure $else = null): string
     {
         if (isset($bp[0])) {
-            $v = static::m($cx, $v, array($bp[0] => $v));
+            $v = static::m($cx, $v, [$bp[0] => $v]);
         }
         if (($v === false) || ($v === null) || (is_array($v) && (count($v) === 0))) {
             return $else ? $else($cx, $in) : '';

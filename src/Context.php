@@ -14,46 +14,46 @@ final class Context
      */
     public static function create(Options $options): array
     {
-        $context = array(
-            'flags' => array(
+        $context = [
+            'flags' => [
                 'noesc' => (int) $options->noEscape,
                 'noind' => (int) $options->preventIndent,
                 'debug' => (int) $options->strict,
                 'partnc' => (int) $options->explicitPartialContext,
                 'nostd' => (int) $options->ignoreStandalone,
                 'knohlp' => (int) $options->knownHelpersOnly,
-            ),
+            ],
             'level' => 0,
-            'stack' => array(),
+            'stack' => [],
             'currentToken' => null,
-            'error' => array(),
-            'elselvl' => array(),
+            'error' => [],
+            'elselvl' => [],
             'elsechain' => false,
-            'tokens' => array(
+            'tokens' => [
                 'standalone' => true,
                 'ahead' => false,
                 'current' => 0,
                 'count' => 0,
                 'partialind' => '',
-            ),
-            'usedPartial' => array(),
-            'partialStack' => array(),
-            'partialCode' => array(),
-            'usedFeature' => array(
+            ],
+            'usedPartial' => [],
+            'partialStack' => [],
+            'partialCode' => [],
+            'usedFeature' => [
                 'dynpartial' => 0,
                 'pblock' => 0,
-            ),
+            ],
             'usedHelpers' => [],
             'compile' => false,
-            'parsed' => array(),
+            'parsed' => [],
             'partials' => $options->partials,
-            'partialblock' => array(),
-            'inlinepartial' => array(),
-            'helpers' => array(),
+            'partialblock' => [],
+            'inlinepartial' => [],
+            'helpers' => [],
             'rawblock' => false,
-        );
+        ];
 
-        $context['ops'] = array(
+        $context['ops'] = [
             'separator' => '.',
             'f_start' => 'return ',
             'f_end' => ';',
@@ -64,7 +64,7 @@ final class Context
             'cnd_else' => ' : ',
             'cnd_end' => ').',
             'cnd_nend' => ')',
-        );
+        ];
 
         $context['ops']['enc'] = 'encq';
         static::updateHelperTable($context, $options);

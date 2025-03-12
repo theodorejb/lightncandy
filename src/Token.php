@@ -8,22 +8,22 @@ namespace DevTheorem\Handlebars;
 final class Token
 {
     // RegExps
-    const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
+    public const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
 
     // Positions of matched token
-    const POS_LOTHER = 1;
-    const POS_LSPACE = 2;
-    const POS_BEGINTAG = 3;
-    const POS_LSPACECTL = 4;
-    const POS_BEGINRAW = 5;
-    const POS_OP = 6;
-    const POS_INNERTAG = 7;
-    const POS_ENDRAW = 8;
-    const POS_RSPACECTL = 9;
-    const POS_ENDTAG = 10;
-    const POS_RSPACE = 11;
-    const POS_ROTHER = 12;
-    const POS_BACKFILL = 13;
+    public const POS_LOTHER = 1;
+    public const POS_LSPACE = 2;
+    public const POS_BEGINTAG = 3;
+    public const POS_LSPACECTL = 4;
+    public const POS_BEGINRAW = 5;
+    public const POS_OP = 6;
+    public const POS_INNERTAG = 7;
+    public const POS_ENDRAW = 8;
+    public const POS_RSPACECTL = 9;
+    public const POS_ENDTAG = 10;
+    public const POS_RSPACE = 11;
+    public const POS_ROTHER = 12;
+    public const POS_BACKFILL = 13;
 
     /**
      * Setup delimiter by default or provided string

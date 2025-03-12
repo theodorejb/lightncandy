@@ -11,7 +11,6 @@ readonly class Options
         public bool $preventIndent = false,
         public bool $ignoreStandalone = false,
         public bool $explicitPartialContext = false,
-
         public array $helpers = [],
         public array $partials = [],
     ) {}

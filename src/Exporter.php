@@ -57,9 +57,9 @@ final class Exporter
         $epos = $file->ftell();
         unset($file);
 
-        return array(
+        return [
             'name' => $refobj->getName(),
-            'code' => substr($lines, $spos, $epos - $spos)
-        );
+            'code' => substr($lines, $spos, $epos - $spos),
+        ];
     }
 }

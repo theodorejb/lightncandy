@@ -99,12 +99,12 @@ class Validator
         } else {
             static::pushPartial($context, Token::toString($context['currentToken']));
             switch ($context['currentToken'][Token::POS_OP]) {
-            case '#*':
-                array_unshift($context['inlinepartial'], '');
-                break;
-            case '#>':
-                array_unshift($context['partialblock'], '');
-                break;
+                case '#*':
+                    array_unshift($context['inlinepartial'], '');
+                    break;
+                case '#>':
+                    array_unshift($context['partialblock'], '');
+                    break;
             }
         }
         $context['parsed'][0][] = $token;
@@ -138,12 +138,12 @@ class Validator
     {
         // {{ }}} or {{{ }} are invalid
         if (strlen($token[Token::POS_BEGINRAW]) !== strlen($token[Token::POS_ENDRAW])) {
-            $context['error'][] = 'Bad token ' . Token::toString($token) . ' ! Do you mean ' . Token::toString($token, array(Token::POS_BEGINRAW => '', Token::POS_ENDRAW => '')) . ' or ' . Token::toString($token, array(Token::POS_BEGINRAW => '{', Token::POS_ENDRAW => '}')) . '?';
+            $context['error'][] = 'Bad token ' . Token::toString($token) . ' ! Do you mean ' . Token::toString($token, [Token::POS_BEGINRAW => '', Token::POS_ENDRAW => '']) . ' or ' . Token::toString($token, [Token::POS_BEGINRAW => '{', Token::POS_ENDRAW => '}']) . '?';
             return true;
         }
         // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
         if ((strlen($token[Token::POS_BEGINRAW]) == 1) && $token[Token::POS_OP] && ($token[Token::POS_OP] !== '&')) {
-            $context['error'][] = 'Bad token ' . Token::toString($token) . ' ! Do you mean ' . Token::toString($token, array(Token::POS_BEGINRAW => '', Token::POS_ENDRAW => '')) . ' ?';
+            $context['error'][] = 'Bad token ' . Token::toString($token) . ' ! Do you mean ' . Token::toString($token, [Token::POS_BEGINRAW => '', Token::POS_ENDRAW => '']) . ' ?';
             return true;
         }
 
@@ -294,7 +294,7 @@ class Validator
         if ($context['elsechain']) {
             $context['elsechain'] = false;
         } else {
-            array_unshift($context['elselvl'], array());
+            array_unshift($context['elselvl'], []);
         }
     }
 
@@ -441,7 +441,7 @@ class Validator
         }
         // if we didn't match our $pop, we didn't actually do a level, so only subtract a level here
         $context['level']--;
-        $pop2 = ($c >= 0) ? $context['stack'][$c]: '';
+        $pop2 = ($c >= 0) ? $context['stack'][$c] : '';
         switch ($context['currentToken'][Token::POS_INNERTAG]) {
             case 'with':
                 if ($pop2 !== '[with]') {
@@ -499,7 +499,7 @@ class Validator
         // Handle raw block
         if ($token[Token::POS_BEGINRAW] === '{{') {
             if ($token[Token::POS_ENDRAW] !== '}}') {
-                $context['error'][] = 'Bad token ' . Token::toString($token) . ' ! Do you mean ' . Token::toString($token, array(Token::POS_ENDRAW => '}}')) . ' ?';
+                $context['error'][] = 'Bad token ' . Token::toString($token) . ' ! Do you mean ' . Token::toString($token, [Token::POS_ENDRAW => '}}']) . ' ?';
             }
             if ($context['rawblock']) {
                 Token::setDelimiter($context);
@@ -576,7 +576,7 @@ class Validator
         }
 
         if (static::operator($token[Token::POS_OP], $context, $vars)) {
-            return isset($token[Token::POS_BACKFILL]) ? null : array($raw, $vars);
+            return isset($token[Token::POS_BACKFILL]) ? null : [$raw, $vars];
         }
 
         if (count($vars) == 0) {
@@ -588,12 +588,12 @@ class Validator
         }
 
         if (!isset($vars[0][0])) {
-            return array($raw, $vars);
+            return [$raw, $vars];
         }
 
         if ($vars[0][0] === 'else') {
             static::doElse($context, $vars);
-            return array($raw, $vars);
+            return [$raw, $vars];
         }
 
         if (!static::helper($context, $vars)) {
@@ -601,7 +601,7 @@ class Validator
             static::log($context, $vars);
         }
 
-        return array($raw, $vars);
+        return [$raw, $vars];
     }
 
     /**
@@ -802,7 +802,7 @@ class Validator
             ($lsp && $rsp) // both side cr
                 || ($rsp && !$token[Token::POS_LOTHER]) // first line without left
                 || ($lsp && !$token[Token::POS_ROTHER]) // final line
-            )) {
+        )) {
             // handle partial
             if ($token[Token::POS_OP] === '>') {
                 if (!$context['flags']['noind']) {

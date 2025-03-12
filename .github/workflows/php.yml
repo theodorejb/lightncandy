@@ -34,3 +34,7 @@ jobs:
       - name: Perform static analysis
         run: composer analyze -- --error-format=github
         if: ${{ matrix.php == '8.4' }}
+
+      - name: Check Formatting
+        run: vendor/bin/php-cs-fixer fix -v --dry-run --stop-on-violation --using-cache=no
+        if: ${{ matrix.php == '8.3' }}

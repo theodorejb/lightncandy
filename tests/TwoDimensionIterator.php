@@ -10,32 +10,35 @@ class TwoDimensionIterator implements \Iterator
 
     public function __construct(
         private readonly int $w,
-        private readonly int $h
+        private readonly int $h,
     ) {}
 
-    function rewind(): void {
+    public function rewind(): void
+    {
         $this->position = 0;
         $this->x = 0;
         $this->y = 0;
     }
 
-    function current(): int|float
+    public function current(): int|float
     {
         return $this->x * $this->y;
     }
 
-    function key(): string
+    public function key(): string
     {
         return $this->x . 'x' . $this->y;
     }
 
-    function next(): void {
+    public function next(): void
+    {
         ++$this->position;
         $this->x = $this->position % $this->w;
         $this->y = floor($this->position / $this->w);
     }
 
-    function valid(): bool {
+    public function valid(): bool
+    {
         return $this->position < $this->w * $this->h;
     }
 }

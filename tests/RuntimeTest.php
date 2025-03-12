@@ -34,9 +34,9 @@ class RuntimeTest extends TestCase
 
     public function testWi(): void
     {
-        $this->assertSame('', Runtime::wi([], false, null, new \stdClass(), function () {return 'A';}));
-        $this->assertSame('', Runtime::wi([], null, null, null, function () {return 'A';}));
-        $this->assertSame('{"a":"b"}', Runtime::wi([], ['a' => 'b'], null, ['a' => 'c'], function ($c, $i) {return json_encode($i);}));
-        $this->assertSame('-b=', Runtime::wi([], 'b', null, ['a' => 'b'], function ($c, $i) {return "-$i=";}));
+        $this->assertSame('', Runtime::wi([], false, null, new \stdClass(), function () {return 'A'; }));
+        $this->assertSame('', Runtime::wi([], null, null, null, function () {return 'A'; }));
+        $this->assertSame('{"a":"b"}', Runtime::wi([], ['a' => 'b'], null, ['a' => 'c'], function ($c, $i) {return json_encode($i); }));
+        $this->assertSame('-b=', Runtime::wi([], 'b', null, ['a' => 'b'], function ($c, $i) {return "-$i="; }));
     }
 }

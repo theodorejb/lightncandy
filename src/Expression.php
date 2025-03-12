@@ -67,7 +67,7 @@ final class Expression
             }
         }
 
-        return array($levels, $spvar, $var);
+        return [$levels, $spvar, $var];
     }
 
     /**

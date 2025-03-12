@@ -28,6 +28,6 @@ final class Encoder
      */
     public static function encq(array $cx, array|string|int|bool|null $var)
     {
-        return str_replace(array('=', '`', '&#039;'), array('&#x3D;', '&#x60;', '&#x27;'), self::enc($cx, $var));
+        return str_replace(['=', '`', '&#039;'], ['&#x3D;', '&#x60;', '&#x27;'], self::enc($cx, $var));
     }
 }

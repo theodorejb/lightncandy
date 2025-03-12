@@ -9,9 +9,9 @@ class ExporterTest extends TestCase
 {
     public function testClosure(): void
     {
-        $this->assertSame('function($a) {return;}', Exporter::closure(
+        $this->assertSame('function($a) { return 1; }', Exporter::closure(
             ['flags' => []],
-            function ($a) {return;}
+            function ($a) { return 1; },
         ));
     }
 }

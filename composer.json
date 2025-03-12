@@ -23,6 +23,7 @@
         "php": ">=8.2"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.71",
         "jbboehr/handlebars-spec": "dev-master",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^11.5"
@@ -39,6 +40,7 @@
     },
     "scripts": {
         "analyze": "phpstan analyze src tests --level 1",
+        "cs-fix": "php-cs-fixer fix -v",
         "test": "vendor/bin/phpunit tests"
     },
     "config": {

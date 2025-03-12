@@ -17,7 +17,7 @@ final class Compiler extends Validator
      */
     public static function compileTemplate(array &$context, string $template): string
     {
-        array_unshift($context['parsed'], array());
+        array_unshift($context['parsed'], []);
         Validator::verify($context, $template);
         static::$lastParsed = $context['parsed'];
 
@@ -145,7 +145,7 @@ final class Compiler extends Validator
     {
         $ret = static::customHelper($context, $vars, true);
 
-        return array($ret, 'FIXME: $subExpression');
+        return [$ret, 'FIXME: $subExpression'];
     }
 
     /**
@@ -176,7 +176,7 @@ final class Compiler extends Validator
             if ($var[1] === "undefined") {
                 $var[1] = "null";
             }
-            return array($var[1], preg_replace('/\'(.*)\'/', '$1', $var[1]));
+            return [$var[1], preg_replace('/\'(.*)\'/', '$1', $var[1])];
         }
 
         [$levels, $spvar, $var] = Expression::analyze($context, $var);
@@ -193,7 +193,7 @@ final class Compiler extends Validator
         }
 
         if ((empty($var) || (count($var) == 0) || (($var[0] === null) && (count($var) == 1))) && ($lookup === null)) {
-            return array($base, $exp);
+            return [$base, $exp];
         }
 
         if ((count($var) > 0) && ($var[0] === null)) {
@@ -223,7 +223,7 @@ final class Compiler extends Validator
             $lenEnd = ')';
         }
 
-        return array("$base$n$L ?? $lenStart" . ($context['flags']['debug'] ? (static::getFuncName($context, 'miss', '') . "\$cx, '$exp')") : 'null') . "$lenEnd", $lookup ? "lookup $exp $lookup[1]" : $exp);
+        return ["$base$n$L ?? $lenStart" . ($context['flags']['debug'] ? (static::getFuncName($context, 'miss', '') . "\$cx, '$exp')") : 'null') . "$lenEnd", $lookup ? "lookup $exp $lookup[1]" : $exp];
     }
 
     /**
@@ -273,10 +273,10 @@ final class Compiler extends Validator
         $pid = Parser::getPartialBlock($vars);
         $p = array_shift($vars);
         if (!isset($vars[0])) {
-            $vars[0] = $context['flags']['partnc'] ? array(0, 'null') : array();
+            $vars[0] = $context['flags']['partnc'] ? [0, 'null'] : [];
         }
         $v = static::getVariableNames($context, $vars);
-        $tag = ">$p[0] " .implode(' ', $v[1]);
+        $tag = ">$p[0] " . implode(' ', $v[1]);
         if (Parser::isSubExp($p)) {
             [$p] = static::compileSubExpression($context, $p[1]);
         } else {
@@ -298,10 +298,10 @@ final class Compiler extends Validator
         [$code] = array_shift($vars);
         $p = array_shift($vars);
         if (!isset($vars[0])) {
-            $vars[0] = $context['flags']['partnc'] ? array(0, 'null') : array();
+            $vars[0] = $context['flags']['partnc'] ? [0, 'null'] : [];
         }
         $v = static::getVariableNames($context, $vars);
-        $tag = ">*inline $p[0]" .implode(' ', $v[1]);
+        $tag = ">*inline $p[0]" . implode(' ', $v[1]);
         return $context['ops']['separator'] . static::getFuncName($context, 'in', $tag) . "\$cx, '{$p[0]}', $code){$context['ops']['separator']}";
     }
 
@@ -382,7 +382,7 @@ final class Compiler extends Validator
      */
     protected static function blockBegin(array &$context, array $vars): string
     {
-        $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($context, $vars[1]) : array(null, array());
+        $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($context, $vars[1]) : [null, []];
         switch ($vars[0][0] ?? null) {
             case 'if':
                 $includeZero = (isset($vars['includeZero'][1]) && $vars['includeZero'][1]) ? 'true' : 'false';
@@ -436,7 +436,7 @@ final class Compiler extends Validator
      */
     protected static function with(array &$context, array $vars)
     {
-        $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($context, $vars[1]) : array(null, array());
+        $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($context, $vars[1]) : [null, []];
         $bp = Parser::getBlockParams($vars);
         $bs = $bp ? ('array(' . Expression::listString($bp) . ')') : 'null';
         $be = $bp ? " as |$bp[0]|" : '';

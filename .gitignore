@@ -1,7 +1,4 @@
 .idea/
 .phpunit.result.cache
-.php_cs.cache
-.phpdoc
+.php-cs-fixer.cache
 vendor/
-build/result/
-phpDocumentor.phar
