@@ -30,7 +30,6 @@ final class Context
             'elselvl' => [],
             'elsechain' => false,
             'tokens' => [
-                'standalone' => true,
                 'ahead' => false,
                 'current' => 0,
                 'count' => 0,
@@ -66,32 +65,19 @@ final class Context
             'cnd_nend' => ')',
         ];
 
-        static::updateHelperTable($context, $options);
-
-        return $context;
-    }
-
-    /**
-     * update specific custom helper table from options
-     *
-     * @param array<string,array|string|int> $context prepared context
-     *
-     * @return array<string,array|string|int> context with generated helper table
-     */
-    protected static function updateHelperTable(array &$context, Options $options): array
-    {
         foreach ($options->helpers as $name => $func) {
             $tn = is_int($name) ? $func : $name;
             if (is_callable($func)) {
                 $context['helpers'][$tn] = $func;
             } else {
                 if (is_array($func)) {
-                    $context['error'][] = "I found an array in helpers with key as $name, please fix it.";
+                    $context['error'][] = "Custom helper $name must be a function, not an array.";
                 } else {
-                    $context['error'][] = "You provide a custom helper named as '$tn' in options['helpers'], but the function $func() is not defined!";
+                    $context['error'][] = "Custom helper '$tn' must be a function.";
                 }
             }
         }
+
         return $context;
     }
 

@@ -286,10 +286,10 @@ class ErrorTest extends TestCase
                 'template' => '{{helper}}',
                 'options' => new Options(
                     helpers: [
-                        'helper' => ['bad input'],
+                        'foo' => ['bad input'],
                     ],
                 ),
-                'expected' => 'I found an array in helpers with key as helper, please fix it.',
+                'expected' => 'Custom helper foo must be a function, not an array.',
             ],
             [
                 'template' => '{{typeof hello}}',
@@ -373,7 +373,7 @@ class ErrorTest extends TestCase
                 'options' => new Options(
                     helpers: ['abc'],
                 ),
-                'expected' => "You provide a custom helper named as 'abc' in options['helpers'], but the function abc() is not defined!",
+                'expected' => "Custom helper 'abc' must be a function.",
             ],
             [
                 'template' => '{{test_join (foo bar)}}',
