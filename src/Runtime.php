@@ -352,10 +352,9 @@ final class Runtime
      * @param array<string,array|string|int> $cx render time context
      * @param string $ch the name of custom helper to be executed
      * @param array<array|string|int> $vars variables for the helper
-     * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      * @param array<string,array|string|int> $_this current rendering context for the helper
      */
-    public static function hbch(array &$cx, string $ch, array $vars, string $op, mixed &$_this): mixed
+    public static function hbch(array &$cx, string $ch, array $vars, mixed &$_this): mixed
     {
         if (isset($cx['blparam'][0][$ch])) {
             return $cx['blparam'][0][$ch];

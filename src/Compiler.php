@@ -466,13 +466,12 @@ final class Compiler extends Validator
             return '';
         }
 
-        $fn = $raw ? 'raw' : $context['ops']['enc'];
         $ch = array_shift($vars);
         $v = static::getVariableNames($context, $vars);
         static::markUsedHelper($context, $ch[0]);
 
         return static::getFuncName($context, 'hbch', "$ch[0] " . implode(' ', $v[1]))
-            . "\$cx, '$ch[0]', {$v[0]}, '$fn', \$in)";
+            . "\$cx, '$ch[0]', {$v[0]}, \$in)";
     }
 
     /**
@@ -524,7 +523,7 @@ final class Compiler extends Validator
         $sep = $nosep ? '' : $context['ops']['separator'];
         $ex = $nosep ? ', 1' : '';
 
-        return $sep . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $v[1]) . "\$cx, {$v[0]}$ex){$sep}";
+        return $sep . static::getFuncName($context, $raw ? 'raw' : 'encq', $v[1]) . "\$cx, {$v[0]}$ex){$sep}";
     }
 
     /**
@@ -538,7 +537,7 @@ final class Compiler extends Validator
     protected static function compileOutput(array &$context, string $variable, string $expression, bool $raw): string
     {
         $sep = $context['ops']['separator'];
-        return $sep . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $expression) . "\$cx, $variable)$sep";
+        return $sep . static::getFuncName($context, $raw ? 'raw' : 'encq', $expression) . "\$cx, $variable)$sep";
     }
 
     /**

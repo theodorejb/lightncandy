@@ -66,7 +66,6 @@ final class Context
             'cnd_nend' => ')',
         ];
 
-        $context['ops']['enc'] = 'encq';
         static::updateHelperTable($context, $options);
 
         return $context;
