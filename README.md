@@ -1,291 +1,121 @@
-LightnCandy
-===========
+# PHP Handlebars
 
 An extremely fast PHP implementation of [Handlebars](https://handlebarsjs.com/).
 
-Features
---------
+Originally based on [LightnCandy](https://github.com/zordius/lightncandy), but rewritten to focus on
+more robust Handlebars.js compatibility without the need for excessive feature flags.
 
-* Compile template to **pure PHP** code. Examples:
-   * <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.tmpl">Template A</a> generated <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.php">PHP A</a>
-   * <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.tmpl">Template B</a> generated <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.php">PHP B</a>
-* **ROBUST!**
-   * Supports almost all <a href="https://github.com/jbboehr/handlebars-spec">handlebars.js spec</a>
-   * Output <a href="https://github.com/zordius/HandlebarsTest/blob/master/FEATURES.md">SAME</a> with <a href="https://github.com/wycats/handlebars.js">handlebars.js</a>
-* Context generation
-   * Analyze used features from your template (execute `LightnCandy::getContext()` to get it) .
-* Debug
-   * <a href="#template-debugging">Generate debug version template</a>
-      * Find out missing data when rendering template.
-      * Generate visually debug template.
-* Standalone Template
-   * The compiled PHP code can run without any PHP library. You do not need to include LightnCandy when execute rendering function.
+## Features
 
-Installation
-------------
+* Compile templates to pure PHP code.
+* Supports most of the [Handlebars.js spec](https://github.com/jbboehr/handlebars-spec).
 
-Use Composer ( https://getcomposer.org/ ) to install LightnCandy:
-
+## Installation
 ```
-composer require zordius/lightncandy:dev-master
+composer require devtheorem/php-handlebars
 ```
 
-**UPGRADE NOTICE**
+## Usage
+```php
+use DevTheorem\Handlebars\Handlebars;
 
-* Please check <a href="HISTORY.md">HISTORY.md</a> for versions history.
-* Please check <a href="UPGRADE.md">UPGRADE.md</a> for upgrade notice.
+$template = Handlebars::compile('Hello {{name}}!');
 
-Documents
----------
+echo $template(['name' => 'World']); // Hello World!
+```
 
-* <a href="https://zordius.github.io/HandlebarsCookbook/9000-quickstart.html">Quick Start</a>
-
-Compile Options
----------------
-
-You can apply more options by running `LightnCandy::compile($template, $options)`:
+## Precompilation
+Templates can be pre-compiled to native PHP for later execution:
 
 ```php
-LightnCandy::compile($template, array(
-    'flags' => LightnCandy::FLAG_PREVENTINDENT
-));
+use DevTheorem\Handlebars\Handlebars;
+
+$code = Handlebars::precompile('<p>{{org.name}}</p>');
+
+// save the compiled code into a PHP file
+file_put_contents('render.php', "<?php $code");
+
+// later import the template function from the PHP file
+$template = require 'render.php';
+
+echo $template(['org' => ['name' => 'DevTheorem']]);
 ```
 
-**Handlebars Options**
-* `FLAG_KNOWNHELPERSONLY`: Set to allow further optimizations based on the known helpers list. Same as the Handlebars.js `knownHelpersOnly` compile time option.
-* `FLAG_NOESCAPE` : Set to not HTML escape any content.
-* `FLAG_STRICT` : Run in strict mode. In this mode, templates will throw rather than silently ignore missing fields.
-* `FLAG_PREVENTINDENT` : Prevent indented partial-call from indenting the entire partial output by the same amount. Same as the Handlebars.js `preventIndent` compile option.
-* `FLAG_IGNORESTANDALONE` : prevent standalone detection on `{{#foo}}`, `{{/foo}}` or `{{^}}`, the behavior is same with handlebars.js `ignoreStandalone` compile time option.
-* `FLAG_PARTIALNEWCONTEXT` : Disables implicit context for partials. When enabled, partials that are not passed a context value will execute against an empty object.
+## Compile Options
 
-Partial Support
----------------
-
-* <a href="https://zordius.github.io/HandlebarsCookbook/0011-partial.html">Example of compile time partial</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/0024-partialcontext.html">Example of partial context changing</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/0028-dynamicpartial.html">use dynamic partial</a>
-
-Custom Helper
--------------
-
-* <a href="https://zordius.github.io/HandlebarsCookbook/9001-customhelper.html">Custom Helpers in LighnCandy</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/9002-helperoptions.html">The $options Object</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/9003-helperescaping.html">Use SafeString</a>
-
-Custom Helper Examples
-----------------------
-
-**#mywith (context change)**
-* LightnCandy
-```php
-// LightnCandy sample, #mywith works same with #with
-$php = LightnCandy::compile($template, array(
-    'helpers' => array(
-        'mywith' => function ($context, $options) {
-            return $options['fn']($context);
-        }
-    )
-));
-```
-
-* Handlebars.js
-```javascript
-// Handlebars.js sample, #mywith works same with #with
-Handlebars.registerHelper('mywith', function(context, options) {
-    return options.fn(context);
-});
-```
-
-**#myeach (context change)**
-* LightnCandy
-```php
-// LightnCandy sample, #myeach works same with #each
-$php = LightnCandy::compile($template, array(
-    'helpers' => array(
-        'myeach' => function ($context, $options) {
-            $ret = '';
-            foreach ($context as $cx) {
-                $ret .= $options['fn']($cx);
-            }
-            return $ret;
-        }
-    )
-));
-```
-
-* Handlebars.js
-```javascript
-// Handlebars.js sample, #myeach works same with #each
-Handlebars.registerHelper('myeach', function(context, options) {
-    var ret = '', i, j = context.length;
-    for (i = 0; i < j; i++) {
-        ret = ret + options.fn(context[i]);
-    }
-    return ret;
-});
-```
-
-**#myif (no context change)**
-* LightnCandy
-```php
-// LightnCandy sample, #myif works same with #if
-$php = LightnCandy::compile($template, array(
-    'helpers' => array(
-        'myif' => function ($conditional, $options) {
-            if ($conditional) {
-                return $options['fn']();
-            } else {
-                return $options['inverse']();
-            }
-        }
-    )
-));
-```
-
-* Handlebars.js
-```javascript
-// Handlebars.js sample, #myif works same with #if
-Handlebars.registerHelper('myif', function(conditional, options) {
-    if (conditional) {
-        return options.fn(this);
-    } else {
-        return options.inverse(this);
-    }
-});
-```
-
-You can use `isset($options['fn'])` to detect your custom helper is a block or not; you can also use `isset($options['inverse'])` to detect the existence of `{{else}}`.
-
-**Data variables and context**
-
-You can get special data variables from `$options['data']`. Using `$options['_this']` to receive current context.
+You can alter the template compilation by passing an `Options` instance as the second argument to `compile` or `precompile`.
+For example, the `strict` option may be set to `true` to generate a debug template which
+contains additional info and will throw an exception for missing data:
 
 ```php
-$php = LightnCandy::compile($template, array(
-    'helpers' => array(
-        'getRoot' => function ($options) {
-            print_r($options['_this']); // dump current context
-            return $options['data']['root']; // same as {{@root}}
-        }
-    )
+use DevTheorem\Handlebars\{Handlebars, Options};
+
+$template = Handlebars::compile('Hi {{first}} {{last}}!', new Options(
+    strict: true,
 ));
+
+echo $template(['first' => 'John']); // Error: Runtime: [last] does not exist
 ```
 
-* Handlebars.js
-```javascript
-Handlebars.registerHelper('getRoot', function(options) {
-    console.log(this); // dump current context
-    return options.data.root; // same as {{@root}}
-});
-```
+**Available Options:**
+* `knownHelpersOnly`: Enable to allow further optimizations based on the known helpers list.
+* `noEscape`: Enable to not HTML escape any content.
+* `strict`: Run in strict mode. In this mode, templates will throw rather than silently ignore missing fields.
+* `preventIndent`: Prevent indented partial-call from indenting the entire partial output by the same amount.
+* `ignoreStandalone`: Disables standalone tag removal. When set, blocks and partials that are on their own line will not remove the whitespace on that line.
+* `explicitPartialContext`: Disables implicit context for partials. When enabled, partials that are not passed a context value will execute against an empty object.
+* `helpers`: Provide a key => value array of custom helper functions.
+* `partials`: Provide a key => value array of custom partial templates.
 
-**Private variables**
+## Custom Helpers
 
-You can inject private variables into inner block when you execute child block with second parameter. The example code showed similar behavior with `{{#each}}` which sets index for child block and can be accessed with `{{@index}}`.
+Helper functions will be passed any arguments provided to the helper in the template.
+If needed, a final `$options` parameter can be included which will be passed a `HelperOptions` instance.
+This object contains properties for accessing `hash` arguments, `data`, and the current `scope`, as well as
+`fn()` and `inverse()` methods to render the block and else contents, respectively.
 
-* LightnCandy
-```php
-$php = LightnCandy::compile($template, array(
-    'helpers' => array(
-        'list' => function ($context, $options) {
-            $out = '';
-            $data = $options['data'];
-
-            foreach ($context as $idx => $cx) {
-                $data['index'] = $idx;
-                $out .= $options['fn']($cx, array('data' => $data));
-            }
-
-            return $out;
-        }
-    )
-));
-```
-
-* Handlebars.js
-```javascript
-Handlebars.registerHelper('list', function(context, options) {
-  var out = '';
-  var data = options.data ? Handlebars.createFrame(options.data) : undefined;
-
-  for (var i=0; i<context.length; i++) {
-    if (data) {
-      data.index = i;
-    }
-    out += options.fn(context[i], {data: data});
-  }
-  return out;
-});
-```
-
-Template Debugging
-------------------
-
-`LightnCandy::compile()` will throw an exception if there is a template error which prevents compilation.
-
-You may generate debug version of templates with `FLAG_STRICT` when compiling.
-The debug template contains additional debug info and will throw an exception for missing data. For example:
+For example, a custom `#equals` helper with JS equality semantics could be implemented as follows:
 
 ```php
-$template = "Hello! {{name}} is {{gender}}.
-Test1: {{@root.name}}
-Test2: {{@root.gender}}
-Test3: {{../test3}}
-Test4: {{../../test4}}
-Test5: {{../../.}}
-Test6: {{../../[test'6]}}
-{{#each .}}
-each Value: {{.}}
-{{/each}}
-{{#.}}
-section Value: {{.}}
-{{/.}}
-{{#if .}}IF OK!{{/if}}
-{{#unless .}}Unless not OK!{{/unless}}
-";
+use DevTheorem\Handlebars\{Handlebars, HelperOptions, Options};
 
-// compile to debug version
-$phpStr = LightnCandy::compile($template, array(
-    'flags' => LightnCandy::STRICT
+$template = Handlebars::compile('{{#equals my_var false}}Equal to false{{else}}Not equal{{/equals}}', new Options(
+    helpers: [
+        'equals' => function (mixed $a, mixed $b, HelperOptions $options) {
+            $jsEquals = function (mixed $a, mixed $b): bool {
+                if ($a === null || $b === null) {
+                    // in JS, null is not equal to blank string or false or zero
+                    return $a === $b;
+                }
+
+                return $a == $b;
+            };
+
+            return $jsEquals($a, $b) ? $options->fn() : $options->inverse();
+        },
+    ],
 ));
 
-// Save the compiled PHP code into a php file
-file_put_contents('render.php', '<?php ' . $phpStr . '?>');
-
-// Get the render function from the php file
-$renderer = include('render.php');
-
-//   LightnCandy\Runtime: [gender] is not exist
-echo $renderer(array('name' => 'John'));
+echo $template(['my_var' => 0]); // Equal to false
+echo $template(['my_var' => 1]); // Not equal
+echo $template(['my_var' => null]); // Not equal
 ```
 
-Unsupported Feature
--------------------
+## Unsupported Features
 
-* `{{foo/bar}}` style variable name, it is deprecated in official handlebars.js document, please use this style: `{{foo.bar}}`.
+* `{{foo/bar}}` style variables (deprecated in official Handlebars.js). Instead use: `{{foo.bar}}`.
 
-Detail Feature list
--------------------
+## Detailed Feature list
 
-Go http://handlebarsjs.com/ to see more feature description about handlebars.js. All features align with it.
+Go https://handlebarsjs.com/ to see more details about each feature.
 
-* Exact same CR/LF behavior with handlebars.js
-* Exact same 'true' or 'false' output with handlebars.js
-* Exact same '[object Object]' output or join(',' array) output with handlebars.js
-* Can place heading/tailing space, tab, CR/LF inside `{{ var }}` or `{{{ var }}}`
+* Exact same CR/LF behavior as Handlebars.js
+* Exact same 'true' or 'false' output as Handlebars.js
+* Exact same '[object Object]' output or join(',' array) output as Handlebars.js
 * `{{{value}}}` or `{{&value}}` : raw variable
-   * true as 'true'
-   * false as 'false' (require `FLAG_TRUE`)
 * `{{value}}` : HTML escaped variable
-   * true as 'true'
-   * false as 'false'
-* `{{{path.to.value}}}` : dot notation, raw
-* `{{path.to.value}}` : dot notation, HTML escaped 
-* `{{.}}` : current context, HTML escaped
-* `{{{.}}}` : current context, raw
-* `{{this}}` : current context, HTML escaped
-* `{{{this}}}` : current context, raw
+* `{{path.to.value}}` : dot notation
+* `{{.}}` or `{{this}}` : current context
 * `{{#value}}` : section
    * false, undefined and null will skip the section
    * true will run the section with original scope
@@ -295,9 +125,9 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
    * false, undefined and null will run the section with original scope
    * All others will skip the section (includes 0, 1, -1, '', '1', '0', '-1', 'false', Array, ...)
 * `{{! comment}}` : comment
-* `{{!-- comment or {{ or }} --}}` : extended comment that can contain }} or {{ .
+* `{{!-- comment {{ or }} --}}` : extended comment that can contain }} or {{ .
 * `{{#each var}}` : each loop
-* `{{#each}}` : each loop on {{.}}
+* `{{#each}}` : each loop on `{{.}}`
 * `{{/each}}` : end loop
 * `{{#each bar as |foo|}}` : echo loop on bar and set the value as foo.
 * `{{#each bar as |foo moo|}}` : echo loop on bar, set the value as foo, set the index as moo.
@@ -326,7 +156,6 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{@root.path.to.value}}` : references to root context then follow the path.
 * `{{@../index}}` : access to parent loop index.
 * `{{@../key}}` : access to parent loop key.
-* `{{foo.[ba.r].[#spec].0.ok}}` : references to $CurrentConext['foo']['ba.r']['#spec'][0]['ok'] .
 * `{{~any_valid_tag}}` : Space control, remove all previous spacing (includes CR/LF, tab, space; stop on any none spacing character)
 * `{{any_valid_tag~}}` : Space control, remove all next spacing (includes CR/LF, tab, space; stop on any none spacing character)
 * `{{{helper var}}}` : Execute custom helper then render the result

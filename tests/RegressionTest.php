@@ -23,10 +23,10 @@ class RegressionTest extends TestCase
         try {
             $template = Handlebars::template($templateSpec);
             $result = $template($issue['data'] ?? null);
-            $this->assertEquals($issue['expected'], $result, "PHP CODE:\n$templateSpec");
         } catch (\Throwable $e) {
             $this->fail("Error: {$e->getMessage()}\nPHP code:\n$templateSpec");
         }
+        $this->assertEquals($issue['expected'], $result, "PHP CODE:\n$templateSpec");
     }
 
     public static function issueProvider(): array
@@ -72,6 +72,19 @@ class RegressionTest extends TestCase
 
         $myDash = function ($a, $b) {
             return "$a-$b";
+        };
+
+        $equals = function (mixed $a, mixed $b, HelperOptions $options) {
+            $jsEquals = function (mixed $a, mixed $b): bool {
+                if ($a === null || $b === null) {
+                    // in JS, null is not equal to blank string or false or zero
+                    return $a === $b;
+                }
+
+                return $a == $b;
+            };
+
+            return $jsEquals($a, $b) ? $options->fn() : $options->inverse();
         };
 
         $issues = [
@@ -1713,6 +1726,31 @@ class RegressionTest extends TestCase
                     ],
                 ),
                 'expected' => 'abc-ab',
+            ],
+
+            [
+                'template' => '{{#equals my_var false}}Equal to false{{else}}Not equal{{/equals}}',
+                'data' => ['my_var' => 0],
+                'options' => new Options(
+                    helpers: ['equals' => $equals],
+                ),
+                'expected' => 'Equal to false',
+            ],
+            [
+                'template' => '{{#equals my_var false}}Equal to false{{else}}Not equal{{/equals}}',
+                'data' => ['my_var' => 1],
+                'options' => new Options(
+                    helpers: ['equals' => $equals],
+                ),
+                'expected' => 'Not equal',
+            ],
+            [
+                'template' => '{{#equals my_var false}}Equal to false{{else}}Not equal{{/equals}}',
+                'data' => [],
+                'options' => new Options(
+                    helpers: ['equals' => $equals],
+                ),
+                'expected' => 'Not equal',
             ],
 
             [
