@@ -16,8 +16,8 @@ class RegressionTest extends TestCase
         $templateSpec = Handlebars::precompile($issue['template'], $issue['options'] ?? new Options());
         $context = Handlebars::getContext();
         $parsed = print_r(Handlebars::$lastParsed, true);
-        if (count($context['error'])) {
-            $this->fail('Compile failed due to: ' . print_r($context['error'], true) . "\nPARSED: $parsed");
+        if ($context->error) {
+            $this->fail('Compile failed due to: ' . print_r($context->error, true) . "\nPARSED: $parsed");
         }
 
         try {

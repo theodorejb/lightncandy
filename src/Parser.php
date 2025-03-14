@@ -61,11 +61,10 @@ final class Parser
      * Return array presentation for an expression
      *
      * @param string $v analyzed expression names.
-     * @param array<string,array|string|int> $context Current compile content.
      *
      * @return array<int,string> Return variable name array
      */
-    protected static function getExpression(string $v, array &$context, int|string $pos): array
+    protected static function getExpression(string $v, Context $context, int|string $pos): array
     {
         $asis = ($pos === 0);
 
@@ -111,20 +110,20 @@ final class Parser
         }
 
         if (preg_match('/\\]/', $v)) {
-            preg_match_all(Token::VARNAME_SEARCH, $v, $matchedall);
+            preg_match_all(Token::VARNAME_SEARCH, $v, $matchedAll);
         } else {
-            preg_match_all('/([^\\.\\/]+)/', $v, $matchedall);
+            preg_match_all('/([^\\.\\/]+)/', $v, $matchedAll);
         }
 
         if ($v !== '.') {
-            $vv = implode('.', $matchedall[1]);
+            $vv = implode('.', $matchedAll[1]);
             if (strlen($v) !== strlen($vv)) {
-                $context['error'][] = "Unexpected character in '$v' (should it be '$vv' ?)";
+                $context->error[] = "Unexpected character in '$v' (should it be '$vv' ?)";
             }
         }
 
-        foreach ($matchedall[1] as $m) {
-            if (substr($m, 0, 1) === '[') {
+        foreach ($matchedAll[1] as $m) {
+            if (str_starts_with($m, '[')) {
                 $ret[] = substr($m, 1, -1);
             } elseif ($m !== 'this' && ($m !== '.')) {
                 $ret[] = $m;
@@ -133,7 +132,7 @@ final class Parser
             }
         }
 
-        if (($scoped > 0) && ($levels === 0) && (count($ret) > 0)) {
+        if ($scoped > 0 && $levels === 0 && count($ret) > 0) {
             array_unshift($ret, 0);
         }
 
@@ -144,11 +143,10 @@ final class Parser
      * Parse the token and return parsed result.
      *
      * @param array<string> $token preg_match results
-     * @param array<string,array|string|int> $context current compile context
      *
      * @return array<bool|int|array> Return parsed result
      */
-    public static function parse(array &$token, array &$context): array
+    public static function parse(array &$token, Context $context): array
     {
         $vars = static::analyze($token[Token::POS_INNERTAG], $context);
         if ($token[Token::POS_OP] === '>') {
@@ -167,7 +165,7 @@ final class Parser
             }
         }
 
-        return [($token[Token::POS_BEGINRAW] === '{') || ($token[Token::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $avars];
+        return [($token[Token::POS_BEGINRAW] === '{') || ($token[Token::POS_OP] === '&') || $context->options->noEscape || $context->rawBlock, $avars];
     }
 
     /**
@@ -190,17 +188,16 @@ final class Parser
      * Parse a subexpression then return parsed result.
      *
      * @param string $expression the full string of a sub expression
-     * @param array<string,array|string|int> $context current compile context
      *
      * @return array<bool|int|array> Return parsed result
      */
-    public static function subexpression(string $expression, array &$context): array
+    public static function subexpression(string $expression, Context $context): array
     {
         $vars = static::analyze(substr($expression, 1, -1), $context);
         $avars = static::advancedVariable($vars, $context, $expression);
         if (isset($avars[0][0])) {
             if (!Validator::helper($context, $avars, true)) {
-                $context['error'][] = 'Missing helper: "' . $avars[0][0] . '"';
+                $context->error[] = 'Missing helper: "' . $avars[0][0] . '"';
             }
         }
         return [static::SUBEXP, $avars, $expression];
@@ -220,12 +217,11 @@ final class Parser
      * Analyze parsed token for advanced variables.
      *
      * @param array<bool|int|array> $vars parsed token
-     * @param array<string,array|string|int> $context current compile context
      * @param string $token original token
      *
      * @return array<bool|int|array> Return parsed result
      */
-    protected static function advancedVariable(array $vars, array &$context, string $token): array
+    protected static function advancedVariable(array $vars, Context $context, string $token): array
     {
         $ret = [];
         $i = 0;
@@ -263,13 +259,13 @@ final class Parser
                     // .foo[ Rule 4: middle [ not after .
                     || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/^(..\\/)+/', '', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $var)))
                 ) {
-                    $context['error'][] = "Wrong variable naming as '$var' in $token !";
+                    $context->error[] = "Wrong variable naming as '$var' in $token !";
                 } else {
                     $name = preg_replace('/(\\[.+?\\])/', '', $var);
-                    // Scan for invalid charactors which not be protected by [ ]
+                    // Scan for invalid characters which not be protected by [ ]
                     // now make ( and ) pass, later fix
                     if (preg_match('/[!"#%\'*+,;<=>{|}~]/', $name)) {
-                        $context['error'][] = "Wrong variable naming as '$var' in $token ! You should wrap ! \" # % & ' * + , ; < = > { | } ~ into [ ]";
+                        $context->error[] = "Wrong variable naming as '$var' in $token ! You should wrap ! \" # % & ' * + , ; < = > { | } ~ into [ ]";
                     }
                 }
             }
@@ -335,11 +331,10 @@ final class Parser
      * Analyze a token string and return parsed result.
      *
      * @param string $token preg_match results
-     * @param array<string,array|string|int> $context current compile context
      *
      * @return array<bool|int|array> Return parsed result
      */
-    protected static function analyze(string $token, array &$context): array
+    protected static function analyze(string $token, Context $context): array
     {
         // Do not break quoted strings. Also, allow escaped quotes inside them.
         $count = preg_match_all('/(\s*)([^"\s]*"(\\\\\\\\.|[^"])*"|[^\'\s]*\'(\\\\\\\\.|[^\'])*\'|\S+)/', $token, $matches);
@@ -380,7 +375,7 @@ final class Parser
                                 continue;
                             }
                             if ($stack < 0) {
-                                $context['error'][] = "Unexpected ')' in expression '$token' !!";
+                                $context->error[] = "Unexpected ')' in expression '$token' !!";
                                 $expect = 0;
                                 break;
                             }
@@ -417,7 +412,7 @@ final class Parser
             }
 
             if ($expect) {
-                $context['error'][] = "Error in '$token': expect '$expect' but the token ended!!";
+                $context->error[] = "Error in '$token': expect '$expect' but the token ended!!";
             }
 
             return $vars;

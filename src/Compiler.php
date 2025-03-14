@@ -11,39 +11,36 @@ final class Compiler extends Validator
 
     /**
      * Compile template into PHP code
-     *
-     * @param array<string,array|string|int> $context Current context
-     * @param string $template handlebars template
      */
-    public static function compileTemplate(array &$context, string $template): string
+    public static function compileTemplate(Context $context, string $template): string
     {
-        array_unshift($context['parsed'], []);
+        array_unshift($context->parsed, []);
         Validator::verify($context, $template);
-        static::$lastParsed = $context['parsed'];
+        static::$lastParsed = $context->parsed;
 
-        if (count($context['error'])) {
+        if (count($context->error)) {
             return '';
         }
 
         Token::setDelimiter($context);
 
-        $context['compile'] = true;
+        $context->compile = true;
 
         // Handle dynamic partials
         Partial::handleDynamic($context);
 
         // Do PHP code generation.
         $code = '';
-        foreach ($context['parsed'][0] as $info) {
+        foreach ($context->parsed[0] as $info) {
             if (is_array($info)) {
-                $context['tokens']['current']++;
+                $context->tokens['current']++;
                 $code .= "'" . static::compileToken($context, $info) . "'";
             } else {
                 $code .= $info;
             }
         }
 
-        array_shift($context['parsed']);
+        array_shift($context->parsed);
 
         return $code;
     }
@@ -51,18 +48,17 @@ final class Compiler extends Validator
     /**
      * Compile Handlebars template to PHP function.
      *
-     * @param array<string,array|string|int> $context Current context
      * @param string $code generated PHP code
      */
-    public static function composePHPRender(array $context, string $code): string
+    public static function composePHPRender(Context $context, string $code): string
     {
-        $flagPartNC = Expression::boolString($context['flags']['partnc']);
-        $flagKnownHlp = Expression::boolString($context['flags']['knohlp']);
+        $flagPartNC = Expression::boolString($context->options->explicitPartialContext);
+        $flagKnownHlp = Expression::boolString($context->options->knownHelpersOnly);
         $runtime = Runtime::class;
         $helperOptions = HelperOptions::class;
         $safeStringClass = SafeString::class;
         $helpers = Exporter::helpers($context);
-        $partials = implode(",\n", $context['partialCode']);
+        $partials = implode(",\n", $context->partialCode);
 
         // Return generated PHP code string.
         return <<<VAREND
@@ -84,7 +80,7 @@ final class Compiler extends Validator
                     'blparam' => [],
                     'partialid' => 0,
                 ];
-                {$context['ops']['op_start']}'$code'{$context['ops']['op_end']}
+                {$context->ops['op_start']}'$code'{$context->ops['op_end']}
             };
             VAREND;
     }
@@ -92,13 +88,12 @@ final class Compiler extends Validator
     /**
      * Get function name for standalone or non-standalone template.
      *
-     * @param array<string,array|string|int> $context Current context of compiler progress.
      * @param string $name base function name
      * @param string $tag original handlebars tag for debug
      */
-    protected static function getFuncName(array &$context, string $name, string $tag): string
+    protected static function getFuncName(Context $context, string $name, string $tag): string
     {
-        if ($context['flags']['debug'] && ($name != 'miss')) {
+        if ($context->options->strict && $name != 'miss') {
             $dbg = "'$tag', '$name', ";
             $name = 'debug';
         } else {
@@ -111,12 +106,11 @@ final class Compiler extends Validator
     /**
      * Get string presentation of variables
      *
-     * @param array<string,array|string|int> $context current compile context
      * @param array<array> $vn variable name array.
      *
      * @return array<string|array> variable names
      */
-    protected static function getVariableNames(array &$context, array $vn, array $blockParams = []): array
+    protected static function getVariableNames(Context $context, array $vn, array $blockParams = []): array
     {
         $vars = [[], []];
         $exps = [];
@@ -136,12 +130,11 @@ final class Compiler extends Validator
     /**
      * Get string presentation of a sub expression
      *
-     * @param array<string,array|string|int> $context current compile context
      * @param array<bool|int|string|array> $vars parsed arguments list
      *
      * @return array<string> code representing passed expression
      */
-    public static function compileSubExpression(array &$context, array $vars): array
+    public static function compileSubExpression(Context $context, array $vars): array
     {
         $ret = static::customHelper($context, $vars, true);
 
@@ -151,12 +144,11 @@ final class Compiler extends Validator
     /**
      * Get string presentation of a subexpression or a variable
      *
-     * @param array<array|string|int> $context current compile context
      * @param array<array|string|int> $var variable parsed path
      *
      * @return array<string> variable names
      */
-    protected static function getVariableNameOrSubExpression(array &$context, array $var): array
+    protected static function getVariableNameOrSubExpression(Context $context, array $var): array
     {
         return Parser::isSubExp($var) ? static::compileSubExpression($context, $var[1]) : static::getVariableName($context, $var);
     }
@@ -165,12 +157,11 @@ final class Compiler extends Validator
      * Get string presentation of a variable
      *
      * @param array<array|string|int> $var variable parsed path
-     * @param array<array|string|int> $context current compile context
      * @param array<string>|null $lookup extra lookup string as valid PHP variable name
      *
      * @return array<string> variable names
      */
-    protected static function getVariableName(array &$context, array $var, ?array $lookup = null): array
+    protected static function getVariableName(Context $context, array $var, ?array $lookup = null): array
     {
         if (isset($var[0]) && ($var[0] === Parser::LITERAL)) {
             if ($var[1] === "undefined") {
@@ -179,7 +170,7 @@ final class Compiler extends Validator
             return [$var[1], preg_replace('/\'(.*)\'/', '$1', $var[1])];
         }
 
-        [$levels, $spvar, $var] = Expression::analyze($context, $var);
+        [$levels, $spvar, $var] = Expression::analyze($var);
         $exp = Expression::toString($levels, $spvar, $var);
         $base = $spvar ? "\$cx['sp_vars']" : '$in';
 
@@ -223,21 +214,20 @@ final class Compiler extends Validator
             $lenEnd = ')';
         }
 
-        return ["$base$n$L ?? $lenStart" . ($context['flags']['debug'] ? (static::getFuncName($context, 'miss', '') . "\$cx, '$exp')") : 'null') . "$lenEnd", $lookup ? "lookup $exp $lookup[1]" : $exp];
+        return ["$base$n$L ?? $lenStart" . ($context->options->strict ? (static::getFuncName($context, 'miss', '') . "\$cx, '$exp')") : 'null') . "$lenEnd", $lookup ? "lookup $exp $lookup[1]" : $exp];
     }
 
     /**
      * Return compiled PHP code for a handlebars token
      *
-     * @param array<string,array|string|int> $context current compile context
      * @param array<string,array|bool> $info parsed information
      */
-    protected static function compileToken(array &$context, array $info): string
+    protected static function compileToken(Context $context, array $info): string
     {
         [$raw, $vars, $token, $indent] = $info;
 
-        $context['tokens']['partialind'] = $indent;
-        $context['currentToken'] = $token;
+        $context->tokens['partialind'] = $indent;
+        $context->currentToken = $token;
 
         if ($ret = static::operator($token[Token::POS_OP], $context, $vars)) {
             return $ret;
@@ -264,16 +254,15 @@ final class Compiler extends Validator
     /**
      * handle partial
      *
-     * @param array $context current compile context
      * @param array $vars parsed arguments list
      */
-    public static function partial(array &$context, array $vars): string
+    public static function partial(Context $context, array $vars): string
     {
         Parser::getBlockParams($vars);
         $pid = Parser::getPartialBlock($vars);
         $p = array_shift($vars);
         if (!isset($vars[0])) {
-            $vars[0] = $context['flags']['partnc'] ? [0, 'null'] : [];
+            $vars[0] = $context->options->explicitPartialContext ? [0, 'null'] : [];
         }
         $v = static::getVariableNames($context, $vars);
         $tag = ">$p[0] " . implode(' ', $v[1]);
@@ -282,49 +271,46 @@ final class Compiler extends Validator
         } else {
             $p = "'$p[0]'";
         }
-        $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
-        return $context['ops']['separator'] . static::getFuncName($context, 'p', $tag) . "\$cx, $p, $v[0],$pid$sp){$context['ops']['separator']}";
+        $sp = $context->tokens['partialind'] ? ", '{$context->tokens['partialind']}'" : '';
+        return $context->ops['separator'] . static::getFuncName($context, 'p', $tag) . "\$cx, $p, $v[0],$pid$sp){$context->ops['separator']}";
     }
 
     /**
      * handle inline partial
      *
-     * @param array $context current compile context
      * @param array $vars parsed arguments list
      */
-    public static function inline(array &$context, array $vars): string
+    public static function inline(Context $context, array $vars): string
     {
         Parser::getBlockParams($vars);
         [$code] = array_shift($vars);
         $p = array_shift($vars);
         if (!isset($vars[0])) {
-            $vars[0] = $context['flags']['partnc'] ? [0, 'null'] : [];
+            $vars[0] = $context->options->explicitPartialContext ? [0, 'null'] : [];
         }
         $v = static::getVariableNames($context, $vars);
         $tag = ">*inline $p[0]" . implode(' ', $v[1]);
-        return $context['ops']['separator'] . static::getFuncName($context, 'in', $tag) . "\$cx, '{$p[0]}', $code){$context['ops']['separator']}";
+        return $context->ops['separator'] . static::getFuncName($context, 'in', $tag) . "\$cx, '{$p[0]}', $code){$context->ops['separator']}";
     }
 
     /**
      * Return compiled PHP code for a handlebars inverted section begin token
      *
-     * @param array $context current compile context
      * @param array $vars parsed arguments list
      */
-    protected static function invertedSection(array &$context, array $vars): string
+    protected static function invertedSection(Context $context, array $vars): string
     {
         $v = static::getVariableName($context, $vars[0]);
-        return "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'isec', '^' . $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
+        return "{$context->ops['cnd_start']}(" . static::getFuncName($context, 'isec', '^' . $v[1]) . "\$cx, {$v[0]})){$context->ops['cnd_then']}";
     }
 
     /**
      * Return compiled PHP code for a handlebars block custom helper begin token
      *
-     * @param array $context current compile context
      * @param array $vars parsed arguments list
      * @param bool $inverted the logic will be inverted
      */
-    protected static function blockCustomHelper(array &$context, array $vars, bool $inverted = false): string
+    protected static function blockCustomHelper(Context $context, array $vars, bool $inverted = false): string
     {
         $bp = Parser::getBlockParams($vars);
         $ch = array_shift($vars);
@@ -332,43 +318,42 @@ final class Compiler extends Validator
         static::markUsedHelper($context, $ch[0]);
         $v = static::getVariableNames($context, $vars, $bp);
 
-        return $context['ops']['separator'] . static::getFuncName($context, 'hbbch', ($inverted ? '^' : '#') . implode(' ', $v[1]))
-            . "\$cx, '$ch[0]', {$v[0]}, \$in, $invertedStr, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context->ops['separator'] . static::getFuncName($context, 'hbbch', ($inverted ? '^' : '#') . implode(' ', $v[1]))
+            . "\$cx, '$ch[0]', {$v[0]}, \$in, $invertedStr, function(\$cx, \$in) {{$context->ops['f_start']}";
     }
 
     /**
      * Return compiled PHP code for a handlebars block end token
      *
-     * @param array $context current compile context
      * @param array $vars parsed arguments list
      * @param string|null $match should also match to this operator
      */
-    protected static function blockEnd(array &$context, array &$vars, ?string $match = null): string
+    protected static function blockEnd(Context $context, array &$vars, ?string $match = null): string
     {
-        $pop = $context['stack'][count($context['stack']) - 1];
+        $pop = $context->stack[count($context->stack) - 1];
 
-        switch (isset($context['helpers'][$context['currentToken'][Token::POS_INNERTAG]]) ? 'skip' : $context['currentToken'][Token::POS_INNERTAG]) {
+        switch (isset($context->helpers[$context->currentToken[Token::POS_INNERTAG]]) ? 'skip' : $context->currentToken[Token::POS_INNERTAG]) {
             case 'if':
             case 'unless':
                 if ($pop === ':') {
-                    array_pop($context['stack']);
-                    return "{$context['ops']['cnd_end']}";
+                    array_pop($context->stack);
+                    return "{$context->ops['cnd_end']}";
                 }
-                return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
+                return "{$context->ops['cnd_else']}''{$context->ops['cnd_end']}";
             case 'with':
-                return "{$context['ops']['f_end']}}){$context['ops']['separator']}";
+                return "{$context->ops['f_end']}}){$context->ops['separator']}";
         }
 
         if ($pop === ':') {
-            array_pop($context['stack']);
-            return "{$context['ops']['f_end']}}){$context['ops']['separator']}";
+            array_pop($context->stack);
+            return "{$context->ops['f_end']}}){$context->ops['separator']}";
         }
 
         switch ($pop) {
             case '#':
-                return "{$context['ops']['f_end']}}){$context['ops']['separator']}";
+                return "{$context->ops['f_end']}}){$context->ops['separator']}";
             case '^':
-                return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
+                return "{$context->ops['cnd_else']}''{$context->ops['cnd_end']}";
         }
 
         throw new \Exception('Failed to match case for blockEnd');
@@ -377,21 +362,20 @@ final class Compiler extends Validator
     /**
      * Return compiled PHP code for a handlebars block begin token
      *
-     * @param array $context current compile context
      * @param array $vars parsed arguments list
      */
-    protected static function blockBegin(array &$context, array $vars): string
+    protected static function blockBegin(Context $context, array $vars): string
     {
         $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($context, $vars[1]) : [null, []];
         switch ($vars[0][0] ?? null) {
             case 'if':
                 $includeZero = (isset($vars['includeZero'][1]) && $vars['includeZero'][1]) ? 'true' : 'false';
-                return "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1])
-                    . "\$cx, {$v[0]}, {$includeZero})){$context['ops']['cnd_then']}";
+                return "{$context->ops['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1])
+                    . "\$cx, {$v[0]}, {$includeZero})){$context->ops['cnd_then']}";
             case 'unless':
                 $includeZero = (isset($vars['includeZero'][1]) && $vars['includeZero'][1]) ? 'true' : 'false';
-                return "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1])
-                    . "\$cx, {$v[0]}, {$includeZero})){$context['ops']['cnd_then']}";
+                return "{$context->ops['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1])
+                    . "\$cx, {$v[0]}, {$includeZero})){$context->ops['cnd_then']}";
             case 'each':
                 return static::section($context, $vars, true);
             case 'with':
@@ -406,11 +390,10 @@ final class Compiler extends Validator
     /**
      * compile {{#foo}} token
      *
-     * @param array $context current compile context
      * @param array $vars parsed arguments list
      * @param bool $isEach the section is #each
      */
-    protected static function section(array &$context, array $vars, bool $isEach = false): string
+    protected static function section(Context $context, array $vars, bool $isEach = false): string
     {
         $bs = 'null';
         $be = '';
@@ -422,45 +405,43 @@ final class Compiler extends Validator
         }
         $v = static::getVariableNameOrSubExpression($context, $vars[0]);
         $each = $isEach ? 'true' : 'false';
-        return $context['ops']['separator'] . static::getFuncName($context, 'sec', ($isEach ? 'each ' : '') . $v[1] . $be)
-            . "\$cx, {$v[0]}, $bs, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context->ops['separator'] . static::getFuncName($context, 'sec', ($isEach ? 'each ' : '') . $v[1] . $be)
+            . "\$cx, {$v[0]}, $bs, \$in, $each, function(\$cx, \$in) {{$context->ops['f_start']}";
     }
 
     /**
      * compile {{with}} token
      *
-     * @param array $context current compile context
      * @param array $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
      */
-    protected static function with(array &$context, array $vars)
+    protected static function with(Context $context, array $vars)
     {
         $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($context, $vars[1]) : [null, []];
         $bp = Parser::getBlockParams($vars);
         $bs = $bp ? ('array(' . Expression::listString($bp) . ')') : 'null';
         $be = $bp ? " as |$bp[0]|" : '';
-        return $context['ops']['separator'] . static::getFuncName($context, 'wi', 'with ' . $v[1] . $be)
-            . "\$cx, {$v[0]}, $bs, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context->ops['separator'] . static::getFuncName($context, 'wi', 'with ' . $v[1] . $be)
+            . "\$cx, {$v[0]}, $bs, \$in, function(\$cx, \$in) {{$context->ops['f_start']}";
     }
 
     /**
      * Return compiled PHP code for a handlebars custom helper token
      *
-     * @param array<string,array|string|int> $context current compile context
      * @param array<bool|int|string|array> $vars parsed arguments list
      * @param bool $raw is this {{{ token or not
      */
-    protected static function customHelper(array &$context, array $vars, bool $raw): string
+    protected static function customHelper(Context $context, array $vars, bool $raw): string
     {
         if (count($vars[0]) > 1) {
             return '';
         }
 
-        if (!isset($context['helpers'][$vars[0][0]])) {
+        if (!isset($context->helpers[$vars[0][0]])) {
             if ($vars[0][0] == 'lookup') {
                 return static::compileLookup($context, $vars, $raw, true);
-            } elseif ($context['flags']['knohlp'] && count($vars) > 1) {
+            } elseif ($context->options->knownHelpersOnly && count($vars) > 1) {
                 throw new \Exception('Missing helper: "' . $vars[0][0] . '"');
             }
             return '';
@@ -477,50 +458,47 @@ final class Compiler extends Validator
     /**
      * Return compiled PHP code for a handlebars else token
      *
-     * @param array $context current compile context
      * @param array $vars parsed arguments list
      */
-    protected static function doElse(array &$context, array $vars)
+    protected static function doElse(Context $context, array $vars)
     {
-        $v = $context['stack'][count($context['stack']) - 2];
+        $v = $context->stack[count($context->stack) - 2];
 
-        if ((($v === '[if]') && !isset($context['helpers']['if'])) ||
-           (($v === '[unless]') && !isset($context['helpers']['unless']))) {
-            $context['stack'][] = ':';
-            return "{$context['ops']['cnd_else']}";
+        if ((($v === '[if]') && !isset($context->helpers['if'])) ||
+           (($v === '[unless]') && !isset($context->helpers['unless']))) {
+            $context->stack[] = ':';
+            return "{$context->ops['cnd_else']}";
         }
 
-        return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return "{$context->ops['f_end']}}, function(\$cx, \$in) {{$context->ops['f_start']}";
     }
 
     /**
      * Return compiled PHP code for a handlebars log token
      *
-     * @param array<string,array|string|int> $context current compile context
      * @param array<bool|int|string|array> $vars parsed arguments list
      * @param bool $raw is this {{{ token or not
      */
-    protected static function compileLog(array &$context, array &$vars, bool $raw): string
+    protected static function compileLog(Context $context, array &$vars, bool $raw): string
     {
         array_shift($vars);
         $v = static::getVariableNames($context, $vars);
-        return $context['ops']['separator'] . static::getFuncName($context, 'lo', $v[1][0])
-            . "\$cx, {$v[0]}){$context['ops']['separator']}";
+        return $context->ops['separator'] . static::getFuncName($context, 'lo', $v[1][0])
+            . "\$cx, {$v[0]}){$context->ops['separator']}";
     }
 
     /**
      * Return compiled PHP code for a handlebars lookup token
      *
-     * @param array<string,array|string|int> $context current compile context
      * @param array<bool|int|string|array> $vars parsed arguments list
      * @param bool $raw is this {{{ token or not
      * @param bool $nosep true to compile without separator
      */
-    protected static function compileLookup(array &$context, array &$vars, bool $raw, bool $nosep = false): string
+    protected static function compileLookup(Context $context, array &$vars, bool $raw, bool $nosep = false): string
     {
         $v2 = static::getVariableName($context, $vars[2]);
         $v = static::getVariableName($context, $vars[1], $v2);
-        $sep = $nosep ? '' : $context['ops']['separator'];
+        $sep = $nosep ? '' : $context->ops['separator'];
         $ex = $nosep ? ', 1' : '';
 
         return $sep . static::getFuncName($context, $raw ? 'raw' : 'encq', $v[1]) . "\$cx, {$v[0]}$ex){$sep}";
@@ -529,37 +507,32 @@ final class Compiler extends Validator
     /**
      * Return compiled PHP code for template output
      *
-     * @param array<string,array|string|int> $context current compile context
      * @param string $variable PHP code for the variable
      * @param string $expression normalized handlebars expression
      * @param bool $raw is this {{{ token or not
      */
-    protected static function compileOutput(array &$context, string $variable, string $expression, bool $raw): string
+    protected static function compileOutput(Context $context, string $variable, string $expression, bool $raw): string
     {
-        $sep = $context['ops']['separator'];
+        $sep = $context->ops['separator'];
         return $sep . static::getFuncName($context, $raw ? 'raw' : 'encq', $expression) . "\$cx, $variable)$sep";
     }
 
     /**
      * Return compiled PHP code for a handlebars variable token
      *
-     * @param array<string,array|string|int> $context current compile context
      * @param array<bool|int|string|array> $vars parsed arguments list
      * @param bool $raw is this {{{ token or not
      */
-    protected static function compileVariable(array &$context, array &$vars, bool $raw): string
+    protected static function compileVariable(Context $context, array &$vars, bool $raw): string
     {
         $v = static::getVariableName($context, $vars[0]);
         return static::compileOutput($context, $v[0], $v[1], $raw);
     }
 
-    /**
-     * @param array<string,array|string|int> $context current context
-     */
-    protected static function markUsedHelper(array &$context, string $name): void
+    protected static function markUsedHelper(Context $context, string $name): void
     {
-        if (!isset($context['usedHelpers'][$name])) {
-            $context['usedHelpers'][$name] = true;
+        if (!isset($context->usedHelpers[$name])) {
+            $context->usedHelpers[$name] = true;
         }
     }
 }

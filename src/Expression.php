@@ -7,12 +7,9 @@ namespace DevTheorem\Handlebars;
  */
 final class Expression
 {
-    /**
-     * Returns 'true' when the value is greater than 0, otherwise 'false'.
-     */
-    public static function boolString(int $value): string
+    public static function boolString(bool $value): string
     {
-        return $value > 0 ? 'true' : 'false';
+        return $value ? 'true' : 'false';
     }
 
     /**
@@ -42,12 +39,11 @@ final class Expression
     /**
      * Analyze an expression
      *
-     * @param array<string,array|string|int> $context Current context
      * @param array<array|string|int> $var variable parsed path
      *
      * @return array{int, bool, array} analyzed result
      */
-    public static function analyze(array $context, array $var): array
+    public static function analyze(array $var): array
     {
         $levels = 0;
         $spvar = false;

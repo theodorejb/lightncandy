@@ -4,7 +4,7 @@ namespace DevTheorem\Handlebars;
 
 final class Handlebars
 {
-    protected static array $lastContext;
+    protected static Context $lastContext;
     public static array $lastParsed;
 
     /**
@@ -20,7 +20,7 @@ final class Handlebars
      */
     public static function precompile(string $template, Options $options = new Options()): string
     {
-        $context = Context::create($options);
+        $context = new Context($options);
         static::handleError($context);
 
         $code = Compiler::compileTemplate($context, SafeString::escapeTemplate($template));
@@ -40,27 +40,21 @@ final class Handlebars
     }
 
     /**
-     * Handle exists error and return error status.
-     *
-     * @param array<string,array|string|int> $context Current context of compiler progress.
-     *
      * @throws \Exception
      */
-    protected static function handleError(array &$context): void
+    protected static function handleError(Context $context): void
     {
         static::$lastContext = $context;
 
-        if (count($context['error'])) {
-            throw new \Exception(implode("\n", $context['error']));
+        if ($context->error) {
+            throw new \Exception(implode("\n", $context->error));
         }
     }
 
     /**
      * Get last compiler context.
-     *
-     * @return array<string,array|string|int> Context data
      */
-    public static function getContext(): array
+    public static function getContext(): Context
     {
         return static::$lastContext;
     }

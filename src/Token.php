@@ -27,21 +27,19 @@ final class Token
 
     /**
      * Setup delimiter by default or provided string
-     *
-     * @param array<string,array|string|int> $context Current context
      */
-    public static function setDelimiter(array &$context): void
+    public static function setDelimiter(Context $context): void
     {
         $left = '{{';
         $right = '}}';
-        $context['tokens']['startchar'] = substr($left, 0, 1);
-        $context['tokens']['left'] = $left;
-        $context['tokens']['right'] = $right;
-        $rawcount = $context['rawblock'] ? '{2}' : '{0,2}';
+        $context->tokens['startchar'] = substr($left, 0, 1);
+        $context->tokens['left'] = $left;
+        $context->tokens['right'] = $right;
+        $rawcount = $context->rawBlock ? '{2}' : '{0,2}';
         $left = preg_quote($left);
         $right = preg_quote($right);
 
-        $context['tokens']['search'] = "/^(.*?)(\\s*)($left)(~?)(\\{{$rawcount})\\s*([\\^#\\/!&>\\*]{0,2})(.*?)\\s*(\\}{$rawcount})(~?)($right)(\\s*)(.*)\$/s";
+        $context->tokens['search'] = "/^(.*?)(\\s*)($left)(~?)(\\{{$rawcount})\\s*([\\^#\\/!&>\\*]{0,2})(.*?)\\s*(\\}{$rawcount})(~?)($right)(\\s*)(.*)\$/s";
     }
 
     /**

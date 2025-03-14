@@ -9,59 +9,53 @@ class Partial
     /**
      * Include all partials when using dynamic partials
      */
-    public static function handleDynamic(array &$context): void
+    public static function handleDynamic(Context $context): void
     {
-        if ($context['usedFeature']['dynpartial'] == 0) {
+        if ($context->usedDynPartial == 0) {
             return;
         }
 
-        foreach ($context['partials'] as $name => $code) {
+        foreach ($context->partials as $name => $code) {
             static::read($context, $name);
         }
     }
 
     /**
      * Read partial file content as string and store in context
-     *
-     * @param array<string,array|string|int> $context Current context of compiler progress.
-     * @param string $name partial name
      */
-    public static function read(array &$context, string $name): void
+    public static function read(Context $context, string $name): void
     {
         $isPB = ($name === '@partial-block');
 
-        if (isset($context['usedPartial'][$name])) {
+        if (isset($context->usedPartial[$name])) {
             return;
         }
 
         $cnt = static::resolve($context, $name);
 
         if ($cnt !== null) {
-            $context['usedPartial'][$name] = SafeString::escapeTemplate($cnt);
+            $context->usedPartial[$name] = SafeString::escapeTemplate($cnt);
             static::compileDynamic($context, $name);
             return;
         }
 
         if (!$isPB) {
-            $context['error'][] = "The partial $name could not be found";
+            $context->error[] = "The partial $name could not be found";
         }
     }
 
     /**
      * resolve partial, return the partial content
      *
-     * @param array<string,array|string|int> $context Current context of compiler progress.
-     * @param string $name partial name
-     *
      * @return string|null $content partial content
      */
-    public static function resolve(array &$context, string &$name): ?string
+    public static function resolve(Context $context, string &$name): ?string
     {
         if ($name === '@partial-block') {
-            $name = "@partial-block{$context['usedFeature']['pblock']}";
+            $name = "@partial-block{$context->usedPBlock}";
         }
-        if (isset($context['partials'][$name])) {
-            return $context['partials'][$name];
+        if (isset($context->partials[$name])) {
+            return $context->partials[$name];
         }
         return null;
     }
@@ -69,17 +63,14 @@ class Partial
     /**
      * compile partial as closure, stored in context
      *
-     * @param array<string,array|string|int> $context Current context of compiler progress.
-     * @param string $name partial name
-     *
      * @return string|null $code compiled PHP code when success
      */
-    public static function compileDynamic(array &$context, string $name): ?string
+    public static function compileDynamic(Context $context, string $name): ?string
     {
-        $func = static::compile($context, $context['usedPartial'][$name], $name);
+        $func = static::compile($context, $context->usedPartial[$name], $name);
 
-        if (!isset($context['partialCode'][$name]) && $func) {
-            $context['partialCode'][$name] = "'$name' => $func";
+        if (!isset($context->partialCode[$name]) && $func) {
+            $context->partialCode[$name] = "'$name' => $func";
         }
 
         return $func;
@@ -87,28 +78,24 @@ class Partial
 
     /**
      * compile a template into a closure function
-     *
-     * @param array<string,array|string|int> $context Current context of compiler progress.
-     * @param string $template template string
-     * @param string $name partial name
      */
-    public static function compile(array &$context, string $template, string $name): ?string
+    public static function compile(Context $context, string $template, string $name): ?string
     {
-        if ((end($context['partialStack']) === $name) && (str_starts_with($name, '@partial-block'))) {
+        if (end($context->partialStack) === $name && str_starts_with($name, '@partial-block')) {
             return null;
         }
 
-        $tmpContext = $context;
-        $tmpContext['inlinepartial'] = [];
-        $tmpContext['partialblock'] = [];
-        $tmpContext['partialStack'][] = $name;
+        $tmpContext = clone $context;
+        $tmpContext->inlinePartial = [];
+        $tmpContext->partialBlock = [];
+        $tmpContext->partialStack[] = $name;
 
         $code = Compiler::compileTemplate($tmpContext, str_replace('function', static::$TMP_JS_FUNCTION_STR, $template));
-        Context::merge($context, $tmpContext);
+        $context->merge($tmpContext);
 
-        if (!$context['flags']['noind']) {
+        if (!$context->options->preventIndent) {
             $sp = ', $sp';
-            $code = preg_replace('/^/m', "'{$context['ops']['separator']}\$sp{$context['ops']['separator']}'", $code);
+            $code = preg_replace('/^/m', "'{$context->ops['separator']}\$sp{$context->ops['separator']}'", $code);
             // callbacks inside partial should be aware of $sp
             $code = preg_replace('/\bfunction\s*\(([^\(]*?)\)\s*{/', 'function(\\1)use($sp){', $code);
             $code = preg_replace('/function\(\$cx, \$in, \$sp\)use\(\$sp\){/', 'function($cx, $in)use($sp){', $code);
@@ -116,6 +103,6 @@ class Partial
             $sp = '';
         }
         $code = str_replace(static::$TMP_JS_FUNCTION_STR, 'function', $code);
-        return "function (\$cx, \$in{$sp}) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}}";
+        return "function (\$cx, \$in{$sp}) {{$context->ops['op_start']}'$code'{$context->ops['op_end']}}";
     }
 }

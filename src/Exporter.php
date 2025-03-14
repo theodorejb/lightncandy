@@ -9,10 +9,8 @@ final class Exporter
 {
     /**
      * Get PHP code string from a closure of function as string
-     *
-     * @param array<string,array|string|int> $context current compile context
      */
-    public static function closure(array $context, \Closure $closure): string
+    public static function closure(\Closure $closure): string
     {
         $ref = new \ReflectionFunction($closure);
         $meta = static::getMeta($ref);
@@ -22,18 +20,16 @@ final class Exporter
 
     /**
      * Export required custom helper functions
-     *
-     * @param array<string,array|string|int> $context current compile context
      */
-    public static function helpers(array $context): string
+    public static function helpers(Context $context): string
     {
         $ret = '';
-        foreach ($context['helpers'] as $name => $func) {
-            if (!isset($context['usedHelpers'][$name])) {
+        foreach ($context->helpers as $name => $func) {
+            if (!isset($context->usedHelpers[$name])) {
                 continue;
             }
             if ($func instanceof \Closure) {
-                $ret .= ("            '$name' => " . static::closure($context, $func) . ",\n");
+                $ret .= ("            '$name' => " . static::closure($func) . ",\n");
                 continue;
             }
             $ret .= "            '$name' => '$func',\n";
