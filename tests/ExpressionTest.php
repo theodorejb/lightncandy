@@ -7,12 +7,6 @@ use PHPUnit\Framework\TestCase;
 
 class ExpressionTest extends TestCase
 {
-    public function testBoolString(): void
-    {
-        $this->assertSame('true', Expression::boolString(true));
-        $this->assertSame('false', Expression::boolString(false));
-    }
-
     public function testListString(): void
     {
         $this->assertSame('', Expression::listString([]));

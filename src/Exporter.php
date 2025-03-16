@@ -13,9 +13,9 @@ final class Exporter
     public static function closure(\Closure $closure): string
     {
         $ref = new \ReflectionFunction($closure);
-        $meta = static::getMeta($ref);
+        $code = static::getFunctionCode($ref);
 
-        return preg_replace('/^.*?function(\s+[^\s\\(]+?)?\s*\\((.+)\\}.*?\s*$/s', 'function($2}', $meta['code']);
+        return preg_replace('/^.*?function(\s+[^\s\\(]+?)?\s*\\((.+)\\}.*?\s*$/s', 'function($2}', $code);
     }
 
     /**
@@ -38,7 +38,7 @@ final class Exporter
         return "[$ret]";
     }
 
-    public static function getMeta(\ReflectionFunction $refobj): array
+    public static function getFunctionCode(\ReflectionFunction $refobj): string
     {
         $fname = $refobj->getFileName();
         $lines = file_get_contents($fname);
@@ -51,11 +51,7 @@ final class Exporter
         $spos = $file->ftell();
         $file->seek($end);
         $epos = $file->ftell();
-        unset($file);
 
-        return [
-            'name' => $refobj->getName(),
-            'code' => substr($lines, $spos, $epos - $spos),
-        ];
+        return substr($lines, $spos, $epos - $spos);
     }
 }

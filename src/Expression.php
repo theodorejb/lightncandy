@@ -7,11 +7,6 @@ namespace DevTheorem\Handlebars;
  */
 final class Expression
 {
-    public static function boolString(bool $value): string
-    {
-        return $value ? 'true' : 'false';
-    }
-
     /**
      * Get string presentation for a string list
      *

@@ -330,7 +330,7 @@ final class Runtime
 
         $cx['partialid'] = ($p === '@partial-block') ? ($pid > 0 ? $pid : ($cx['partialid'] > 0 ? $cx['partialid'] - 1 : 0)) : $pid;
 
-        return call_user_func($cx['partials'][$pp], $cx, static::m($cx, $v[0][0], $v[1]), $sp);
+        return $cx['partials'][$pp]($cx, static::m($cx, $v[0][0], $v[1]), $sp);
     }
 
     /**

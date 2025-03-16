@@ -52,8 +52,6 @@ final class Compiler extends Validator
      */
     public static function composePHPRender(Context $context, string $code): string
     {
-        $flagPartNC = Expression::boolString($context->options->explicitPartialContext);
-        $flagKnownHlp = Expression::boolString($context->options->knownHelpersOnly);
         $runtime = Runtime::class;
         $helperOptions = HelperOptions::class;
         $safeStringClass = SafeString::class;
@@ -69,10 +67,6 @@ final class Compiler extends Validator
                 \$helpers = $helpers;
                 \$partials = [$partials];
                 \$cx = [
-                    'flags' => [
-                        'partnc' => $flagPartNC,
-                        'knohlp' => $flagKnownHlp,
-                    ],
                     'helpers' => isset(\$options['helpers']) ? array_merge(\$helpers, \$options['helpers']) : \$helpers,
                     'partials' => isset(\$options['partials']) ? array_merge(\$partials, \$options['partials']) : \$partials,
                     'scopes' => [],
