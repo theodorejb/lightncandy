@@ -12,9 +12,8 @@ final class Runtime
      *
      * @param string $v expression
      * @param string $f runtime function name
-     * @param array<string,array|string|int> $cx render time context
      */
-    public static function debug(string $v, string $f, array $cx)
+    public static function debug(string $v, string $f, RuntimeContext $cx)
     {
         // Build array of reference for call_user_func_array
         $P = func_get_args();
@@ -28,20 +27,16 @@ final class Runtime
 
     /**
      * Throw exception for missing expression. Only used in strict mode.
-     *
-     * @param array<string,array|string|int> $cx render time context
      */
-    public static function miss(array $cx, string $v): void
+    public static function miss(RuntimeContext $cx, string $v): void
     {
         throw new \Exception("Runtime: $v does not exist");
     }
 
     /**
-     * For {{log}} .
-     *
-     * @param array<string,array|string|int> $cx render time context
+     * For {{log}}.
      */
-    public static function lo(array $cx, array $v): string
+    public static function lo(RuntimeContext $cx, array $v): string
     {
         error_log(var_export($v[0], true));
         return '';
@@ -50,13 +45,12 @@ final class Runtime
     /**
      * For {{#if}} and {{#unless}}.
      *
-     * @param array<string,array|string|int> $cx render time context
-     * @param array<array|string|int>|string|int|null $v value to be tested
+     * @param array<array|string|int>|string|int|float|bool|null $v value to be tested
      * @param bool $zero include zero as true
      *
      * @return bool Return true when the value is not null nor false.
      */
-    public static function ifvar(array $cx, mixed $v, bool $zero): bool
+    public static function ifvar(mixed $v, bool $zero): bool
     {
         return ($v !== null) && ($v !== false) && ($zero || ($v !== 0) && ($v !== 0.0)) && ($v !== '') && (!is_array($v) || count($v) > 0);
     }
@@ -64,12 +58,11 @@ final class Runtime
     /**
      * For {{^var}} .
      *
-     * @param array<string,array|string|int> $cx render time context
-     * @param array<array|string|int>|string|int|null $v value to be tested
+     * @param array<array|string|int>|string|int|bool|null $v value to be tested
      *
-     * @return bool Return true when the value is not null nor false.
+     * @return bool Return true when the value is null or false or empty
      */
-    public static function isec(array $cx, mixed $v): bool
+    public static function isec(mixed $v): bool
     {
         return $v === null || $v === false || (is_array($v) && count($v) === 0);
     }
@@ -77,45 +70,42 @@ final class Runtime
     /**
      * For {{var}} .
      *
-     * @param array $cx render time context
      * @param array<array|string|int>|string|int|null $var value to be htmlencoded
      */
-    public static function enc(array $cx, $var): string
+    public static function enc($var): string
     {
         if ($var instanceof SafeString) {
             return (string) $var;
         }
 
-        return Encoder::enc($cx, $var);
+        return Encoder::enc($var);
     }
 
     /**
      * For {{var}} , do html encode just like handlebars.js .
      *
-     * @param array $cx render time context
      * @param array<array|string|int>|string|int|null $var value to be htmlencoded
      *
      * @return string The htmlencoded value of the specified variable
      */
-    public static function encq(array $cx, $var): string
+    public static function encq($var): string
     {
         if ($var instanceof SafeString) {
             return (string) $var;
         }
 
-        return Encoder::encq($cx, $var);
+        return Encoder::encq($var);
     }
 
     /**
      * Get string value
      *
-     * @param array<string,array|string|int> $cx render time context
      * @param array<array|string|int>|string|int|null $v value to be output
      * @param int $ex 1 to return untouched value, default is 0
      *
      * @return array<array|string|int>|string|int|null The raw value of the specified variable
      */
-    public static function raw(array $cx, $v, int $ex = 0)
+    public static function raw($v, int $ex = 0)
     {
         if ($ex) {
             return $v;
@@ -125,7 +115,7 @@ final class Runtime
             return 'true';
         }
 
-        if (($v === false)) {
+        if ($v === false) {
             return 'false';
         }
 
@@ -135,7 +125,7 @@ final class Runtime
             } else {
                 $ret = [];
                 foreach ($v as $vv) {
-                    $ret[] = static::raw($cx, $vv);
+                    $ret[] = static::raw($vv);
                 }
                 return join(',', $ret);
             }
@@ -147,15 +137,14 @@ final class Runtime
     /**
      * For {{#var}} or {{#each}} .
      *
-     * @param array<string,array|string|int> $cx render time context
-     * @param array<array|string|int>|string|int|null $v value for the section
+     * @param array<array|string|int>|string|int|null|\Traversable $v value for the section
      * @param array<string>|null $bp block parameters
      * @param array<array|string|int>|string|int|null $in input data with current scope
      * @param bool $each true when rendering #each
      * @param \Closure $cb callback function to render child context
      * @param \Closure|null $else callback function to render child context when {{else}}
      */
-    public static function sec(array $cx, mixed $v, ?array $bp, mixed $in, bool $each, \Closure $cb, ?\Closure $else = null): string
+    public static function sec(RuntimeContext $cx, mixed $v, ?array $bp, mixed $in, bool $each, \Closure $cb, ?\Closure $else = null): string
     {
         $push = ($in !== $v) || $each;
 
@@ -186,22 +175,23 @@ final class Runtime
                 }
             }
             $ret = [];
+            $cx = clone $cx;
             if ($push) {
-                $cx['scopes'][] = $in;
+                $cx->scopes[] = $in;
             }
             $i = 0;
-            $old_spvar = $cx['sp_vars'] ?? [];
-            $cx['sp_vars'] = array_merge(['root' => $old_spvar['root'] ?? null], $old_spvar, ['_parent' => $old_spvar]);
+            $old_spvar = $cx->spVars ?? [];
+            $cx->spVars = array_merge(['root' => $old_spvar['root'] ?? null], $old_spvar, ['_parent' => $old_spvar]);
             if (!$isTrav) {
                 $last = count($keys) - 1;
             }
 
             $isSparceArray = $isObj && (count(array_filter(array_keys($v), 'is_string')) == 0);
             foreach ($v as $index => $raw) {
-                $cx['sp_vars']['first'] = ($i === 0);
-                $cx['sp_vars']['last'] = ($i == $last);
-                $cx['sp_vars']['key'] = $index;
-                $cx['sp_vars']['index'] = $isSparceArray ? $index : $i;
+                $cx->spVars['first'] = ($i === 0);
+                $cx->spVars['last'] = ($i == $last);
+                $cx->spVars['key'] = $index;
+                $cx->spVars['index'] = $isSparceArray ? $index : $i;
                 $i++;
                 if (isset($bp[0])) {
                     $raw = static::m($cx, $raw, [$bp[0] => $raw]);
@@ -212,14 +202,14 @@ final class Runtime
                 $ret[] = $cb($cx, $raw);
             }
             if ($isObj) {
-                unset($cx['sp_vars']['key']);
+                unset($cx->spVars['key']);
             } else {
-                unset($cx['sp_vars']['last']);
+                unset($cx->spVars['last']);
             }
-            unset($cx['sp_vars']['index'], $cx['sp_vars']['first']);
+            unset($cx->spVars['index'], $cx->spVars['first']);
 
             if ($push) {
-                array_pop($cx['scopes']);
+                array_pop($cx->scopes);
             }
             return join('', $ret);
         }
@@ -231,11 +221,11 @@ final class Runtime
         }
         if ($isAry) {
             if ($push) {
-                $cx['scopes'][] = $in;
+                $cx->scopes[] = $in;
             }
             $ret = $cb($cx, $v);
             if ($push) {
-                array_pop($cx['scopes']);
+                array_pop($cx->scopes);
             }
             return $ret;
         }
@@ -244,7 +234,7 @@ final class Runtime
             return $cb($cx, $in);
         }
 
-        if (($v !== null) && ($v !== false)) {
+        if ($v !== null && $v !== false) {
             return $cb($cx, $v);
         }
 
@@ -258,14 +248,13 @@ final class Runtime
     /**
      * For {{#with}} .
      *
-     * @param array<string,array|string|int> $cx render time context
      * @param array<array|string|int>|string|int|null $v value to be the new context
      * @param array<array|string|int>|\stdClass|null $in input data with current scope
      * @param array<string>|null $bp block parameters
      * @param \Closure $cb callback function to render child context
      * @param \Closure|null $else callback function to render child context when {{else}}
      */
-    public static function wi(array $cx, mixed $v, ?array $bp, array|\stdClass|null $in, \Closure $cb, ?\Closure $else = null): string
+    public static function wi(RuntimeContext $cx, mixed $v, ?array $bp, array|\stdClass|null $in, \Closure $cb, ?\Closure $else = null): string
     {
         if (isset($bp[0])) {
             $v = static::m($cx, $v, [$bp[0] => $v]);
@@ -276,9 +265,9 @@ final class Runtime
         if ($v === $in) {
             $ret = $cb($cx, $v);
         } else {
-            $cx['scopes'][] = $in;
+            $cx->scopes[] = $in;
             $ret = $cb($cx, $v);
-            array_pop($cx['scopes']);
+            array_pop($cx->scopes);
         }
         return $ret;
     }
@@ -286,14 +275,13 @@ final class Runtime
     /**
      * Get merged context.
      *
-     * @param array<string,array|string|int> $cx render time context
      * @param array<array|string|int>|string|int|null $a the context to be merged
      * @param array<array|string|int>|string|int|null $b the new context to overwrite
      *
      * @return array<array|string|int>|string|int the merged context object
      *
      */
-    public static function m(array $cx, $a, $b)
+    public static function m(RuntimeContext $cx, $a, $b)
     {
         if (is_array($b)) {
             if ($a === null) {
@@ -315,49 +303,47 @@ final class Runtime
     /**
      * For {{> partial}} .
      *
-     * @param array<string,array|string|int> $cx render time context
      * @param string $p partial name
      * @param array<array|string|int>|string|int|null $v value to be the new context
      *
      */
-    public static function p(array $cx, string $p, $v, int $pid, $sp = ''): string
+    public static function p(RuntimeContext $cx, string $p, $v, int $pid, $sp = ''): string
     {
-        $pp = ($p === '@partial-block') ? $p . ($pid > 0 ? $pid : $cx['partialid']) : $p;
+        $pp = ($p === '@partial-block') ? $p . ($pid > 0 ? $pid : $cx->partialId) : $p;
 
-        if (!isset($cx['partials'][$pp])) {
+        if (!isset($cx->partials[$pp])) {
             throw new \Exception("Runtime: the partial $p could not be found");
         }
 
-        $cx['partialid'] = ($p === '@partial-block') ? ($pid > 0 ? $pid : ($cx['partialid'] > 0 ? $cx['partialid'] - 1 : 0)) : $pid;
+        $cx = clone $cx;
+        $cx->partialId = ($p === '@partial-block') ? ($pid > 0 ? $pid : ($cx->partialId > 0 ? $cx->partialId - 1 : 0)) : $pid;
 
-        return $cx['partials'][$pp]($cx, static::m($cx, $v[0][0], $v[1]), $sp);
+        return $cx->partials[$pp]($cx, static::m($cx, $v[0][0], $v[1]), $sp);
     }
 
     /**
      * For {{#* inlinepartial}} .
      *
-     * @param array<string,array|string|int> $cx render time context
      * @param string $p partial name
      * @param \Closure $code the compiled partial code
      *
      */
-    public static function in(array &$cx, string $p, \Closure $code)
+    public static function in(RuntimeContext $cx, string $p, \Closure $code)
     {
-        $cx['partials'][$p] = $code;
+        $cx->partials[$p] = $code;
     }
 
     /**
      * For single custom helpers.
      *
-     * @param array<string,array|string|int> $cx render time context
      * @param string $ch the name of custom helper to be executed
      * @param array<array|string|int> $vars variables for the helper
      * @param array<string,array|string|int> $_this current rendering context for the helper
      */
-    public static function hbch(array &$cx, string $ch, array $vars, mixed &$_this): mixed
+    public static function hbch(RuntimeContext $cx, string $ch, array $vars, mixed &$_this): mixed
     {
-        if (isset($cx['blparam'][0][$ch])) {
-            return $cx['blparam'][0][$ch];
+        if (isset($cx->blParam[0][$ch])) {
+            return $cx->blParam[0][$ch];
         }
 
         $options = new HelperOptions(
@@ -367,7 +353,7 @@ final class Runtime
             inverse: function () { return ''; },
             blockParams: 0,
             scope: $_this,
-            data: $cx['sp_vars'],
+            data: $cx->spVars,
         );
 
         return static::exch($cx, $ch, $vars, $options);
@@ -376,7 +362,6 @@ final class Runtime
     /**
      * For block custom helpers.
      *
-     * @param array<string,array|string|int> $cx render time context
      * @param string $ch the name of custom helper to be executed
      * @param array<array|string|int> $vars variables for the helper
      * @param array<string,array|string|int> $_this current rendering context for the helper
@@ -384,10 +369,10 @@ final class Runtime
      * @param \Closure|null $cb callback function to render child context
      * @param \Closure|null $else callback function to render child context when {{else}}
      */
-    public static function hbbch(array &$cx, string $ch, array $vars, mixed &$_this, bool $inverted, ?\Closure $cb, ?\Closure $else = null): mixed
+    public static function hbbch(RuntimeContext $cx, string $ch, array $vars, mixed &$_this, bool $inverted, ?\Closure $cb, ?\Closure $else = null): mixed
     {
         $blockParams = 0;
-        $data = &$cx['sp_vars'];
+        $data = &$cx->spVars;
 
         if (isset($vars[2])) {
             $blockParams = count($vars[2]);
@@ -401,29 +386,30 @@ final class Runtime
         }
 
         $fn = function ($context = null, $data = null) use ($cx, $_this, $cb, $vars) {
-            $old_spvar = $cx['sp_vars'];
+            $cx = clone $cx;
+            $old_spvar = $cx->spVars;
             if (isset($data['data'])) {
-                $cx['sp_vars'] = array_merge(['root' => $old_spvar['root']], $data['data'], ['_parent' => $old_spvar]);
+                $cx->spVars = array_merge(['root' => $old_spvar['root']], $data['data'], ['_parent' => $old_spvar]);
             }
 
             $ex = false;
             if (isset($data['blockParams']) && isset($vars[2])) {
                 $ex = array_combine($vars[2], array_slice($data['blockParams'], 0, count($vars[2])));
-                array_unshift($cx['blparam'], $ex);
-            } elseif (isset($cx['blparam'][0])) {
-                $ex = $cx['blparam'][0];
+                array_unshift($cx->blParam, $ex);
+            } elseif (isset($cx->blParam[0])) {
+                $ex = $cx->blParam[0];
             }
 
             if ($context === null) {
                 $ret = $cb($cx, is_array($ex) ? static::m($cx, $_this, $ex) : $_this);
             } else {
-                $cx['scopes'][] = $_this;
+                $cx->scopes[] = $_this;
                 $ret = $cb($cx, is_array($ex) ? static::m($cx, $context, $ex) : $context);
-                array_pop($cx['scopes']);
+                array_pop($cx->scopes);
             }
 
             if (isset($data['data'])) {
-                $cx['sp_vars'] = $old_spvar;
+                $cx->spVars = $old_spvar;
             }
             return $ret;
         };
@@ -433,9 +419,9 @@ final class Runtime
                 if ($context === null) {
                     $ret = $else($cx, $_this);
                 } else {
-                    $cx['scopes'][] = $_this;
+                    $cx->scopes[] = $_this;
                     $ret = $else($cx, $context);
-                    array_pop($cx['scopes']);
+                    array_pop($cx->scopes);
                 }
                 return $ret;
             };
@@ -461,17 +447,16 @@ final class Runtime
     /**
      * Execute custom helper with prepared options
      *
-     * @param array<string,array|string|int> $cx render time context
      * @param string $ch the name of custom helper to be executed
      * @param array<array|string|int> $vars variables for the helper
      */
-    public static function exch(array $cx, string $ch, array $vars, HelperOptions $options): mixed
+    public static function exch(RuntimeContext $cx, string $ch, array $vars, HelperOptions $options): mixed
     {
         $args = $vars[0];
         $args[] = $options;
 
         try {
-            return ($cx['helpers'][$ch])(...$args);
+            return ($cx->helpers[$ch])(...$args);
         } catch (\Throwable $e) {
             throw new \Exception("Runtime: call custom helper '$ch' error: " . $e->getMessage());
         }

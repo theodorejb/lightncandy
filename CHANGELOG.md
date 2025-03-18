@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.9.0] Modern Cleanup - 2025-03-12
+## [0.9.0] Modern Cleanup - 2025-03-18
 Initial release after forking from LightnCandy 1.2.6.
 
 ### Added

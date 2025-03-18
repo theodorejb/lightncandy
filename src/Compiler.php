@@ -55,6 +55,7 @@ final class Compiler extends Validator
         $runtime = Runtime::class;
         $helperOptions = HelperOptions::class;
         $safeStringClass = SafeString::class;
+        $runtimeContext = RuntimeContext::class;
         $helpers = Exporter::helpers($context);
         $partials = implode(",\n", $context->partialCode);
 
@@ -63,17 +64,18 @@ final class Compiler extends Validator
             use {$runtime} as LR;
             use {$safeStringClass};
             use {$helperOptions};
+            use {$runtimeContext};
             return function (\$in = null, array \$options = []) {
                 \$helpers = $helpers;
                 \$partials = [$partials];
-                \$cx = [
-                    'helpers' => isset(\$options['helpers']) ? array_merge(\$helpers, \$options['helpers']) : \$helpers,
-                    'partials' => isset(\$options['partials']) ? array_merge(\$partials, \$options['partials']) : \$partials,
-                    'scopes' => [],
-                    'sp_vars' => isset(\$options['data']) ? array_merge(['root' => \$in], \$options['data']) : ['root' => \$in],
-                    'blparam' => [],
-                    'partialid' => 0,
-                ];
+                \$cx = new RuntimeContext(
+                    helpers: isset(\$options['helpers']) ? array_merge(\$helpers, \$options['helpers']) : \$helpers,
+                    partials: isset(\$options['partials']) ? array_merge(\$partials, \$options['partials']) : \$partials,
+                    scopes: [],
+                    spVars: isset(\$options['data']) ? array_merge(['root' => \$in], \$options['data']) : ['root' => \$in],
+                    blParam: [],
+                    partialId: 0,
+                );
                 {$context->ops['op_start']}'$code'{$context->ops['op_end']}
             };
             VAREND;
@@ -166,18 +168,18 @@ final class Compiler extends Validator
 
         [$levels, $spvar, $var] = Expression::analyze($var);
         $exp = Expression::toString($levels, $spvar, $var);
-        $base = $spvar ? "\$cx['sp_vars']" : '$in';
+        $base = $spvar ? "\$cx->spVars" : '$in';
 
         // change base when trace to parent
         if ($levels > 0) {
             if ($spvar) {
                 $base .= str_repeat("['_parent']", $levels);
             } else {
-                $base = "\$cx['scopes'][count(\$cx['scopes'])-$levels]";
+                $base = "\$cx->scopes[count(\$cx->scopes)-$levels]";
             }
         }
 
-        if ((empty($var) || (count($var) == 0) || (($var[0] === null) && (count($var) == 1))) && ($lookup === null)) {
+        if ((!$var || ($var[0] === null && count($var) == 1)) && $lookup === null) {
             return [$base, $exp];
         }
 
@@ -295,7 +297,7 @@ final class Compiler extends Validator
     protected static function invertedSection(Context $context, array $vars): string
     {
         $v = static::getVariableName($context, $vars[0]);
-        return "{$context->ops['cnd_start']}(" . static::getFuncName($context, 'isec', '^' . $v[1]) . "\$cx, {$v[0]})){$context->ops['cnd_then']}";
+        return "{$context->ops['cnd_start']}(" . static::getFuncName($context, 'isec', '^' . $v[1]) . "{$v[0]})){$context->ops['cnd_then']}";
     }
 
     /**
@@ -365,11 +367,11 @@ final class Compiler extends Validator
             case 'if':
                 $includeZero = (isset($vars['includeZero'][1]) && $vars['includeZero'][1]) ? 'true' : 'false';
                 return "{$context->ops['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1])
-                    . "\$cx, {$v[0]}, {$includeZero})){$context->ops['cnd_then']}";
+                    . "{$v[0]}, {$includeZero})){$context->ops['cnd_then']}";
             case 'unless':
                 $includeZero = (isset($vars['includeZero'][1]) && $vars['includeZero'][1]) ? 'true' : 'false';
                 return "{$context->ops['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1])
-                    . "\$cx, {$v[0]}, {$includeZero})){$context->ops['cnd_then']}";
+                    . "{$v[0]}, {$includeZero})){$context->ops['cnd_then']}";
             case 'each':
                 return static::section($context, $vars, true);
             case 'with':
@@ -495,7 +497,7 @@ final class Compiler extends Validator
         $sep = $nosep ? '' : $context->ops['separator'];
         $ex = $nosep ? ', 1' : '';
 
-        return $sep . static::getFuncName($context, $raw ? 'raw' : 'encq', $v[1]) . "\$cx, {$v[0]}$ex){$sep}";
+        return $sep . static::getFuncName($context, $raw ? 'raw' : 'encq', $v[1]) . "{$v[0]}$ex){$sep}";
     }
 
     /**
@@ -508,7 +510,7 @@ final class Compiler extends Validator
     protected static function compileOutput(Context $context, string $variable, string $expression, bool $raw): string
     {
         $sep = $context->ops['separator'];
-        return $sep . static::getFuncName($context, $raw ? 'raw' : 'encq', $expression) . "\$cx, $variable)$sep";
+        return $sep . static::getFuncName($context, $raw ? 'raw' : 'encq', $expression) . "$variable)$sep";
     }
 
     /**

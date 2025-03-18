@@ -16,7 +16,7 @@ class SafeString
      */
     public function __construct(string $str, bool|string $escape = false)
     {
-        $this->string = $escape ? (($escape === 'encq') ? Encoder::encq([], $str) : Encoder::enc([], $str)) : $str;
+        $this->string = $escape ? ($escape === 'encq' ? Encoder::encq($str) : Encoder::enc($str)) : $str;
     }
 
     public function __toString()
