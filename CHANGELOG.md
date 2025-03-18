@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.9.1] Better Return Type - 2025-03-18
+### Added
+- Detailed return annotation for `compile()` method.
+
 ## [0.9.0] Modern Cleanup - 2025-03-18
 Initial release after forking from LightnCandy 1.2.6.
 
@@ -31,4 +35,5 @@ Initial release after forking from LightnCandy 1.2.6.
 - HTML documentation.
 - Dozens of unnecessary feature flags.
 
+[0.9.1]: https://github.com/devtheorem/php-handlebars/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/devtheorem/php-handlebars/tree/v0.9.0
