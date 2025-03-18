@@ -9,6 +9,7 @@ final class Handlebars
 
     /**
      * Compiles a template so it can be executed immediately.
+     * @return \Closure(mixed=, array=):string
      */
     public static function compile(string $template, Options $options = new Options()): \Closure
     {

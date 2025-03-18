@@ -65,7 +65,7 @@ final class Compiler extends Validator
             use {$safeStringClass};
             use {$helperOptions};
             use {$runtimeContext};
-            return function (\$in = null, array \$options = []) {
+            return function (mixed \$in = null, array \$options = []) {
                 \$helpers = $helpers;
                 \$partials = [$partials];
                 \$cx = new RuntimeContext(
