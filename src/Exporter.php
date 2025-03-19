@@ -13,9 +13,7 @@ final class Exporter
     public static function closure(\Closure $closure): string
     {
         $ref = new \ReflectionFunction($closure);
-        $code = static::getFunctionCode($ref);
-
-        return preg_replace('/^.*?function(\s+[^\s\\(]+?)?\s*\\((.+)\\}.*?\s*$/s', 'function($2}', $code);
+        return static::getClosureSource($ref);
     }
 
     /**
@@ -38,20 +36,50 @@ final class Exporter
         return "[$ret]";
     }
 
-    public static function getFunctionCode(\ReflectionFunction $refobj): string
+    public static function getClosureSource(\ReflectionFunction $fn): string
     {
-        $fname = $refobj->getFileName();
-        $lines = file_get_contents($fname);
-        $file = new \SplFileObject($fname);
+        $fileContents = file_get_contents($fn->getFileName());
+        $startLine = $fn->getStartLine();
+        $endLine = $fn->getEndLine();
+        $enteredFnToken = null;
+        $depth = 0;
+        $code = '';
 
-        $start = $refobj->getStartLine() - 1;
-        $end = $refobj->getEndLine();
+        foreach (\PhpToken::tokenize($fileContents) as $token) {
+            if ($token->line < $startLine) {
+                continue;
+            } elseif ($token->line > $endLine) {
+                break;
+            } elseif (!$enteredFnToken) {
+                if ($token->id !== T_FUNCTION && $token->id !== T_FN) {
+                    continue;
+                }
+                $enteredFnToken = $token;
+            }
 
-        $file->seek($start);
-        $spos = $file->ftell();
-        $file->seek($end);
-        $epos = $file->ftell();
+            $name = $token->getTokenName();
 
-        return substr($lines, $spos, $epos - $spos);
+            if (in_array($name, ['(', '[', '{', 'T_CURLY_OPEN'])) {
+                $depth++;
+            } elseif (in_array($name, [')', ']', '}'])) {
+                if ($depth === 0 && $enteredFnToken->id === T_FN) {
+                    return rtrim($code);
+                }
+                $depth--;
+            }
+
+            if ($depth === 0) {
+                if ($enteredFnToken->id === T_FUNCTION && $name === '}') {
+                    $code .= $token->text;
+                    return $code;
+                } elseif ($enteredFnToken->id === T_FN && in_array($name, [';', ','])) {
+                    return $code;
+                }
+            }
+
+            $code .= $token->text;
+        }
+
+        return $code;
     }
 }
