@@ -199,11 +199,11 @@ final class Compiler extends Validator
             if ($levels > 0) {
                 $checks[] = "isset($base)";
             }
+            $p = count($var) ? Expression::arrayString($var) : '';
+            if ($p !== '' && ($spvar || $levels === 0)) {
+                $checks[] = "isset($base$p)";
+            }
             if (!$spvar) {
-                $p = count($var) ? Expression::arrayString($var) : '';
-                if ($levels === 0 && $p !== '') {
-                    $checks[] = "isset($base$p)";
-                }
                 $checks[] = ("$base$p" == '$in') ? '$inary' : "is_array($base$p)";
             }
             $lenStart = '(' . ((count($checks) > 1) ? '(' : '') . implode(' && ', $checks) . ((count($checks) > 1) ? ')' : '') . " ? count($base" . Expression::arrayString($var) . ') : ';

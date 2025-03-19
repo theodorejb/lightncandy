@@ -1384,6 +1384,13 @@ class RegressionTest extends TestCase
             ],
 
             [
+                'id' => 370,
+                'template' => '{{@root.items.length}}',
+                'data' => ['items' => [1, 2, 3]],
+                'expected' => '3',
+            ],
+
+            [
                 'template' => '{{#each . as |v k|}}#{{k}}{{/each}}',
                 'data' => ['a' => [], 'c' => []],
                 'expected' => '#a#c',
