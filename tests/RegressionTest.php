@@ -1306,6 +1306,16 @@ class RegressionTest extends TestCase
             ],
 
             [
+                'id' => 344,
+                'template' => '{{{{raw}}}} {{bar}} {{{{/raw}}}} {{bar}}',
+                'data' => [
+                    'raw' => true,
+                    'bar' => 'content',
+                ],
+                'expected' => ' {{bar}}  content',
+            ],
+
+            [
                 'id' => 357,
                 'template' => '{{echo (echo "foobar(moo).")}}',
                 'options' => new Options(

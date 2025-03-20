@@ -37,6 +37,7 @@ class Validator
                 }
                 static::pushToken($context, $V);
             }
+            // set template to remainder after pushed token
             $template = "{$matches[Token::POS_RSPACE]}{$matches[Token::POS_ROTHER]}";
         }
         static::pushToken($context, $template);
@@ -473,8 +474,8 @@ class Validator
                 $context->error[] = 'Bad token ' . Token::toString($token) . ' ! Do you mean ' . Token::toString($token, [Token::POS_ENDRAW => '}}']) . ' ?';
             }
             if ($context->rawBlock) {
-                Token::setDelimiter($context);
                 $context->rawBlock = false;
+                Token::setDelimiter($context);
             } else {
                 if ($token[Token::POS_OP]) {
                     $context->error[] = "Wrong raw block begin with " . Token::toString($token) . ' ! Remove "' . $token[Token::POS_OP] . '" to fix this issue.';
