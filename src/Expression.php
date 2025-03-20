@@ -14,9 +14,7 @@ final class Expression
      */
     public static function listString(array $list): string
     {
-        return implode(',', (array_map(function ($v) {
-            return "'$v'";
-        }, $list)));
+        return implode(',', array_map(static fn($v) => "'$v'", $list));
     }
 
     /**
@@ -26,9 +24,7 @@ final class Expression
      */
     public static function arrayString(array $list): string
     {
-        return implode('', (array_map(function ($v) {
-            return "['$v']";
-        }, $list)));
+        return implode('', array_map(static fn($v) => "['$v']", $list));
     }
 
     /**
@@ -72,8 +68,8 @@ final class Expression
      */
     public static function toString(int $levels, bool $spvar, array $var): string
     {
-        return ($spvar ? '@' : '') . str_repeat('../', $levels) . (count($var) ? implode('.', array_map(function ($v) {
-            return ($v === null) ? 'this' : "[$v]";
-        }, $var)) : 'this');
+        $mapper = static fn($v) => $v === null ? 'this' : "[$v]";
+        return ($spvar ? '@' : '') . str_repeat('../', $levels)
+            . (count($var) ? implode('.', array_map($mapper, $var)) : 'this');
     }
 }

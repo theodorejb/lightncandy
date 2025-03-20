@@ -33,7 +33,7 @@ final class Context
         public array $partialBlock = [],
         public array $inlinePartial = [],
         public array $helpers = [],
-        public bool|string $rawBlock = false,
+        public string|false $rawBlock = false,
         public readonly array $ops = [
             'separator' => '.',
             'f_start' => 'return ',

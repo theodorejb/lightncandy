@@ -18,7 +18,7 @@ class Validator
 
         while (preg_match($context->tokens['search'], $template, $matches)) {
             // Skip a token when it is slash escaped
-            if (($matches[Token::POS_LSPACE] === '') && preg_match('/^(.*?)(\\\\+)$/s', $matches[Token::POS_LOTHER], $escmatch)) {
+            if ($matches[Token::POS_LSPACE] === '' && preg_match('/^(.*?)(\\\\+)$/s', $matches[Token::POS_LOTHER], $escmatch)) {
                 if (strlen($escmatch[2]) % 4) {
                     static::pushToken($context, substr($matches[Token::POS_LOTHER], 0, -2) . $context->tokens['startchar']);
                     $matches[Token::POS_BEGINTAG] = substr($matches[Token::POS_BEGINTAG], 1);
@@ -245,6 +245,7 @@ class Validator
                 $P = &$context->parsed[0][$c];
                 $found = Partial::resolve($context, $vars[0][0]) !== null;
                 $v = $found ? "@partial-block{$P[1][Parser::PARTIALBLOCK]}" : $vars[0][0];
+
                 if (!$context->partialBlock) {
                     $context->usedPartial[$v] = $tmpl;
                     Partial::compileDynamic($context, $v);
@@ -406,13 +407,13 @@ class Validator
     protected static function blockEnd(Context $context, array &$vars, ?string $match = null)
     {
         $c = count($context->stack) - 2;
-        $pop = ($c >= 0) ? $context->stack[$c + 1] : '';
-        if (($match !== null) && ($match !== $pop)) {
+        $pop = $c >= 0 ? $context->stack[$c + 1] : '';
+        if ($match !== null && $match !== $pop) {
             return false;
         }
         // if we didn't match our $pop, we didn't actually do a level, so only subtract a level here
         $context->level--;
-        $pop2 = ($c >= 0) ? $context->stack[$c] : '';
+        $pop2 = $c >= 0 ? $context->stack[$c] : '';
         switch ($context->currentToken[Token::POS_INNERTAG]) {
             case 'with':
                 if ($pop2 !== '[with]') {
@@ -460,7 +461,7 @@ class Validator
         $inner = $token[Token::POS_INNERTAG];
 
         // skip parse when inside raw block
-        if ($context->rawBlock && !(($token[Token::POS_BEGINRAW] === '{{') && ($token[Token::POS_OP] === '/') && ($context->rawBlock === $inner))) {
+        if ($context->rawBlock && !($token[Token::POS_BEGINRAW] === '{{' && $token[Token::POS_OP] === '/' && $context->rawBlock === $inner)) {
             return true;
         }
 
@@ -601,7 +602,7 @@ class Validator
      */
     public static function log(Context $context, array $vars): void
     {
-        if (isset($vars[0][0]) && ($vars[0][0] === 'log')) {
+        if (isset($vars[0][0]) && $vars[0][0] === 'log') {
             if (count($vars) < 2) {
                 $context->error[] = "No argument after {{log}} !";
             }
@@ -615,7 +616,7 @@ class Validator
      */
     public static function lookup(Context $context, array $vars): void
     {
-        if (isset($vars[0][0]) && ($vars[0][0] === 'lookup')) {
+        if (isset($vars[0][0]) && $vars[0][0] === 'lookup') {
             if (count($vars) < 2) {
                 $context->error[] = "No argument after {{lookup}} !";
             } elseif (count($vars) < 3) {
@@ -694,7 +695,7 @@ class Validator
      */
     protected static function inline(Context $context, array $vars)
     {
-        if (!isset($vars[0][0]) || ($vars[0][0] !== 'inline')) {
+        if (!isset($vars[0][0]) || $vars[0][0] !== 'inline') {
             $context->error[] = "Do not support {{#*{$context->currentToken[Token::POS_INNERTAG]}}}, now we only support {{#*inline \"partialName\"}}template...{{/inline}}";
         }
         if (!isset($vars[1][0])) {

@@ -165,7 +165,7 @@ final class Parser
             }
         }
 
-        return [($token[Token::POS_BEGINRAW] === '{') || ($token[Token::POS_OP] === '&') || $context->options->noEscape || $context->rawBlock, $avars];
+        return [$token[Token::POS_BEGINRAW] === '{' || $token[Token::POS_OP] === '&' || $context->options->noEscape || $context->rawBlock, $avars];
     }
 
     /**
@@ -401,7 +401,7 @@ final class Parser
                 }
 
                 // continue to next match when 'as' without ending '|'
-                if (($t === 'as') && (count($vars) > 0)) {
+                if ($t === 'as' && count($vars) > 0) {
                     $prev = '';
                     $expect = '|';
                     $stack = 1;

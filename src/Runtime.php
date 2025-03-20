@@ -28,7 +28,7 @@ final class Runtime
     /**
      * Throw exception for missing expression. Only used in strict mode.
      */
-    public static function miss(RuntimeContext $cx, string $v): void
+    public static function miss(string $v): void
     {
         throw new \Exception("Runtime: $v does not exist");
     }
@@ -36,7 +36,7 @@ final class Runtime
     /**
      * For {{log}}.
      */
-    public static function lo(RuntimeContext $cx, array $v): string
+    public static function lo(array $v): string
     {
         error_log(var_export($v[0], true));
         return '';
@@ -52,7 +52,7 @@ final class Runtime
      */
     public static function ifvar(mixed $v, bool $zero): bool
     {
-        return ($v !== null) && ($v !== false) && ($zero || ($v !== 0) && ($v !== 0.0)) && ($v !== '') && (!is_array($v) || count($v) > 0);
+        return $v !== null && $v !== false && ($zero || ($v !== 0 && $v !== 0.0)) && $v !== '' && (!is_array($v) || count($v) > 0);
     }
 
     /**
@@ -146,7 +146,7 @@ final class Runtime
      */
     public static function sec(RuntimeContext $cx, mixed $v, ?array $bp, mixed $in, bool $each, \Closure $cb, ?\Closure $else = null): string
     {
-        $push = ($in !== $v) || $each;
+        $push = $in !== $v || $each;
 
         $isAry = is_array($v) || ($v instanceof \ArrayObject);
         $isTrav = $v instanceof \Traversable;
@@ -194,10 +194,10 @@ final class Runtime
                 $cx->spVars['index'] = $isSparceArray ? $index : $i;
                 $i++;
                 if (isset($bp[0])) {
-                    $raw = static::m($cx, $raw, [$bp[0] => $raw]);
+                    $raw = static::merge($raw, [$bp[0] => $raw]);
                 }
                 if (isset($bp[1])) {
-                    $raw = static::m($cx, $raw, [$bp[1] => $index]);
+                    $raw = static::merge($raw, [$bp[1] => $index]);
                 }
                 $ret[] = $cb($cx, $raw);
             }
@@ -257,9 +257,9 @@ final class Runtime
     public static function wi(RuntimeContext $cx, mixed $v, ?array $bp, array|\stdClass|null $in, \Closure $cb, ?\Closure $else = null): string
     {
         if (isset($bp[0])) {
-            $v = static::m($cx, $v, [$bp[0] => $v]);
+            $v = static::merge($v, [$bp[0] => $v]);
         }
-        if (($v === false) || ($v === null) || (is_array($v) && (count($v) === 0))) {
+        if ($v === false || $v === null || (is_array($v) && count($v) === 0)) {
             return $else ? $else($cx, $in) : '';
         }
         if ($v === $in) {
@@ -281,7 +281,7 @@ final class Runtime
      * @return array<array|string|int>|string|int the merged context object
      *
      */
-    public static function m(RuntimeContext $cx, $a, $b)
+    public static function merge($a, $b)
     {
         if (is_array($b)) {
             if ($a === null) {
@@ -318,7 +318,7 @@ final class Runtime
         $cx = clone $cx;
         $cx->partialId = ($p === '@partial-block') ? ($pid > 0 ? $pid : ($cx->partialId > 0 ? $cx->partialId - 1 : 0)) : $pid;
 
-        return $cx->partials[$pp]($cx, static::m($cx, $v[0][0], $v[1]), $sp);
+        return $cx->partials[$pp]($cx, static::merge($v[0][0], $v[1]), $sp);
     }
 
     /**
@@ -401,10 +401,10 @@ final class Runtime
             }
 
             if ($context === null) {
-                $ret = $cb($cx, is_array($ex) ? static::m($cx, $_this, $ex) : $_this);
+                $ret = $cb($cx, is_array($ex) ? static::merge($_this, $ex) : $_this);
             } else {
                 $cx->scopes[] = $_this;
-                $ret = $cb($cx, is_array($ex) ? static::m($cx, $context, $ex) : $context);
+                $ret = $cb($cx, is_array($ex) ? static::merge($context, $ex) : $context);
                 array_pop($cx->scopes);
             }
 

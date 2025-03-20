@@ -183,7 +183,7 @@ final class Compiler extends Validator
             return [$base, $exp];
         }
 
-        if ((count($var) > 0) && ($var[0] === null)) {
+        if (count($var) > 0 && $var[0] === null) {
             array_shift($var);
         }
 
@@ -204,13 +204,13 @@ final class Compiler extends Validator
                 $checks[] = "isset($base$p)";
             }
             if (!$spvar) {
-                $checks[] = ("$base$p" == '$in') ? '$inary' : "is_array($base$p)";
+                $checks[] = "$base$p" == '$in' ? '$inary' : "is_array($base$p)";
             }
-            $lenStart = '(' . ((count($checks) > 1) ? '(' : '') . implode(' && ', $checks) . ((count($checks) > 1) ? ')' : '') . " ? count($base" . Expression::arrayString($var) . ') : ';
+            $lenStart = '(' . (count($checks) > 1 ? '(' : '') . implode(' && ', $checks) . (count($checks) > 1 ? ')' : '') . " ? count($base" . Expression::arrayString($var) . ') : ';
             $lenEnd = ')';
         }
 
-        return ["$base$n$L ?? $lenStart" . ($context->options->strict ? (static::getFuncName($context, 'miss', '') . "\$cx, '$exp')") : 'null') . "$lenEnd", $lookup ? "lookup $exp $lookup[1]" : $exp];
+        return ["$base$n$L ?? $lenStart" . ($context->options->strict ? (static::getFuncName($context, 'miss', '') . "'$exp')") : 'null') . "$lenEnd", $lookup ? "lookup $exp $lookup[1]" : $exp];
     }
 
     /**
@@ -460,8 +460,8 @@ final class Compiler extends Validator
     {
         $v = $context->stack[count($context->stack) - 2];
 
-        if ((($v === '[if]') && !isset($context->helpers['if'])) ||
-           (($v === '[unless]') && !isset($context->helpers['unless']))) {
+        if (($v === '[if]' && !isset($context->helpers['if'])) ||
+           ($v === '[unless]' && !isset($context->helpers['unless']))) {
             $context->stack[] = ':';
             return "{$context->ops['cnd_else']}";
         }
@@ -480,7 +480,7 @@ final class Compiler extends Validator
         array_shift($vars);
         $v = static::getVariableNames($context, $vars);
         return $context->ops['separator'] . static::getFuncName($context, 'lo', $v[1][0])
-            . "\$cx, {$v[0]}){$context->ops['separator']}";
+            . "{$v[0]}){$context->ops['separator']}";
     }
 
     /**
