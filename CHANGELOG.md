@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.9.3] Raw Block Parsing - 2025-03-20
+### Fixed
+- Correctly parse handlebars after raw block (fixes https://github.com/zordius/lightncandy/issues/344).
+
 ## [0.9.2] Arrow Function Helpers - 2025-03-19
 ### Added
 - Support for arrow function helpers.
@@ -44,6 +48,7 @@ Initial release after forking from LightnCandy 1.2.6.
 - HTML documentation.
 - Dozens of unnecessary feature flags.
 
+[0.9.3]: https://github.com/devtheorem/php-handlebars/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/devtheorem/php-handlebars/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/devtheorem/php-handlebars/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/devtheorem/php-handlebars/tree/v0.9.0
