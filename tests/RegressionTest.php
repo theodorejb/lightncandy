@@ -1260,6 +1260,21 @@ class RegressionTest extends TestCase
             ],
 
             [
+                'id' => 295,
+                'template' => '{{> MyPartial (newObject name="John Doe") message=(echo message=(echo message="Hello World!"))}}',
+                'options' => new Options(
+                    helpers: [
+                        'newObject' => fn(HelperOptions $options) => $options->hash,
+                        'echo' => fn(HelperOptions $options) => $options->hash['message'],
+                    ],
+                    partials: [
+                        'MyPartial' => '{{name}} says: "{{message}}"',
+                    ],
+                ),
+                'expected' => 'John Doe says: "Hello World!"',
+            ],
+
+            [
                 'id' => 297,
                 'template' => '{{test "foo" prop="\" "}}',
                 'options' => new Options(
