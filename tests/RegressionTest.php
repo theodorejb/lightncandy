@@ -1162,6 +1162,18 @@ class RegressionTest extends TestCase
             ],
 
             [
+                'id' => 281,
+                'template' => "{{test 'foo bar' (toRegex '^(foo|bar|baz)')}}",
+                'options' => new Options(
+                    helpers: [
+                        'toRegex' => fn($regex) => "/$regex/",
+                        'test' => fn(string $str, string $regex) => (bool) preg_match($regex, $str),
+                    ],
+                ),
+                'expected' => 'true',
+            ],
+
+            [
                 'id' => 284,
                 'template' => '{{> foo}}',
                 'options' => new Options(
@@ -1342,6 +1354,16 @@ class RegressionTest extends TestCase
             ],
             [
                 'id' => 357,
+                'template' => "{{{debug (debug 'foobar(moo).')}}}",
+                'options' => new Options(
+                    helpers: [
+                        'debug' => fn($arg1) => "ECHO: $arg1",
+                    ],
+                ),
+                'expected' => 'ECHO: ECHO: foobar(moo).',
+            ],
+            [
+                'id' => 357,
                 'template' => '{{echo (echo "foobar(moo)." (echo "moobar(foo)"))}}',
                 'options' => new Options(
                     helpers: [
@@ -1349,6 +1371,17 @@ class RegressionTest extends TestCase
                     ],
                 ),
                 'expected' => 'ECHO: ECHO: foobar(moo).',
+            ],
+
+            [
+                'id' => 367,
+                'template' => "{{#each (myfunc 'foo(bar)' ) }}{{.}},{{/each}}",
+                'options' => new Options(
+                    helpers: [
+                        'myfunc' => fn($arg) => explode('(', $arg),
+                    ],
+                ),
+                'expected' => 'foo,bar),',
             ],
 
             [

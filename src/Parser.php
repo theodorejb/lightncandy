@@ -285,7 +285,7 @@ final class Parser
     /**
      * Detect quote characters in a string
      *
-     * @return array<string,int>|null Expected ending string when there is a quote character
+     * @return array{string,int}|null Expected ending string when there is a quote character
      */
     protected static function detectQuote(string $string): ?array
     {
@@ -300,7 +300,7 @@ final class Parser
         }
 
         // begin with \' without ending '
-        if (preg_match('/^\\\\\'[^\']*$/', $string)) {
+        if (preg_match('/^\'[^\']*$/', $string)) {
             return ['\'', 0];
         }
 
@@ -315,7 +315,7 @@ final class Parser
         }
 
         // =\' exists without ending '
-        if (preg_match('/^[^\']*=\\\\\'[^\']*$/', $string)) {
+        if (preg_match('/^[^\']*=\'[^\']*$/', $string)) {
             return ['\'', 0];
         }
 
@@ -337,7 +337,7 @@ final class Parser
     protected static function analyze(string $token, Context $context): array
     {
         // Do not break quoted strings. Also, allow escaped quotes inside them.
-        $count = preg_match_all('/(\s*)([^"\s]*"(\\\\\\\\.|[^"])*"|[^\'\s]*\'(\\\\\\\\.|[^\'])*\'|\S+)/', $token, $matches);
+        $count = preg_match_all('/(\s*)([^"\s]*"(\\\\\\\\.|[^"])*"|[^\'\s]*\'(\\\\\\\\.|[^\'])*\'|\\S+)/', $token, $matches);
         // Parse arguments and deal with "..." or [...] or (...) or \'...\' or |...|
         if ($count > 0) {
             $vars = [];
@@ -350,7 +350,7 @@ final class Parser
                 $detected = static::detectQuote($t);
 
                 if ($expect === ')') {
-                    if ($detected && ($detected[0] !== ')')) {
+                    if ($detected && $detected[0] !== ')') {
                         $quote = $detected[0];
                     }
                     if (substr($t, -1, 1) === $quote) {
@@ -358,7 +358,7 @@ final class Parser
                     }
                 }
                 // if we are inside quotes, we should later skip stack changes
-                $quotes = preg_match("/^\".*\"$|^'.*'$/", $t);
+                $quotes = preg_match("/^(\".*\")|('.*')$/", $t);
 
                 // continue from previous match when expect something
                 if ($expect) {
